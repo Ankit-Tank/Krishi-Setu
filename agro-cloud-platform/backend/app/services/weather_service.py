@@ -1,4 +1,5 @@
 import asyncio
+import time
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 from collections import defaultdict
@@ -11,6 +12,14 @@ from app.schemas.schemas import (
 )
 
 OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5"
+
+# ---------------------------------------------------------------------------
+# In-Memory Weather Cache
+# ---------------------------------------------------------------------------
+# Key: "farm_{farm_id}" or "coords_{lat}_{lon}"
+# Value: {"data": WeatherForecastResponse, "timestamp": float, "lat": float, "lon": float}
+_WEATHER_CACHE: Dict[str, Dict[str, Any]] = {}
+CACHE_TTL_SECONDS: float = 30 * 60  # 30 minutes
 
 
 def _format_day_name(date_str: str, today_date_str: str) -> str:
@@ -94,13 +103,55 @@ def _generate_agronomic_guidance(
 
 class WeatherService:
     @staticmethod
+    def clear_cache() -> None:
+        """Clear the in-memory weather cache (primarily used in test suites)."""
+        global _WEATHER_CACHE
+        _WEATHER_CACHE.clear()
+
+    @staticmethod
     async def fetch_weather_for_coordinates(
         lat: float,
         lon: float,
         farm_id: int = 1,
-        farm_name: str = "Farm Plot"
+        farm_name: str = "Farm Plot",
+        force_refresh: bool = False,
     ) -> WeatherForecastResponse:
-        """Fetch current weather and 5-day forecast from OpenWeatherMap."""
+        """
+        Fetch current weather and 5-day forecast from OpenWeatherMap with in-memory caching.
+        Returns cached weather if fetched within the last 30 minutes for the same farm/coords.
+        """
+        cache_key = f"farm_{farm_id}" if farm_id > 0 else f"coords_{round(lat, 3)}_{round(lon, 3)}"
+        now = time.time()
+
+        # ----------------------------------------------------
+        # 1. Check in-memory 30-minute cache
+        # ----------------------------------------------------
+        if not force_refresh and cache_key in _WEATHER_CACHE:
+            cached_entry = _WEATHER_CACHE[cache_key]
+            cached_time = cached_entry["timestamp"]
+            age_seconds = now - cached_time
+            coord_match = (
+                abs(cached_entry.get("lat", lat) - lat) < 0.01 and
+                abs(cached_entry.get("lon", lon) - lon) < 0.01
+            )
+
+            if age_seconds < CACHE_TTL_SECONDS and coord_match:
+                age_minutes = age_seconds / 60.0
+                print(f"[Weather Cache] used cache for {cache_key} (farm_id={farm_id}, age={age_minutes:.1f}m / TTL=30m)")
+                cached_data: WeatherForecastResponse = cached_entry["data"]
+                # Update farm_name if changed
+                if cached_data.farm_name != farm_name or cached_data.farm_id != farm_id:
+                    cached_data = cached_data.model_copy(update={"farm_name": farm_name, "farm_id": farm_id})
+                return cached_data
+            else:
+                reason = "expired" if age_seconds >= CACHE_TTL_SECONDS else "coordinates changed"
+                print(f"[Weather Cache] Cache {reason} for {cache_key} (age={age_seconds/60:.1f}m). Making fresh API call.")
+        else:
+            print(f"[Weather Cache] Cache miss for {cache_key} (farm_id={farm_id}). Making fresh API call.")
+
+        # ----------------------------------------------------
+        # 2. Make real OpenWeatherMap API call
+        # ----------------------------------------------------
         api_key = settings.OPENWEATHER_API_KEY
         if not api_key:
             raise ValueError("OPENWEATHER_API_KEY is not configured in backend/.env")
@@ -114,6 +165,8 @@ class WeatherService:
             "appid": api_key,
             "units": "metric",
         }
+
+        print(f"[Weather Service] Calling OpenWeatherMap API for lat={lat}, lon={lon} (farm_id={farm_id})")
 
         async with httpx.AsyncClient(timeout=10.0) as client:
             current_resp, forecast_resp = await asyncio.gather(
@@ -162,7 +215,6 @@ class WeatherService:
         )
 
         # Aggregate 3-Hour Forecast list into Daily Forecast (up to 5 days)
-        # Groups: date_str (YYYY-MM-DD) -> list of 3-hour slices
         grouped_by_date = defaultdict(list)
         for item in fore_data.get("list", []):
             dt_txt = item.get("dt_txt", "")
@@ -185,9 +237,7 @@ class WeatherService:
                 for s in slices if isinstance(s.get("rain"), dict)
             ]
 
-            # Find midday slice or dominant weather condition
             mid_slice = slices[len(slices) // 2]
-            # If any slice has Rain/Thunderstorm, prioritize showing that
             rain_slice = next(
                 (s for s in slices if (s.get("weather") or [{}])[0].get("main") in ["Rain", "Thunderstorm", "Drizzle"]),
                 None
@@ -217,7 +267,7 @@ class WeatherService:
         city_name = curr_data.get("name") or fore_data.get("city", {}).get("name") or "Local Field Area"
         country = curr_data.get("sys", {}).get("country") or fore_data.get("city", {}).get("country") or "IN"
 
-        return WeatherForecastResponse(
+        weather_response = WeatherForecastResponse(
             farm_id=farm_id,
             farm_name=farm_name,
             city_name=city_name,
@@ -231,3 +281,15 @@ class WeatherService:
             guidance_type=guidance_type,
             fetched_at=datetime.now(timezone.utc).isoformat(),
         )
+
+        # ----------------------------------------------------
+        # 3. Store in in-memory cache
+        # ----------------------------------------------------
+        _WEATHER_CACHE[cache_key] = {
+            "data": weather_response,
+            "timestamp": now,
+            "lat": lat,
+            "lon": lon,
+        }
+
+        return weather_response
