@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      appName: 'Agro-Cloud',
+      appName: 'Krishi Setu',
       tagline: 'Precision Advisory & Mandi Linkage',
       tabs: {
         dashboard: 'Dashboard',
@@ -50,13 +50,40 @@ const resources = {
       profile: {
         title: 'Farmer Profile & Settings',
         selectLanguage: 'Select Preferred Language',
-        offlineCache: 'Offline Cache Active'
+        offlineCache: 'Offline Cache Active',
+        irrigation: 'Irrigation',
+        experience: 'Experience',
+        season: 'Preferred Season'
+      },
+      onboarding: {
+        title: '🌱 Welcome to Krishi Setu',
+        subtitle: 'Register your farmer profile & farm plot details to get personalized AI agronomic advisories.',
+        farmerSection: '👨‍🌾 1. Farmer Identity',
+        fullName: 'Full Name *',
+        phone: 'Mobile Phone Number *',
+        region: 'Village / Tehsil / Region Name *',
+        experience: 'Farming Experience (in Years) *',
+        farmSection: '🌾 2. Farm Plot Details',
+        farmName: 'Farm / Plot Name *',
+        cropType: 'Select Primary Crop Type *',
+        area: 'Plot Area in Acres *',
+        irrigationSource: 'Irrigation Source *',
+        irrigationBorewell: 'Borewell',
+        irrigationCanal: 'Canal',
+        irrigationRainfed: 'Rainfed',
+        irrigationOther: 'Other',
+        preferredSeason: 'Preferred Crop Season *',
+        seasonKharif: 'Kharif',
+        seasonRabi: 'Rabi',
+        seasonBoth: 'Both',
+        submitButton: 'Create Profile & Start Dashboard',
+        networkError: "Couldn't connect - check your WiFi and try again"
       }
     }
   },
   hi: {
     translation: {
-      appName: 'एग्रो-क्लाउड',
+      appName: 'कृषि सेतु',
       tagline: 'सटीक कृषि सलाह और मंडी बाजार',
       tabs: {
         dashboard: 'डैशबोर्ड',
@@ -102,13 +129,40 @@ const resources = {
       profile: {
         title: 'किसान प्रोफाइल और भाषा',
         selectLanguage: 'अपनी भाषा चुनें',
-        offlineCache: 'ऑफलाइन डेटा सक्रिय'
+        offlineCache: 'ऑफलाइन डेटा सक्रिय',
+        irrigation: 'सिंचाई साधन',
+        experience: 'खेती का अनुभव',
+        season: 'पसंदीदा फसल चक्र'
+      },
+      onboarding: {
+        title: '🌱 कृषि सेतु में आपका स्वागत है',
+        subtitle: 'व्यक्तिगत एआई कृषि सलाह पाने के लिए अपना प्रोफाइल और खेत विवरण दर्ज करें।',
+        farmerSection: '👨‍🌾 1. किसान विवरण',
+        fullName: 'पूरा नाम *',
+        phone: 'मोबाइल नंबर *',
+        region: 'गांव / तहसील / क्षेत्र *',
+        experience: 'खेती का अनुभव (वर्ष) *',
+        farmSection: '🌾 2. खेत का विवरण',
+        farmName: 'खेत / प्लॉट का नाम *',
+        cropType: 'मुख्य फसल चुनें *',
+        area: 'खेत का क्षेत्रफल (एकड़) *',
+        irrigationSource: 'सिंचाई साधन *',
+        irrigationBorewell: 'बोरवेल',
+        irrigationCanal: 'नहर',
+        irrigationRainfed: 'वर्षा आधारित',
+        irrigationOther: 'अन्य',
+        preferredSeason: 'पसंदीदा फसल मौसम *',
+        seasonKharif: 'खरीफ',
+        seasonRabi: 'रबी',
+        seasonBoth: 'दोनों',
+        submitButton: 'प्रोफाइल बनाएं और शुरू करें',
+        networkError: 'सर्वर से कनेक्ट नहीं हो सका - कृपया अपना वाईफाई जांचें और पुनः प्रयास करें'
       }
     }
   },
   te: {
     translation: {
-      appName: 'ఆగ్రో-క్లౌడ్',
+      appName: 'కృషి సేతు',
       tagline: 'వ్యవసాయ సలహాలు మరియు మార్కెట్ ధరలు',
       tabs: {
         dashboard: 'డాష్‌బోర్డ్',
@@ -154,13 +208,40 @@ const resources = {
       profile: {
         title: 'రైతు ప్రొఫైల్',
         selectLanguage: 'భాషను ఎంచుకోండి',
-        offlineCache: 'ఆఫ్‌లైన్ క్యాష్ అందుబాటులో ఉంది'
+        offlineCache: 'ఆఫ్‌లైన్ క్యాష్ అందుబాటులో ఉంది',
+        irrigation: 'నీటి వనరు',
+        experience: 'అనుభవం',
+        season: 'పంట సీజన్'
+      },
+      onboarding: {
+        title: '🌱 కృషి సేతుకి స్వాగతం',
+        subtitle: 'వ్యక్తిగత AI వ్యవసాయ సలహాల కోసం మీ వివరాలను నమోదు చేయండి.',
+        farmerSection: '👨‍🌾 1. రైతు వివరాలు',
+        fullName: 'పూర్తి పేరు *',
+        phone: 'మొబైల్ సంఖ్య *',
+        region: 'గ్రామం / ప్రాంతం *',
+        experience: 'వ్యవసాయ అనుభవం (సంవత్సరాలు) *',
+        farmSection: '🌾 2. పొలం వివరాలు',
+        farmName: 'పొలం పేరు *',
+        cropType: 'ప్రధాన పంట *',
+        area: 'విస్తీర్ణం (ఎకరాలు) *',
+        irrigationSource: 'నీటి వనరు *',
+        irrigationBorewell: 'బోరుబావి',
+        irrigationCanal: 'కాలువ',
+        irrigationRainfed: 'వర్షాధారం',
+        irrigationOther: 'ఇతర',
+        preferredSeason: 'పంట కాలం *',
+        seasonKharif: 'ఖరీఫ్',
+        seasonRabi: 'రబీ',
+        seasonBoth: 'రెండూ',
+        submitButton: 'ప్రొఫైల్ సృష్టించండి',
+        networkError: 'కనెక్ట్ చేయడం సాధ్యం కాలేదు - మీ వైఫైని తనిఖీ చేసి మళ్లీ ప్రయత్నించండి'
       }
     }
   },
   mr: {
     translation: {
-      appName: 'ॲग्रो-क्लाउड',
+      appName: 'कृषी सेतू',
       tagline: 'कृषी सल्ला आणि बाजार भाव',
       tabs: {
         dashboard: 'डॅशबोर्ड',
@@ -206,7 +287,34 @@ const resources = {
       profile: {
         title: 'शेतकरी प्रोफाइल',
         selectLanguage: 'भाषा निवडा',
-        offlineCache: 'ऑफलाइन डेटा सक्रिय'
+        offlineCache: 'ऑफलाइन डेटा सक्रिय',
+        irrigation: 'सिंचन स्रोत',
+        experience: 'शेतीचा अनुभव',
+        season: 'हंगाम'
+      },
+      onboarding: {
+        title: '🌱 कृषी सेतू मध्ये आपले स्वागत आहे',
+        subtitle: 'वैयक्तिकृत कृषी सल्ल्यासाठी तुमची माहिती नोंदवा.',
+        farmerSection: '👨‍🌾 1. शेतकरी माहिती',
+        fullName: 'पूर्ण नाव *',
+        phone: 'मोबाईल नंबर *',
+        region: 'गाव / तालुका / जिल्हा *',
+        experience: 'शेतीचा अनुभव (वर्षे) *',
+        farmSection: '🌾 2. शेत तपशील',
+        farmName: 'शेताचे नाव *',
+        cropType: 'मुख्य पीक निवडा *',
+        area: 'क्षेत्रफळ (एकर) *',
+        irrigationSource: 'सिंचन साधन *',
+        irrigationBorewell: 'बोअरवेल',
+        irrigationCanal: 'कालवा',
+        irrigationRainfed: 'पावसावर आधारित',
+        irrigationOther: 'इतर',
+        preferredSeason: 'पिकाचा हंगाम *',
+        seasonKharif: 'खरीप',
+        seasonRabi: 'रब्बी',
+        seasonBoth: 'दोन्ही',
+        submitButton: 'प्रोफाइल तयार करा',
+        networkError: 'सर्व्हरशी संपर्क होऊ शकला नाही - कृपया वायफाय तपासा आणि पुन्हा प्रयत्न करा'
       }
     }
   }
@@ -216,7 +324,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'hi',
+    lng: 'en',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,

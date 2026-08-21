@@ -16,6 +16,8 @@ def create_farmer(payload: FarmerCreate, db: Session = Depends(get_db)):
         existing.name = payload.name
         existing.region = payload.region
         existing.preferred_language = payload.preferred_language
+        if payload.experience_years is not None:
+            existing.experience_years = payload.experience_years
         db.commit()
         db.refresh(existing)
         return existing

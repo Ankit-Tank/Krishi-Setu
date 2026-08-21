@@ -10,8 +10,9 @@ class Farmer(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(150), nullable=False)
     phone = Column(String(20), unique=True, index=True, nullable=False)
-    preferred_language = Column(String(10), default="hi")
+    preferred_language = Column(String(10), default="en")
     region = Column(String(100), nullable=False)
+    experience_years = Column(Integer, nullable=True, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     farms = relationship("Farm", back_populates="farmer", cascade="all, delete-orphan")
@@ -28,6 +29,8 @@ class Farm(Base):
     longitude = Column(Float, nullable=True)
     area_acres = Column(Float, default=1.0)
     crop_type = Column(String(100), nullable=False)
+    irrigation_source = Column(String(50), nullable=True, default="borewell")
+    preferred_season = Column(String(50), nullable=True, default="both")
 
     farmer = relationship("Farmer", back_populates="farms")
     telemetry_readings = relationship("TelemetryReading", back_populates="farm", cascade="all, delete-orphan")

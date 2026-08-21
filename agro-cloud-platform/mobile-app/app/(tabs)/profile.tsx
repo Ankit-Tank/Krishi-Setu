@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, View, Alert } from 'react-native';
-import { Card, Text, Title, Paragraph, Button, RadioButton, Divider, Avatar } from 'react-native-paper';
+import { StyleSheet, ScrollView, View } from 'react-native';
+import { Card, Text, Title, Paragraph, Button, RadioButton, Divider, Avatar, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { IdentityService, FarmerIdentity } from '../../src/services/api';
@@ -9,15 +9,19 @@ export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const [identity, setIdentity] = useState<FarmerIdentity | null>(null);
-  const [language, setLanguage] = useState(i18n.language || 'hi');
+  const [language, setLanguage] = useState(i18n.language || 'en');
 
   useEffect(() => {
     loadIdentity();
   }, []);
 
   const loadIdentity = async () => {
-    const saved = await IdentityService.getSavedIdentity();
-    setIdentity(saved);
+    try {
+      const saved = await IdentityService.getSavedIdentity();
+      setIdentity(saved);
+    } catch (e) {
+      console.warn('Error loading identity in Profile:', e);
+    }
   };
 
   const changeLanguage = (lang: string) => {
@@ -26,7 +30,11 @@ export default function ProfileScreen() {
   };
 
   const handleResetData = async () => {
-    await IdentityService.clearIdentity();
+    try {
+      await IdentityService.clearIdentity();
+    } catch (e) {
+      console.warn('Error resetting identity:', e);
+    }
     router.replace('/onboarding');
   };
 
@@ -43,20 +51,48 @@ export default function ProfileScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Profile Header */}
       <Card style={styles.card}>
-        <Card.Content style={styles.profileRow}>
-          <Avatar.Text
-            size={56}
-            label={getInitials(identity?.farmer_name)}
-            style={{ backgroundColor: '#2E7D32' }}
-          />
-          <View style={{ marginLeft: 14, flex: 1 }}>
-            <Title style={styles.name}>{identity?.farmer_name || 'Farmer'}</Title>
-            <Paragraph style={styles.subText}>
-              📱 +91 {identity?.phone || 'N/A'} | 📍 {identity?.region || 'Punjab'}
-            </Paragraph>
-            <Paragraph style={styles.subText}>
-              🌾 {identity?.farm_name || 'My Farm Plot'} ({identity?.crop_type || 'Wheat'}, {identity?.area_acres || 0} Acres)
-            </Paragraph>
+        <Card.Content>
+          <View style={styles.profileRow}>
+            <Avatar.Text
+              size={56}
+              label={getInitials(identity?.farmer_name)}
+              style={{ backgroundColor: '#2E7D32' }}
+            />
+            <View style={{ marginLeft: 14, flex: 1 }}>
+              <Title style={styles.name}>{identity?.farmer_name || 'Farmer'}</Title>
+              <Paragraph style={styles.subText}>
+                📱 +91 {identity?.phone || 'N/A'} | 📍 {identity?.region || 'Punjab'}
+              </Paragraph>
+              <Paragraph style={styles.subText}>
+                🌾 {identity?.farm_name || 'My Farm Plot'} ({identity?.crop_type || 'Wheat'}, {identity?.area_acres || 0} Acres)
+              </Paragraph>
+            </View>
+          </View>
+
+          <Divider style={{ marginVertical: 12 }} />
+
+          {/* Farmer & Farm Meta Tags */}
+          <View style={styles.tagsContainer}>
+            <View style={styles.tagItem}>
+              <Text style={styles.tagLabel}>💧 Irrigation:</Text>
+              <Chip style={styles.chip} textStyle={styles.chipText}>
+                {identity?.irrigation_source ? identity.irrigation_source.toUpperCase() : 'BOREWELL'}
+              </Chip>
+            </View>
+
+            <View style={styles.tagItem}>
+              <Text style={styles.tagLabel}>⏳ Experience:</Text>
+              <Chip style={styles.chip} textStyle={styles.chipText}>
+                {identity?.experience_years !== undefined ? `${identity.experience_years} Years` : '5 Years'}
+              </Chip>
+            </View>
+
+            <View style={styles.tagItem}>
+              <Text style={styles.tagLabel}>🌦️ Season:</Text>
+              <Chip style={styles.chip} textStyle={styles.chipText}>
+                {identity?.preferred_season ? identity.preferred_season.toUpperCase() : 'BOTH'}
+              </Chip>
+            </View>
           </View>
         </Card.Content>
       </Card>
@@ -68,12 +104,12 @@ export default function ProfileScreen() {
           
           <RadioButton.Group onValueChange={changeLanguage} value={language}>
             <View style={styles.radioRow}>
-              <RadioButton value="hi" color="#2E7D32" />
-              <Text style={styles.radioLabel}>हिंदी (Hindi)</Text>
-            </View>
-            <View style={styles.radioRow}>
               <RadioButton value="en" color="#2E7D32" />
               <Text style={styles.radioLabel}>English</Text>
+            </View>
+            <View style={styles.radioRow}>
+              <RadioButton value="hi" color="#2E7D32" />
+              <Text style={styles.radioLabel}>हिंदी (Hindi)</Text>
             </View>
             <View style={styles.radioRow}>
               <RadioButton value="te" color="#2E7D32" />
@@ -141,6 +177,31 @@ const styles = StyleSheet.create({
   subText: {
     fontSize: 12,
     color: '#666666',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  tagItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  tagLabel: {
+    fontSize: 12,
+    color: '#555',
+    fontWeight: '600',
+  },
+  chip: {
+    backgroundColor: '#E8F5E9',
+    height: 28,
+  },
+  chipText: {
+    fontSize: 11,
+    color: '#1B5E20',
+    fontWeight: 'bold',
   },
   sectionTitle: {
     fontSize: 16,

@@ -29,14 +29,14 @@ python -m venv .venv
 # 2. Install AI Engine dependencies
 pip install -r requirements.txt
 
-# 3. Start AI Engine FastAPI server on Port 8500
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8500
+# 3. Start AI Engine FastAPI server on Port 8500 (bound to 0.0.0.0 to accept mobile/network connections)
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8500
 ```
-*Verify AI Engine health*: Open `http://127.0.0.1:8500/health` in your browser.
+*Verify AI Engine health*: Open `http://localhost:8500/health` in your browser.
 
 ---
 
-### Terminal 2: Agro-Cloud Backend API & Database Seed (Port 8080)
+### Terminal 2: Agro-Cloud Backend API & Database Seed (Port 8000)
 ```bash
 cd agro-cloud-platform/backend
 
@@ -53,10 +53,10 @@ pip install -r requirements.txt
 # 3. Seed Database with 240 telemetry readings, Mandi prices & Trade listings
 python seed.py
 
-# 4. Start Backend FastAPI server on Port 8080
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
+# 4. Start Backend FastAPI server on Port 8000 (bound to 0.0.0.0 to accept mobile/network connections)
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-*Verify Backend API*: Open `http://127.0.0.1:8080/docs` in your browser.
+*Verify Backend API*: Open `http://localhost:8000/docs` in your browser.
 
 ---
 

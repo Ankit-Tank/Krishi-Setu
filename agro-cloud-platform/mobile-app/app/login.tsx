@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { Text, TextInput, Button, Card, SegmentedButtons } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -32,6 +32,15 @@ export default function LoginScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>
         <Card.Content style={styles.cardContent}>
+          {/* Brand Logo */}
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../assets/krishisetu-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+
           <Text variant="headlineMedium" style={styles.title}>
             🌱 {t('appName')}
           </Text>
@@ -133,6 +142,15 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 24,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 16,
   },
   title: {
     textAlign: 'center',

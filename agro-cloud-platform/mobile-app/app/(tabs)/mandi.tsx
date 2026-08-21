@@ -37,24 +37,32 @@ export default function MandiScreen() {
 
   const fetchMarketData = async () => {
     setLoading(true);
-    const identity = await IdentityService.getSavedIdentity();
-    const activeCrop = identity?.crop_type || 'Wheat';
-    const activeFarmerId = identity?.farmer_id || 1;
+    try {
+      const identity = await IdentityService.getSavedIdentity();
+      const activeCrop = identity?.crop_type || 'Wheat';
+      const activeFarmerId = identity?.farmer_id || 1;
 
-    setCropType(activeCrop);
-    setFarmerId(activeFarmerId);
+      setCropType(activeCrop);
+      setFarmerId(activeFarmerId);
 
-    const [pricesRes, forecastRes] = await Promise.all([
-      AgroApiService.getMandiPrices(),
-      AgroApiService.get14DayPriceForecast(activeCrop, 'Khanna Mandi')
-    ]);
-    setPrices(pricesRes.data);
-    setForecast(forecastRes.data);
-    setLoading(false);
+      const [pricesRes, forecastRes] = await Promise.all([
+        AgroApiService.getMandiPrices(),
+        AgroApiService.get14DayPriceForecast(activeCrop, 'Khanna Mandi')
+      ]);
+      setPrices(pricesRes.data);
+      setForecast(forecastRes.data);
+    } catch (err) {
+      console.warn('Market data fetching error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCreateTradeListing = async () => {
-    if (!quantity || isNaN(Number(quantity))) return;
+    if (!quantity || isNaN(Number(quantity)) || Number(quantity) <= 0) {
+      alert('Please enter a valid harvest quantity in quintals.');
+      return;
+    }
     setListingSubmitting(true);
     setConfirmedTrade(null);
     try {
@@ -68,8 +76,9 @@ export default function MandiScreen() {
 
       const matches = await AgroApiService.getBuyerMatches(listing.id);
       setBuyerMatches(matches);
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Could not create trade listing on backend:', err);
+      alert(err?.message || "Couldn't connect to create listing - please check your WiFi and try again.");
     } finally {
       setListingSubmitting(false);
     }
@@ -81,8 +90,9 @@ export default function MandiScreen() {
     try {
       const confirmRes = await AgroApiService.confirmTradeListing(createdListing.id, buyerMatchId);
       setConfirmedTrade(confirmRes);
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Trade confirmation failed:', err);
+      alert(err?.message || "Couldn't confirm trade - please check your WiFi and try again.");
     } finally {
       setAcceptingId(null);
     }

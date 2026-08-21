@@ -1,28 +1,31 @@
 {
   "expo": {
-    "name": "Agro-Cloud",
-    "slug": "agro-cloud-mobile-app",
+    "name": "Krishi Setu",
+    "slug": "krishi-setu",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "scheme": "agrocloud",
+    "icon": "./assets/krishisetu-logo.png",
+    "scheme": "krishisetu",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/krishisetu-logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2E7D32"
+      "backgroundColor": "#FFFFFF"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.krishisetu.app"
     },
     "android": {
+      "package": "com.krishisetu.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2E7D32"
+        "foregroundImage": "./assets/krishisetu-logo.png",
+        "backgroundColor": "#FFFFFF"
       }
     },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/krishisetu-logo.png"
     },
     "platforms": [
       "ios",

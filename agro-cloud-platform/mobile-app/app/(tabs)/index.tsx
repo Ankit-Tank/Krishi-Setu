@@ -24,70 +24,80 @@ export default function DashboardScreen() {
 
   const loadDashboardData = async () => {
     setLoading(true);
+    try {
+      // 1. Check Saved Per-Device Identity
+      const savedIdentity = await IdentityService.getSavedIdentity();
+      if (!savedIdentity) {
+        router.replace('/onboarding');
+        return;
+      }
+      setIdentity(savedIdentity);
 
-    // 1. Check Saved Per-Device Identity
-    const savedIdentity = await IdentityService.getSavedIdentity();
-    if (!savedIdentity) {
-      router.replace('/onboarding');
-      return;
-    }
-    setIdentity(savedIdentity);
+      // 2. Fetch Farms for Saved Farmer ID
+      const farmsRes = await AgroApiService.getFarms(savedIdentity.farmer_id);
+      setFarms(farmsRes.data);
 
-    // 2. Fetch Farms for Saved Farmer ID
-    const farmsRes = await AgroApiService.getFarms(savedIdentity.farmer_id);
-    setFarms(farmsRes.data);
+      // Default to farm matched from savedIdentity or first returned farm
+      let farm = farmsRes.data.find(f => f.id === savedIdentity.farm_id) || (farmsRes.data.length > 0 ? farmsRes.data[0] : null);
+      if (!farm && savedIdentity.farm_id) {
+        farm = {
+          id: savedIdentity.farm_id,
+          farmer_id: savedIdentity.farmer_id,
+          name: savedIdentity.farm_name,
+          area_acres: savedIdentity.area_acres,
+          crop_type: savedIdentity.crop_type,
+          latitude: 30.7,
+          longitude: 76.2
+        };
+      }
+      setSelectedFarm(farm);
 
-    // Default to farm matched from savedIdentity or first returned farm
-    let farm = farmsRes.data.find(f => f.id === savedIdentity.farm_id) || (farmsRes.data.length > 0 ? farmsRes.data[0] : null);
-    if (!farm && savedIdentity.farm_id) {
-      farm = {
-        id: savedIdentity.farm_id,
-        farmer_id: savedIdentity.farmer_id,
-        name: savedIdentity.farm_name,
-        area_acres: savedIdentity.area_acres,
-        crop_type: savedIdentity.crop_type,
-        latitude: 30.7,
-        longitude: 76.2
-      };
-    }
-    setSelectedFarm(farm);
+      if (farm) {
+        // 3. Fetch Telemetry & Advisories for Selected Farm
+        const [telRes, advRes] = await Promise.all([
+          AgroApiService.getLatestTelemetry(farm.id),
+          AgroApiService.getAdvisories(farm.id)
+        ]);
 
-    if (farm) {
-      // 3. Fetch Telemetry & Advisories for Selected Farm
-      const [telRes, advRes] = await Promise.all([
-        AgroApiService.getLatestTelemetry(farm.id),
-        AgroApiService.getAdvisories(farm.id)
-      ]);
+        setTelemetry(telRes.data);
+        setAdvisories(advRes.data.advisory_records || []);
+        setIsOffline(farmsRes.isOffline || telRes.isOffline || advRes.isOffline);
 
-      setTelemetry(telRes.data);
-      setAdvisories(advRes.data.advisory_records || []);
-      setIsOffline(farmsRes.isOffline || telRes.isOffline || advRes.isOffline);
-
-      // Trigger notification if urgent advisory exists
-      if (advRes.data.advisory_records && advRes.data.advisory_records.length > 0) {
-        const topAdv = advRes.data.advisory_records[0];
-        if (topAdv.type === 'disease' || topAdv.type === 'irrigation') {
-          NotificationService.scheduleAdvisoryNotification(
-            `High Priority ${topAdv.type.toUpperCase()} Advisory`,
-            topAdv.message
-          );
+        // Trigger notification if urgent advisory exists
+        if (advRes.data.advisory_records && advRes.data.advisory_records.length > 0) {
+          const topAdv = advRes.data.advisory_records[0];
+          if (topAdv.type === 'disease' || topAdv.type === 'irrigation') {
+            NotificationService.scheduleAdvisoryNotification(
+              `High Priority ${topAdv.type.toUpperCase()} Advisory`,
+              topAdv.message
+            );
+          }
         }
       }
+    } catch (err) {
+      console.warn('Dashboard data loading error:', err);
+      setIsOffline(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSelectFarm = async (farm: Farm) => {
     setSelectedFarm(farm);
     setMenuVisible(false);
     setLoading(true);
-    const [telRes, advRes] = await Promise.all([
-      AgroApiService.getLatestTelemetry(farm.id),
-      AgroApiService.getAdvisories(farm.id)
-    ]);
-    setTelemetry(telRes.data);
-    setAdvisories(advRes.data.advisory_records || []);
-    setLoading(false);
+    try {
+      const [telRes, advRes] = await Promise.all([
+        AgroApiService.getLatestTelemetry(farm.id),
+        AgroApiService.getAdvisories(farm.id)
+      ]);
+      setTelemetry(telRes.data);
+      setAdvisories(advRes.data.advisory_records || []);
+    } catch (err) {
+      console.warn('Farm switch loading error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

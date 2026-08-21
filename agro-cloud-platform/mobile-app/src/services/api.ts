@@ -15,6 +15,9 @@ export interface FarmerIdentity {
   crop_type: string;
   area_acres: number;
   region: string;
+  irrigation_source?: 'borewell' | 'canal' | 'rainfed' | 'other' | string;
+  experience_years?: number;
+  preferred_season?: 'Kharif' | 'Rabi' | 'both' | string;
 }
 
 const IDENTITY_STORAGE_KEY = '@agro_farmer_identity';
@@ -53,6 +56,7 @@ export interface Farmer {
   phone: string;
   preferred_language: string;
   region: string;
+  experience_years?: number;
   created_at: string;
 }
 
@@ -64,6 +68,8 @@ export interface Farm {
   longitude: number;
   area_acres: number;
   crop_type: string;
+  irrigation_source?: string;
+  preferred_season?: string;
 }
 
 export interface TelemetryReading {
@@ -179,8 +185,28 @@ const STORAGE_KEYS = {
   PRICE_FORECAST: 'AGRO_OFFLINE_PRICE_FORECAST',
 };
 
+// Friendly user error message formatter
+export function formatFriendlyErrorMessage(err: any): string {
+  if (!err) return "Couldn't connect - check your WiFi and try again.";
+  const msg = err.message || String(err);
+  const isNetwork =
+    msg.includes('Network') ||
+    msg.includes('timeout') ||
+    msg.includes('Failed to fetch') ||
+    msg.includes('Aborted') ||
+    msg.includes('AbortError') ||
+    msg.includes('Network request failed') ||
+    msg.includes('refused') ||
+    msg.includes('Load failed');
+
+  if (isNetwork) {
+    return "Couldn't connect - check your WiFi and try again.";
+  }
+  return msg || "Something went wrong. Please check your connection and try again.";
+}
+
 // Helper for network calls with abort timeout
-async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs: number = 10000): Promise<Response> {
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs: number = 8000): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -192,16 +218,22 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutM
     return response;
   } catch (err: any) {
     clearTimeout(timeoutId);
-    if (err.name === 'AbortError') {
-      throw new Error(`Network timeout (${timeoutMs / 1000}s) connecting to ${url}`);
+    if (err.name === 'AbortError' || err.message?.includes('aborted')) {
+      throw new Error("Couldn't connect - request timed out. Please check your WiFi and try again.");
     }
-    throw err;
+    throw new Error(formatFriendlyErrorMessage(err));
   }
 }
 
 export const AgroApiService = {
   // Create a new farmer record on the real backend
-  async createFarmer(data: { name: string; phone: string; preferred_language?: string; region?: string }): Promise<Farmer> {
+  async createFarmer(data: {
+    name: string;
+    phone: string;
+    preferred_language?: string;
+    region?: string;
+    experience_years?: number;
+  }): Promise<Farmer> {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/farmers`, {
         method: 'POST',
@@ -209,24 +241,34 @@ export const AgroApiService = {
         body: JSON.stringify({
           name: data.name,
           phone: data.phone,
-          preferred_language: data.preferred_language || 'hi',
-          region: data.region || 'Punjab'
+          preferred_language: data.preferred_language || 'en',
+          region: data.region || 'Punjab',
+          experience_years: data.experience_years ?? 0,
         })
-      }, 10000);
+      }, 8000);
 
       if (response.ok) {
         return await response.json();
       }
       const errText = await response.text().catch(() => '');
-      throw new Error(`Server returned status ${response.status}: ${errText || response.statusText}`);
+      throw new Error(errText || `Server returned status ${response.status}`);
     } catch (err: any) {
       console.warn('Backend createFarmer failed:', err?.message || err);
-      throw err;
+      throw new Error(formatFriendlyErrorMessage(err));
     }
   },
 
   // Create a new farm record on the real backend
-  async createFarm(data: { farmer_id: number; name: string; crop_type: string; area_acres: number; latitude?: number; longitude?: number }): Promise<Farm> {
+  async createFarm(data: {
+    farmer_id: number;
+    name: string;
+    crop_type: string;
+    area_acres: number;
+    latitude?: number;
+    longitude?: number;
+    irrigation_source?: string;
+    preferred_season?: string;
+  }): Promise<Farm> {
     try {
       const response = await fetchWithTimeout(`${API_BASE_URL}/farms`, {
         method: 'POST',
@@ -237,24 +279,27 @@ export const AgroApiService = {
           crop_type: data.crop_type,
           area_acres: data.area_acres,
           latitude: data.latitude || 30.7,
-          longitude: data.longitude || 76.2
+          longitude: data.longitude || 76.2,
+          irrigation_source: data.irrigation_source || 'borewell',
+          preferred_season: data.preferred_season || 'both',
         })
-      }, 10000);
+      }, 8000);
 
       if (response.ok) {
         return await response.json();
       }
       const errText = await response.text().catch(() => '');
-      throw new Error(`Server returned status ${response.status}: ${errText || response.statusText}`);
+      throw new Error(errText || `Server returned status ${response.status}`);
     } catch (err: any) {
       console.warn('Backend createFarm failed:', err?.message || err);
-      throw err;
+      throw new Error(formatFriendlyErrorMessage(err));
     }
   },
+
   // Get all registered farmers
   async getFarmers(): Promise<{ data: Farmer[]; isOffline: boolean }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/farmers/`);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farmers/`, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(STORAGE_KEYS.FARMERS, JSON.stringify(data));
@@ -265,7 +310,7 @@ export const AgroApiService = {
     }
     const cached = await AsyncStorage.getItem(STORAGE_KEYS.FARMERS);
     const data = cached ? JSON.parse(cached) : [
-      { id: 1, name: 'Gurpreet Singh', phone: '9876543210', preferred_language: 'en', region: 'Punjab', created_at: '2026-08-01' }
+      { id: 1, name: 'Gurpreet Singh', phone: '9876543210', preferred_language: 'en', region: 'Punjab', experience_years: 10, created_at: '2026-08-01' }
     ];
     return { data, isOffline: true };
   },
@@ -273,7 +318,7 @@ export const AgroApiService = {
   // Get farms for farmer
   async getFarms(farmerId: number = 1): Promise<{ data: Farm[]; isOffline: boolean }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/farms/?farmer_id=${farmerId}`);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farms/?farmer_id=${farmerId}`, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(`${STORAGE_KEYS.FARMS}_${farmerId}`, JSON.stringify(data));
@@ -284,8 +329,8 @@ export const AgroApiService = {
     }
     const cached = await AsyncStorage.getItem(`${STORAGE_KEYS.FARMS}_${farmerId}`);
     const data = cached ? JSON.parse(cached) : [
-      { id: 1, farmer_id: 1, name: 'Green Acres Wheat Farm', latitude: 30.9, longitude: 75.85, area_acres: 12.5, crop_type: 'Wheat' },
-      { id: 2, farmer_id: 1, name: 'Riverside Paddy Field', latitude: 30.92, longitude: 75.88, area_acres: 8.0, crop_type: 'Rice' },
+      { id: 1, farmer_id: 1, name: 'Green Acres Wheat Farm', latitude: 30.9, longitude: 75.85, area_acres: 12.5, crop_type: 'Wheat', irrigation_source: 'borewell', preferred_season: 'both' },
+      { id: 2, farmer_id: 1, name: 'Riverside Paddy Field', latitude: 30.92, longitude: 75.88, area_acres: 8.0, crop_type: 'Rice', irrigation_source: 'canal', preferred_season: 'Kharif' },
     ];
     return { data, isOffline: true };
   },
@@ -293,7 +338,7 @@ export const AgroApiService = {
   // Get latest telemetry for a farm
   async getLatestTelemetry(farmId: number = 1): Promise<{ data: TelemetryReading | null; isOffline: boolean }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/telemetry/${farmId}/latest`);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/telemetry/${farmId}/latest`, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(`${STORAGE_KEYS.TELEMETRY}_${farmId}`, JSON.stringify(data));
@@ -321,7 +366,7 @@ export const AgroApiService = {
   // Get advisory records & precision recommendations for a farm
   async getAdvisories(farmId: number = 1): Promise<{ data: RuleBasedAdvisoryResponse; isOffline: boolean }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/advisory/${farmId}`);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/advisory/${farmId}`, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(`${STORAGE_KEYS.ADVISORY}_${farmId}`, JSON.stringify(data));
@@ -363,13 +408,13 @@ export const AgroApiService = {
       } as any);
     }
 
-    const response = await fetch(`${API_BASE_URL}/leaf-scan/upload`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/leaf-scan/upload`, {
       method: 'POST',
       body: formData
-    });
+    }, 15000);
 
     if (!response.ok) {
-      throw new Error(`Upload failed with status ${response.status}`);
+      throw new Error(`Upload diagnosis failed (status ${response.status})`);
     }
 
     return await response.json();
@@ -384,7 +429,7 @@ export const AgroApiService = {
       if (region) params.append('region', region);
       if (params.toString()) url += `?${params.toString()}`;
 
-      const response = await fetch(url);
+      const response = await fetchWithTimeout(url, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(STORAGE_KEYS.MANDI_PRICES, JSON.stringify(data));
@@ -405,7 +450,7 @@ export const AgroApiService = {
 
   // Create trade listing for harvest sale
   async createTradeListing(farmerId: number, cropType: string, quantityQuintals: number, harvestDate: string): Promise<TradeListingResponse> {
-    const response = await fetch(`${API_BASE_URL}/market/trade-listing`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/market/trade-listing`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -414,10 +459,10 @@ export const AgroApiService = {
         quantity_quintals: quantityQuintals,
         harvest_date: harvestDate
       })
-    });
+    }, 8000);
 
     if (!response.ok) {
-      throw new Error(`Trade listing creation failed: ${response.status}`);
+      throw new Error(`Trade listing creation failed (status ${response.status})`);
     }
 
     return await response.json();
@@ -425,23 +470,23 @@ export const AgroApiService = {
 
   // Get ranked buyer matches for trade listing
   async getBuyerMatches(listingId: number): Promise<BuyerMatchResponse[]> {
-    const response = await fetch(`${API_BASE_URL}/market/matches/${listingId}`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/market/matches/${listingId}`, {}, 8000);
     if (!response.ok) {
-      throw new Error(`Failed to fetch buyer matches: ${response.status}`);
+      throw new Error(`Failed to fetch buyer matches (status ${response.status})`);
     }
     return await response.json();
   },
 
   // Confirm trade listing and generate logistics record
   async confirmTradeListing(listingId: number, buyerMatchId: number): Promise<TradeConfirmResponse> {
-    const response = await fetch(`${API_BASE_URL}/market/trade-listing/${listingId}/confirm`, {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/market/trade-listing/${listingId}/confirm`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ buyer_match_id: buyerMatchId })
-    });
+    }, 8000);
 
     if (!response.ok) {
-      throw new Error(`Failed to confirm trade listing: ${response.status}`);
+      throw new Error(`Failed to confirm trade listing (status ${response.status})`);
     }
 
     return await response.json();
@@ -450,7 +495,7 @@ export const AgroApiService = {
   // Get 14-day price forecast
   async get14DayPriceForecast(crop: string = 'Wheat', mandi: string = 'Khanna Mandi'): Promise<{ data: PriceForecastResult; isOffline: boolean }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/market/price-forecast?crop=${encodeURIComponent(crop)}&mandi=${encodeURIComponent(mandi)}`);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/market/price-forecast?crop=${encodeURIComponent(crop)}&mandi=${encodeURIComponent(mandi)}`, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(STORAGE_KEYS.PRICE_FORECAST, JSON.stringify(data));
@@ -469,7 +514,7 @@ export const AgroApiService = {
       forecast_prices: [2360, 2375, 2390, 2410, 2430, 2450, 2470],
       projected_max_price: 2470.0,
       best_time_to_sell_recommendation: `Optimal selling window for ${crop} at ${mandi}: Sell in 7 days to capture peak price of INR 2,470.00/quintal.`,
-      source: 'Agro-Cloud AI Engine (Offline Cache)'
+      source: 'Krishi Setu AI Engine (Offline Cache)'
     };
     return { data, isOffline: true };
   }

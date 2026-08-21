@@ -1,20 +1,42 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Card, HelperText, Chip } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import { Text, TextInput, Button, Card, HelperText, Chip, SegmentedButtons } from 'react-native-paper';
 import { useRouter } from 'expo-router';
-import { AgroApiService, IdentityService, API_BASE_URL } from '../src/services/api';
+import { useTranslation } from 'react-i18next';
+import { AgroApiService, IdentityService, formatFriendlyErrorMessage } from '../src/services/api';
 
 const COMMON_CROPS = ['Wheat', 'Rice', 'Cotton', 'Maize', 'Sugarcane', 'Mustard'];
 
+const IRRIGATION_SOURCES = [
+  { value: 'borewell', label: 'Borewell 🚰' },
+  { value: 'canal', label: 'Canal 🌊' },
+  { value: 'rainfed', label: 'Rainfed 🌧️' },
+  { value: 'other', label: 'Other 🔄' },
+];
+
+const SEASONS = [
+  { value: 'Kharif', label: 'Kharif' },
+  { value: 'Rabi', label: 'Rabi' },
+  { value: 'both', label: 'Both' },
+];
+
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { t, i18n } = useTranslation();
 
+  // Farmer identity fields
   const [farmerName, setFarmerName] = useState('');
   const [phone, setPhone] = useState('');
+  const [region, setRegion] = useState('');
+  const [experienceYears, setExperienceYears] = useState('5');
+
+  // Farm plot fields
   const [farmName, setFarmName] = useState('');
   const [cropType, setCropType] = useState('Wheat');
   const [areaAcres, setAreaAcres] = useState('5.0');
-  const [region, setRegion] = useState('');
+  const [irrigationSource, setIrrigationSource] = useState<'borewell' | 'canal' | 'rainfed' | 'other' | string>('borewell');
+  const [preferredSeason, setPreferredSeason] = useState<'Kharif' | 'Rabi' | 'both' | string>('both');
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -29,16 +51,20 @@ export default function OnboardingScreen() {
       setErrorMsg('Please enter a valid 10-digit mobile number.');
       return;
     }
+    if (!region.trim()) {
+      setErrorMsg('Please enter your village, district, or region.');
+      return;
+    }
+    if (experienceYears.trim() === '' || isNaN(Number(experienceYears)) || Number(experienceYears) < 0) {
+      setErrorMsg('Please enter a valid farming experience in years.');
+      return;
+    }
     if (!farmName.trim()) {
       setErrorMsg('Please enter your farm or plot name.');
       return;
     }
     if (!areaAcres.trim() || isNaN(Number(areaAcres)) || Number(areaAcres) <= 0) {
       setErrorMsg('Please enter a valid farm area in acres.');
-      return;
-    }
-    if (!region.trim()) {
-      setErrorMsg('Please enter your village, district, or region.');
       return;
     }
 
@@ -49,8 +75,9 @@ export default function OnboardingScreen() {
       const farmer = await AgroApiService.createFarmer({
         name: farmerName.trim(),
         phone: phone.trim(),
-        preferred_language: 'hi',
+        preferred_language: i18n.language || 'en',
         region: region.trim(),
+        experience_years: Math.max(0, parseInt(experienceYears, 10) || 0),
       });
 
       // 2. Create Farm Record under Farmer ID
@@ -59,6 +86,8 @@ export default function OnboardingScreen() {
         name: farmName.trim(),
         crop_type: cropType,
         area_acres: Number(areaAcres),
+        irrigation_source: irrigationSource,
+        preferred_season: preferredSeason,
       });
 
       // 3. Save Persistent Per-Device Identity
@@ -71,20 +100,16 @@ export default function OnboardingScreen() {
         crop_type: farm.crop_type,
         area_acres: farm.area_acres,
         region: farmer.region,
+        irrigation_source: irrigationSource,
+        experience_years: Math.max(0, parseInt(experienceYears, 10) || 0),
+        preferred_season: preferredSeason,
       });
 
       // 4. Navigate into Main App Tabs
       router.replace('/(tabs)');
     } catch (err: any) {
       console.error('Onboarding submission error:', err);
-      const msg = err?.message || String(err);
-      const isNetworkError = msg.includes('Network') || msg.includes('timeout') || msg.includes('Failed to fetch') || msg.includes('Aborted') || msg.includes('AbortError');
-      
-      if (isNetworkError) {
-        setErrorMsg(`Couldn't reach the server at ${API_BASE_URL}. Please check your Wi-Fi connection, ensure your phone and computer are on the same Wi-Fi network, and that the backend server is running.`);
-      } else {
-        setErrorMsg(msg || 'Could not register profile. Please check your connection and try again.');
-      }
+      setErrorMsg(formatFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -94,8 +119,17 @@ export default function OnboardingScreen() {
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Card style={styles.card}>
         <Card.Content style={styles.cardContent}>
+          {/* Brand Logo */}
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../assets/krishisetu-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+
           <Text variant="headlineMedium" style={styles.title}>
-            🌱 Welcome to KrishiSetu
+            🌱 Welcome to Krishi Setu
           </Text>
           <Text variant="bodyMedium" style={styles.subtitle}>
             Register your farmer profile & farm plot details to get personalized AI agronomic advisories.
@@ -106,7 +140,7 @@ export default function OnboardingScreen() {
               <Card.Content style={styles.errorCardContent}>
                 <View style={styles.errorHeaderRow}>
                   <Text style={styles.errorIcon}>⚠️</Text>
-                  <Text style={styles.errorTitle}>Server Connection Failed</Text>
+                  <Text style={styles.errorTitle}>Connection Notice</Text>
                 </View>
                 <Text style={styles.errorDescription}>{errorMsg}</Text>
                 <Button
@@ -119,7 +153,7 @@ export default function OnboardingScreen() {
                   textColor="#B71C1C"
                   style={styles.retryBtn}
                 >
-                  Retry Connection
+                  Retry
                 </Button>
               </Card.Content>
             </Card>
@@ -160,6 +194,18 @@ export default function OnboardingScreen() {
             placeholder="e.g. Ludhiana, Punjab / Khanna, Fatehgarh"
             value={region}
             onChangeText={setRegion}
+            mode="outlined"
+            style={styles.input}
+            outlineColor="#C8E6C9"
+            activeOutlineColor="#2E7D32"
+          />
+
+          <TextInput
+            label="Farming Experience (in Years) *"
+            placeholder="e.g. 5 or 12"
+            value={experienceYears}
+            onChangeText={setExperienceYears}
+            keyboardType="numeric"
             mode="outlined"
             style={styles.input}
             outlineColor="#C8E6C9"
@@ -212,6 +258,44 @@ export default function OnboardingScreen() {
             activeOutlineColor="#2E7D32"
           />
 
+          {/* Irrigation Source */}
+          <Text style={styles.chipLabel}>Irrigation Source *</Text>
+          <View style={styles.chipRow}>
+            {IRRIGATION_SOURCES.map((source) => (
+              <Chip
+                key={source.value}
+                selected={irrigationSource === source.value}
+                onPress={() => setIrrigationSource(source.value)}
+                style={[
+                  styles.chip,
+                  irrigationSource === source.value ? styles.chipSelected : styles.chipUnselected,
+                ]}
+                textStyle={{ color: irrigationSource === source.value ? '#FFFFFF' : '#2E7D32' }}
+              >
+                {source.label}
+              </Chip>
+            ))}
+          </View>
+
+          {/* Preferred Crop Season */}
+          <Text style={styles.chipLabel}>Preferred Crop Season *</Text>
+          <View style={styles.chipRow}>
+            {SEASONS.map((season) => (
+              <Chip
+                key={season.value}
+                selected={preferredSeason === season.value}
+                onPress={() => setPreferredSeason(season.value)}
+                style={[
+                  styles.chip,
+                  preferredSeason === season.value ? styles.chipSelected : styles.chipUnselected,
+                ]}
+                textStyle={{ color: preferredSeason === season.value ? '#FFFFFF' : '#2E7D32' }}
+              >
+                {season.label}
+              </Chip>
+            ))}
+          </View>
+
           <Button
             mode="contained"
             onPress={handleSubmitOnboarding}
@@ -243,6 +327,15 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 20,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 16,
   },
   title: {
     textAlign: 'center',
@@ -287,10 +380,6 @@ const styles = StyleSheet.create({
   },
   retryBtn: {
     borderRadius: 8,
-  },
-  errorText: {
-    fontSize: 13,
-    marginBottom: 8,
   },
   sectionHeader: {
     fontWeight: 'bold',

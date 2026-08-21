@@ -9,8 +9,9 @@ from pydantic import BaseModel, Field
 class FarmerBase(BaseModel):
     name: str = Field(..., example="Ramesh Kumar")
     phone: str = Field(..., example="+919876543210")
-    preferred_language: str = Field("hi", example="hi")
+    preferred_language: str = Field("en", example="en")
     region: str = Field(..., example="Punjab")
+    experience_years: Optional[int] = Field(None, example=5)
 
 
 class FarmerCreate(FarmerBase):
@@ -22,6 +23,7 @@ class FarmerUpdate(BaseModel):
     phone: Optional[str] = None
     preferred_language: Optional[str] = None
     region: Optional[str] = None
+    experience_years: Optional[int] = None
 
 
 class FarmerResponse(FarmerBase):
@@ -42,6 +44,8 @@ class FarmBase(BaseModel):
     longitude: Optional[float] = Field(75.8573, example=75.8573)
     area_acres: float = Field(2.5, example=2.5)
     crop_type: str = Field(..., example="Wheat")
+    irrigation_source: Optional[str] = Field("borewell", example="borewell")
+    preferred_season: Optional[str] = Field("both", example="both")
 
 
 class FarmCreate(FarmBase):
@@ -54,6 +58,8 @@ class FarmUpdate(BaseModel):
     longitude: Optional[float] = None
     area_acres: Optional[float] = None
     crop_type: Optional[str] = None
+    irrigation_source: Optional[str] = None
+    preferred_season: Optional[str] = None
 
 
 class FarmResponse(FarmBase):

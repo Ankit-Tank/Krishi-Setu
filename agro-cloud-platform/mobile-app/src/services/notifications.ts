@@ -14,7 +14,6 @@ try {
     if (setNotificationHandler) {
       setNotificationHandler({
         handleNotification: async () => ({
-          shouldShowAlert: true,
           shouldShowBanner: true,
           shouldShowList: true,
           shouldPlaySound: true,
@@ -37,7 +36,7 @@ export const NotificationService = {
 
       await scheduleNotificationAsync({
         content: {
-          title: `🌱 Agro-Cloud Alert: ${title}`,
+          title: `🌱 Krishi Setu Alert: ${title}`,
           body: body,
           data: { urgency },
         },

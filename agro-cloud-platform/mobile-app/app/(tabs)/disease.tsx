@@ -16,11 +16,11 @@ export default function DiseaseScreen() {
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
-        alert('Permission to access media library is required!');
+        alert('Permission to access photo gallery is required to diagnose crop leaves.');
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         quality: 0.8,
       });
@@ -29,6 +29,7 @@ export default function DiseaseScreen() {
       }
     } catch (e) {
       console.warn('Error picking image from gallery:', e);
+      alert("Couldn't open gallery. Please check app permissions and try again.");
     }
   };
 
@@ -143,7 +144,7 @@ export default function DiseaseScreen() {
           <ActivityIndicator size="large" color="#2E7D32" />
           <Text style={styles.analyzingText}>{t('disease.analyzing')}</Text>
           <Paragraph style={{ color: '#666', fontSize: 12, marginTop: 4 }}>
-            Querying Agro-Cloud AI Deep Learning Microservice...
+            Querying Krishi Setu AI Deep Learning Microservice...
           </Paragraph>
         </View>
       )}
