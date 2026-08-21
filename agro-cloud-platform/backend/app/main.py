@@ -9,6 +9,7 @@ from app.api.telemetry import router as telemetry_router
 from app.api.leaf_scans import router as leaf_scans_router
 from app.api.advisory import router as advisory_router
 from app.api.market import router as market_router
+from app.api.weather import router as weather_router
 
 # Create database tables automatically if missing
 Base.metadata.create_all(bind=engine)
@@ -67,6 +68,7 @@ app.include_router(telemetry_router)
 app.include_router(leaf_scans_router)
 app.include_router(advisory_router)
 app.include_router(market_router)
+app.include_router(weather_router)
 
 
 if __name__ == "__main__":

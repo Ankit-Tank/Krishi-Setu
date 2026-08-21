@@ -4,10 +4,25 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.core.config import settings
 from app.models.models import Farm, TelemetryReading, AdvisoryRecord
-from app.schemas.schemas import RuleBasedAdvisoryResponse
+from app.schemas.schemas import RuleBasedAdvisoryResponse, SmartSummaryResponse
 from app.services.agronomic_advisor import AgronomicAdvisor
+from app.services.smart_summary_service import SmartSummaryService
 
 router = APIRouter(prefix="/advisory", tags=["Advisory"])
+
+
+@router.get("/{farm_id}/smart-summary", response_model=SmartSummaryResponse)
+def get_farm_smart_summary(farm_id: int, db: Session = Depends(get_db)):
+    """
+    Generate an all-in-one AI Smart Summary synthesizing the farmer's latest disease
+    scan result, soil moisture/irrigation status, and top mandi market match.
+    """
+    try:
+        return SmartSummaryService.generate_smart_summary(farm_id, db)
+    except ValueError as ve:
+        raise HTTPException(status_code=404, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate smart summary: {str(e)}")
 
 
 @router.get("/{farm_id}", response_model=RuleBasedAdvisoryResponse)

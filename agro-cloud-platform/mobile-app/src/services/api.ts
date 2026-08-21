@@ -202,6 +202,91 @@ export interface FarmerHistoryResponse {
   timeline: HistoryItem[];
 }
 
+export interface CurrentWeather {
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+  humidity: number;
+  pressure: number;
+  wind_speed: number;
+  wind_deg?: number;
+  weather_main: string;
+  weather_description: string;
+  icon: string;
+  rain_1h_mm: number;
+  clouds_pct: number;
+}
+
+export interface ForecastDay {
+  date: string;
+  day_name: string;
+  temp_min: number;
+  temp_max: number;
+  temp_day: number;
+  humidity: number;
+  rain_prob_pct: number;
+  rain_mm: number;
+  weather_main: string;
+  weather_description: string;
+  icon: string;
+}
+
+export interface WeatherForecastResponse {
+  farm_id: number;
+  farm_name: string;
+  city_name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  is_live: boolean;
+  current: CurrentWeather;
+  forecast_5d: ForecastDay[];
+  guidance_text: string;
+  guidance_type: 'rain_alert' | 'dry_spell' | 'wind_alert' | 'favorable' | string;
+  fetched_at: string;
+}
+
+export interface DiseasePillar {
+  has_scan: boolean;
+  status: 'HEALTHY' | 'DISEASED' | 'NO_SCAN' | string;
+  predicted_disease?: string | null;
+  confidence_score?: number | null;
+  treatment_window?: string | null;
+  action_text: string;
+  scan_date?: string | null;
+}
+
+export interface SoilPillar {
+  moisture_pct?: number | null;
+  moisture_status: 'LOW' | 'OPTIMAL' | 'HIGH' | 'OFFLINE' | string;
+  npk_status: 'BALANCED' | 'DEFICIENT' | 'OFFLINE' | string;
+  action_text: string;
+}
+
+export interface MarketPillar {
+  mandi_name: string;
+  region: string;
+  best_price_per_quintal: number;
+  distance_km: number;
+  demand_urgency: 'high' | 'medium' | 'normal' | string;
+  action_text: string;
+}
+
+export interface SmartSummaryResponse {
+  farm_id: number;
+  farmer_id: number;
+  farm_name: string;
+  crop_type: string;
+  headline: string;
+  summary_text: string;
+  urgency_level: 'HIGH' | 'MEDIUM' | 'NORMAL' | string;
+  disease: DiseasePillar;
+  soil_irrigation: SoilPillar;
+  market: MarketPillar;
+  generated_at: string;
+}
+
 const STORAGE_KEYS = {
   FARMERS: 'AGRO_OFFLINE_FARMERS',
   FARMS: 'AGRO_OFFLINE_FARMS',
@@ -210,6 +295,8 @@ const STORAGE_KEYS = {
   MANDI_PRICES: 'AGRO_OFFLINE_MANDI_PRICES',
   PRICE_FORECAST: 'AGRO_OFFLINE_PRICE_FORECAST',
   HISTORY: 'KRISHI_OFFLINE_HISTORY',
+  WEATHER: 'KRISHI_OFFLINE_WEATHER',
+  SMART_SUMMARY: 'KRISHI_OFFLINE_SMART_SUMMARY',
 };
 
 // Friendly user error message formatter
@@ -354,6 +441,8 @@ export const AgroApiService = {
     name?: string;
     crop_type?: string;
     area_acres?: number;
+    latitude?: number;
+    longitude?: number;
     irrigation_source?: string;
     preferred_season?: string;
   }): Promise<Farm> {
@@ -373,6 +462,11 @@ export const AgroApiService = {
       console.warn('Backend updateFarm failed:', err?.message || err);
       throw new Error(formatFriendlyErrorMessage(err));
     }
+  },
+
+  // Update farm GPS coordinates specifically
+  async updateFarmLocation(farmId: number, latitude: number, longitude: number): Promise<Farm> {
+    return await this.updateFarm(farmId, { latitude, longitude });
   },
 
   // Get all registered farmers
@@ -621,5 +715,129 @@ export const AgroApiService = {
       timeline: []
     };
     return { data, isOffline: true };
+  },
+
+  // Get real live weather & 5-day forecast for farm GPS location
+  async getFarmWeather(farmId: number = 1): Promise<{ data: WeatherForecastResponse; isOffline: boolean }> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/weather/${farmId}`, {}, 8000);
+      if (response.ok) {
+        const data: WeatherForecastResponse = await response.json();
+        await AsyncStorage.setItem(`${STORAGE_KEYS.WEATHER}_${farmId}`, JSON.stringify(data));
+        return { data, isOffline: false };
+      }
+    } catch (e) {
+      console.warn('Network error fetching live weather, loading offline cache.');
+    }
+
+    const cached = await AsyncStorage.getItem(`${STORAGE_KEYS.WEATHER}_${farmId}`);
+    if (cached) {
+      return { data: JSON.parse(cached), isOffline: true };
+    }
+
+    // Default offline fallback weather representation
+    const fallback: WeatherForecastResponse = {
+      farm_id: farmId,
+      farm_name: 'Farm Plot',
+      city_name: 'Local Region',
+      country: 'IN',
+      latitude: 30.9,
+      longitude: 75.85,
+      is_live: false,
+      current: {
+        temp: 28.0,
+        feels_like: 30.5,
+        temp_min: 24.0,
+        temp_max: 33.0,
+        humidity: 68,
+        pressure: 1010,
+        wind_speed: 3.2,
+        weather_main: 'Clouds',
+        weather_description: 'Partly Cloudy',
+        icon: '03d',
+        rain_1h_mm: 0.0,
+        clouds_pct: 40,
+      },
+      forecast_5d: [
+        { date: '2026-08-22', day_name: 'Today', temp_min: 24.0, temp_max: 33.0, temp_day: 29.0, humidity: 65, rain_prob_pct: 20, rain_mm: 0.0, weather_main: 'Clouds', weather_description: 'Partly Cloudy', icon: '03d' },
+        { date: '2026-08-23', day_name: 'Tomorrow', temp_min: 25.0, temp_max: 34.0, temp_day: 30.0, humidity: 62, rain_prob_pct: 15, rain_mm: 0.0, weather_main: 'Clear', weather_description: 'Clear Sky', icon: '01d' },
+        { date: '2026-08-24', day_name: 'Mon', temp_min: 25.5, temp_max: 35.0, temp_day: 31.0, humidity: 58, rain_prob_pct: 10, rain_mm: 0.0, weather_main: 'Clear', weather_description: 'Sunny', icon: '01d' },
+        { date: '2026-08-25', day_name: 'Tue', temp_min: 26.0, temp_max: 36.0, temp_day: 32.0, humidity: 55, rain_prob_pct: 35, rain_mm: 1.5, weather_main: 'Rain', weather_description: 'Scattered Showers', icon: '10d' },
+        { date: '2026-08-26', day_name: 'Wed', temp_min: 25.0, temp_max: 33.0, temp_day: 28.5, humidity: 72, rain_prob_pct: 60, rain_mm: 5.0, weather_main: 'Rain', weather_description: 'Moderate Rain', icon: '10d' },
+      ],
+      guidance_text: '⛅ Favorable weather conditions — optimal window for routine field operations and monitoring.',
+      guidance_type: 'favorable',
+      fetched_at: new Date().toISOString(),
+    };
+    return { data: fallback, isOffline: true };
+  },
+
+  // Get live weather by direct coordinates
+  async getWeatherByCoords(lat: number, lon: number, farmName: string = 'My Location'): Promise<{ data: WeatherForecastResponse; isOffline: boolean }> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/weather?lat=${lat}&lon=${lon}&farm_name=${encodeURIComponent(farmName)}`, {}, 8000);
+      if (response.ok) {
+        const data: WeatherForecastResponse = await response.json();
+        return { data, isOffline: false };
+      }
+    } catch (e) {
+      console.warn('Network error fetching coordinate weather.');
+    }
+    return await this.getFarmWeather(1);
+  },
+
+  // Get all-in-one AI Smart Summary synthesizing Disease + Soil/Irrigation + Mandi Match
+  async getSmartSummary(farmId: number = 1): Promise<{ data: SmartSummaryResponse; isOffline: boolean }> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/advisory/${farmId}/smart-summary`, {}, 7000);
+      if (response.ok) {
+        const data: SmartSummaryResponse = await response.json();
+        await AsyncStorage.setItem(`${STORAGE_KEYS.SMART_SUMMARY}_${farmId}`, JSON.stringify(data));
+        return { data, isOffline: false };
+      }
+    } catch (e) {
+      console.warn('Network error fetching smart summary, loading offline cache.');
+    }
+
+    const cached = await AsyncStorage.getItem(`${STORAGE_KEYS.SMART_SUMMARY}_${farmId}`);
+    if (cached) {
+      return { data: JSON.parse(cached), isOffline: true };
+    }
+
+    // Default fallback smart summary
+    const fallback: SmartSummaryResponse = {
+      farm_id: farmId,
+      farmer_id: 1,
+      farm_name: 'Farm Plot',
+      crop_type: 'Wheat',
+      headline: '🌱 AI Field & Market Recommendation',
+      summary_text: 'Your wheat has no recent disease scan on record. Soil moisture is low (24.4%), irrigate today. Once harvested, Khanna Mandi currently offers the best price of ₹2,380/qtl 12km away.',
+      urgency_level: 'HIGH',
+      disease: {
+        has_scan: false,
+        status: 'NO_SCAN',
+        predicted_disease: null,
+        confidence_score: null,
+        treatment_window: null,
+        action_text: 'Take a photo to diagnose crop health.',
+        scan_date: null,
+      },
+      soil_irrigation: {
+        moisture_pct: 24.4,
+        moisture_status: 'LOW',
+        npk_status: 'BALANCED',
+        action_text: 'Soil moisture is low (24.4%). Schedule irrigation today.',
+      },
+      market: {
+        mandi_name: 'Khanna Mandi',
+        region: 'Punjab',
+        best_price_per_quintal: 2380.0,
+        distance_km: 12.0,
+        demand_urgency: 'high',
+        action_text: 'Top price of ₹2,380/qtl available at Khanna Mandi.',
+      },
+      generated_at: new Date().toISOString(),
+    };
+    return { data: fallback, isOffline: true };
   }
 };

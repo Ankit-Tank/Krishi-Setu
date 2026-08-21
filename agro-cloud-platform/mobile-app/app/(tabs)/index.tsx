@@ -3,12 +3,24 @@ import { StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
 import { Card, Text, Title, Paragraph, Chip, Button, ActivityIndicator, Banner, Menu } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { AgroApiService, IdentityService, FarmerIdentity, Farm, TelemetryReading, AdvisoryRecord } from '../../src/services/api';
+import {
+  AgroApiService,
+  IdentityService,
+  FarmerIdentity,
+  Farm,
+  TelemetryReading,
+  AdvisoryRecord,
+  WeatherForecastResponse,
+  SmartSummaryResponse,
+} from '../../src/services/api';
+import { LocationService } from '../../src/services/location';
 import { NotificationService } from '../../src/services/notifications';
 import { SampleFarm } from '../../src/data/sampleFarms';
 import { SampleFarmState } from '../../src/services/sampleFarmState';
 import SampleFarmBanner from '../../src/components/SampleFarmBanner';
 import SampleFarmsModal from '../../src/components/SampleFarmsModal';
+import WeatherCard from '../../src/components/WeatherCard';
+import SmartSummaryCard from '../../src/components/SmartSummaryCard';
 
 export default function DashboardScreen() {
   const { t } = useTranslation();
@@ -21,6 +33,12 @@ export default function DashboardScreen() {
 
   const [telemetry, setTelemetry] = useState<TelemetryReading | null>(null);
   const [advisories, setAdvisories] = useState<AdvisoryRecord[]>([]);
+  const [weather, setWeather] = useState<WeatherForecastResponse | null>(null);
+  const [smartSummary, setSmartSummary] = useState<SmartSummaryResponse | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -58,6 +76,53 @@ export default function DashboardScreen() {
         });
         setAdvisories(currentSample.advisory.advisory_records as any);
         setIsOffline(false);
+        
+        // Synthesize smart summary for sample scenario
+        const isDrought = currentSample.telemetry.soil_moisture < 25.0;
+        const diseaseAdv = currentSample.advisory.advisory_records?.find(r => r.type === 'disease');
+        const hasDisease = currentSample.condition_tag === 'disease_risk' || !!diseaseAdv;
+        const diseaseName = diseaseAdv ? diseaseAdv.message.split('.')[0] : (hasDisease ? 'Foliar Blight Risk' : 'Healthy Foliage');
+        setSmartSummary({
+          farm_id: 999,
+          farmer_id: 999,
+          farm_name: currentSample.name,
+          crop_type: currentSample.crop_type,
+          headline: hasDisease || isDrought ? '⚠️ Urgent Field & Market Action Recommended' : '✅ Crop Health & Market Alignment on Track',
+          summary_text: `${hasDisease ? `Your ${currentSample.crop_type.toLowerCase()} shows ${diseaseName.toLowerCase()} — treat within 48 hours.` : `Your ${currentSample.crop_type.toLowerCase()} shows healthy foliage.`} ${isDrought ? `Soil moisture is low (${currentSample.telemetry.soil_moisture}%), irrigate today.` : `Soil moisture is optimal (${currentSample.telemetry.soil_moisture}%).`} Once harvested, Khanna Mandi currently offers the top price of ₹2,380/qtl 12km away.`,
+          urgency_level: hasDisease || isDrought ? 'HIGH' : 'NORMAL',
+          disease: {
+            has_scan: true,
+            status: hasDisease ? 'DISEASED' : 'HEALTHY',
+            predicted_disease: diseaseName,
+            confidence_score: 0.94,
+            treatment_window: hasDisease ? 'within 48 hours' : null,
+            action_text: hasDisease ? `Apply treatment for ${diseaseName}.` : 'Canopy is healthy.',
+          },
+          soil_irrigation: {
+            moisture_pct: currentSample.telemetry.soil_moisture,
+            moisture_status: isDrought ? 'LOW' : 'OPTIMAL',
+            npk_status: currentSample.telemetry.nitrogen_ppm < 100 ? 'DEFICIENT' : 'BALANCED',
+            action_text: isDrought ? 'Irrigate today to prevent stress.' : 'Moisture is balanced.',
+          },
+          market: {
+            mandi_name: 'Khanna Mandi',
+            region: currentSample.region,
+            best_price_per_quintal: 2380.0,
+            distance_km: 12.0,
+            demand_urgency: 'high',
+            action_text: 'Top regional rate at Khanna Mandi.',
+          },
+          generated_at: new Date().toISOString(),
+        });
+
+        // Fetch weather for sample farm coordinates
+        try {
+          const sampleWeatherRes = await AgroApiService.getFarmWeather(1);
+          setWeather(sampleWeatherRes.data);
+        } catch (we) {
+          console.warn('Sample weather fetch error:', we);
+        }
+
         setLoading(false);
         return;
       }
@@ -75,21 +140,29 @@ export default function DashboardScreen() {
           name: savedIdentity.farm_name,
           area_acres: savedIdentity.area_acres,
           crop_type: savedIdentity.crop_type,
-          latitude: 30.7,
-          longitude: 76.2
+          latitude: 30.9010,
+          longitude: 75.8573
         };
       }
       setSelectedFarm(farm);
 
       if (farm) {
-        const [telRes, advRes] = await Promise.all([
+        const [telRes, advRes, weatherRes, summaryRes] = await Promise.all([
           AgroApiService.getLatestTelemetry(farm.id),
-          AgroApiService.getAdvisories(farm.id)
+          AgroApiService.getAdvisories(farm.id),
+          AgroApiService.getFarmWeather(farm.id).catch(() => ({ data: null, isOffline: true })),
+          AgroApiService.getSmartSummary(farm.id).catch(() => ({ data: null, isOffline: true }))
         ]);
 
         setTelemetry(telRes.data);
         setAdvisories(advRes.data.advisory_records || []);
-        setIsOffline(farmsRes.isOffline || telRes.isOffline || advRes.isOffline);
+        if (weatherRes && weatherRes.data) {
+          setWeather(weatherRes.data);
+        }
+        if (summaryRes && summaryRes.data) {
+          setSmartSummary(summaryRes.data);
+        }
+        setIsOffline(farmsRes.isOffline || telRes.isOffline || advRes.isOffline || summaryRes.isOffline);
 
         if (advRes.data.advisory_records && advRes.data.advisory_records.length > 0) {
           const topAdv = advRes.data.advisory_records[0];
@@ -106,6 +179,46 @@ export default function DashboardScreen() {
       setIsOffline(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRefreshSmartSummary = async () => {
+    if (!selectedFarm) return;
+    setSummaryLoading(true);
+    try {
+      const res = await AgroApiService.getSmartSummary(selectedFarm.id);
+      if (res && res.data) {
+        setSmartSummary(res.data);
+      }
+    } catch (err) {
+      console.warn('Error refreshing smart summary:', err);
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
+  const handleRefreshLocationAndWeather = async () => {
+    if (!selectedFarm) return;
+    setWeatherLoading(true);
+    try {
+      const loc = await LocationService.getCurrentLocation();
+      if (loc.permissionGranted && loc.latitude && loc.longitude) {
+        // Sync GPS coordinates to farm in backend
+        await AgroApiService.updateFarmLocation(selectedFarm.id, loc.latitude, loc.longitude);
+        setLocationError(null);
+      } else if (loc.error) {
+        setLocationError(loc.error);
+      }
+      // Re-fetch weather
+      const wRes = await AgroApiService.getFarmWeather(selectedFarm.id);
+      if (wRes && wRes.data) {
+        setWeather(wRes.data);
+      }
+    } catch (e: any) {
+      console.warn('Error refreshing live weather:', e);
+      setLocationError(e?.message || 'Could not refresh weather');
+    } finally {
+      setWeatherLoading(false);
     }
   };
 
@@ -248,12 +361,31 @@ export default function DashboardScreen() {
         </Card.Content>
       </Card>
 
-      {/* 4. SENSOR METRIC GRID */}
+      {/* 4. AI SMART SUMMARY (DISEASE + SOIL/IRRIGATION + MANDI MATCH) */}
+      <SmartSummaryCard
+        summary={smartSummary}
+        loading={summaryLoading || (loading && !smartSummary)}
+        onRefresh={handleRefreshSmartSummary}
+      />
+
+      {/* 5. REAL LIVE WEATHER & 5-DAY FORECAST (REAL GPS) */}
+      <WeatherCard
+        weather={weather}
+        loading={weatherLoading || (loading && !weather)}
+        onRefreshLocation={handleRefreshLocationAndWeather}
+        locationError={locationError}
+        hasPermission={!locationError}
+      />
+
+      {/* 5. SIMULATED FIELD SENSORS (DEMO TELEMETRY) */}
       <View style={styles.sectionHeaderRow}>
-        <Title style={styles.sectionHeader}>{t('dashboard.title')}</Title>
+        <View style={{ flex: 1 }}>
+          <Title style={styles.sectionHeader}>🧪 Simulated Field Sensors (Demo)</Title>
+          <Text style={styles.sectionSubHeader}>Hardware IoT node telemetry stream</Text>
+        </View>
         {activeSampleFarm && (
           <Chip style={styles.sampleTag} textStyle={{ fontSize: 10, color: '#E65100', fontWeight: 'bold' }}>
-            Simulated Sensor Values
+            Sample Preset
           </Chip>
         )}
       </View>
@@ -497,6 +629,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     color: '#1B5E20',
+  },
+  sectionSubHeader: {
+    fontSize: 11,
+    color: '#666666',
+    marginTop: 1,
   },
   sampleTag: {
     backgroundColor: '#FFE0B2',

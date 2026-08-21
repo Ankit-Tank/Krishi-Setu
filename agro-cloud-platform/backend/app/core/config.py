@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     
     # CORS
     CORS_ORIGINS: List[str] = ["*"]
+    
+    # OpenWeatherMap API
+    OPENWEATHER_API_KEY: str = "598cea97773e248dde1d04b543a9b976"
 
     class Config:
         case_sensitive = True

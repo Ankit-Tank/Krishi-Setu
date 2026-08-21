@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
-import { Text, TextInput, Button, Card, HelperText, Chip, SegmentedButtons } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Text, TextInput, Button, Card, HelperText, Chip, SegmentedButtons, ActivityIndicator } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { AgroApiService, IdentityService, formatFriendlyErrorMessage } from '../src/services/api';
+import { LocationService } from '../src/services/location';
 
 const COMMON_CROPS = ['Wheat', 'Rice', 'Cotton', 'Maize', 'Sugarcane', 'Mustard'];
 
@@ -37,8 +38,46 @@ export default function OnboardingScreen() {
   const [irrigationSource, setIrrigationSource] = useState<'borewell' | 'canal' | 'rainfed' | 'other' | string>('borewell');
   const [preferredSeason, setPreferredSeason] = useState<'Kharif' | 'Rabi' | 'both' | string>('both');
 
+  // Device GPS Location
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locationStatus, setLocationStatus] = useState<string>('');
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Attempt automatic GPS location capture upon mounting
+  useEffect(() => {
+    handleDetectLocation();
+  }, []);
+
+  const handleDetectLocation = async () => {
+    setLocating(true);
+    setLocationStatus('Detecting GPS location...');
+    try {
+      const loc = await LocationService.getCurrentLocation();
+      if (loc.permissionGranted && loc.latitude && loc.longitude) {
+        setLatitude(loc.latitude);
+        setLongitude(loc.longitude);
+        const parts = [loc.cityName, loc.regionName].filter(Boolean);
+        if (parts.length > 0) {
+          const detectedRegion = parts.join(', ');
+          setRegion((prev) => prev.trim() ? prev : detectedRegion);
+          setLocationStatus(`📍 GPS Captured: ${detectedRegion} (${loc.latitude.toFixed(2)}°, ${loc.longitude.toFixed(2)}°)`);
+        } else {
+          setLocationStatus(`📍 GPS Captured: ${loc.latitude.toFixed(2)}°N, ${loc.longitude.toFixed(2)}°E`);
+        }
+      } else if (loc.error) {
+        setLocationStatus(loc.error);
+      }
+    } catch (e) {
+      console.warn('GPS detection failed:', e);
+      setLocationStatus('GPS detection skipped. Default coordinates will be used.');
+    } finally {
+      setLocating(false);
+    }
+  };
 
   const handleSubmitOnboarding = async () => {
     setErrorMsg('');
@@ -80,12 +119,14 @@ export default function OnboardingScreen() {
         experience_years: Math.max(0, parseInt(experienceYears, 10) || 0),
       });
 
-      // 2. Create Farm Record under Farmer ID
+      // 2. Create Farm Record with device GPS coordinates under Farmer ID
       const farm = await AgroApiService.createFarm({
         farmer_id: farmer.id,
         name: farmName.trim(),
         crop_type: cropType,
         area_acres: Number(areaAcres),
+        latitude: latitude || 30.9010,
+        longitude: longitude || 75.8573,
         irrigation_source: irrigationSource,
         preferred_season: preferredSeason,
       });
@@ -188,6 +229,27 @@ export default function OnboardingScreen() {
             outlineColor="#C8E6C9"
             activeOutlineColor="#2E7D32"
           />
+
+          {/* GPS Location Status & Auto-Detection */}
+          <View style={styles.gpsRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.gpsStatusText}>
+                {locating ? '📡 Locating device GPS...' : (locationStatus || '📍 Auto-detects your farm location')}
+              </Text>
+            </View>
+            <Button
+              mode="text"
+              icon="crosshairs-gps"
+              onPress={handleDetectLocation}
+              loading={locating}
+              disabled={locating}
+              compact
+              textColor="#2E7D32"
+              labelStyle={{ fontSize: 12 }}
+            >
+              Detect GPS
+            </Button>
+          </View>
 
           <TextInput
             label="Village / Tehsil / Region Name *"
@@ -420,5 +482,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#2E7D32',
     marginTop: 16,
     borderRadius: 10,
+  },
+  gpsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#E8F5E9',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#C8E6C9',
+  },
+  gpsStatusText: {
+    fontSize: 11,
+    color: '#1B5E20',
+    fontWeight: '500',
   },
 });

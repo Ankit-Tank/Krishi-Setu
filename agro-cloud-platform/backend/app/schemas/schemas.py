@@ -283,3 +283,96 @@ class FarmerHistoryResponse(BaseModel):
     advisories_count: int
     timeline: List[HistoryItem]
 
+
+# ----------------------------------------------------
+# Real Live Weather & Forecast Schemas
+# ----------------------------------------------------
+class CurrentWeather(BaseModel):
+    temp: float
+    feels_like: float
+    temp_min: float
+    temp_max: float
+    humidity: int
+    pressure: int
+    wind_speed: float  # m/s
+    wind_deg: Optional[int] = None
+    weather_main: str  # Clear, Clouds, Rain, Drizzle, Thunderstorm, etc.
+    weather_description: str
+    icon: str
+    rain_1h_mm: float = 0.0
+    clouds_pct: int = 0
+
+
+class ForecastDay(BaseModel):
+    date: str  # YYYY-MM-DD
+    day_name: str  # Mon, Tue, Today, Tomorrow
+    temp_min: float
+    temp_max: float
+    temp_day: float
+    humidity: int
+    rain_prob_pct: int  # 0-100%
+    rain_mm: float
+    weather_main: str
+    weather_description: str
+    icon: str
+
+
+class WeatherForecastResponse(BaseModel):
+    farm_id: int
+    farm_name: str
+    city_name: str
+    country: str
+    latitude: float
+    longitude: float
+    is_live: bool = True
+    current: CurrentWeather
+    forecast_5d: List[ForecastDay]
+    guidance_text: str
+    guidance_type: str  # rain_alert | dry_spell | wind_alert | favorable
+    fetched_at: str
+
+
+# ----------------------------------------------------
+# AI Smart Summary Schemas
+# ----------------------------------------------------
+class DiseasePillar(BaseModel):
+    has_scan: bool
+    status: str  # "HEALTHY" | "DISEASED" | "NO_SCAN"
+    predicted_disease: Optional[str] = None
+    confidence_score: Optional[float] = None
+    treatment_window: Optional[str] = None
+    action_text: str
+    scan_date: Optional[str] = None
+
+
+class SoilPillar(BaseModel):
+    moisture_pct: Optional[float] = None
+    moisture_status: str  # "LOW" | "OPTIMAL" | "HIGH" | "OFFLINE"
+    npk_status: str  # "BALANCED" | "DEFICIENT" | "OFFLINE"
+    action_text: str
+
+
+class MarketPillar(BaseModel):
+    mandi_name: str
+    region: str
+    best_price_per_quintal: float
+    distance_km: float
+    demand_urgency: str  # "high" | "medium" | "normal"
+    action_text: str
+
+
+class SmartSummaryResponse(BaseModel):
+    farm_id: int
+    farmer_id: int
+    farm_name: str
+    crop_type: str
+    headline: str
+    summary_text: str
+    urgency_level: str  # "HIGH" | "MEDIUM" | "NORMAL"
+    disease: DiseasePillar
+    soil_irrigation: SoilPillar
+    market: MarketPillar
+    generated_at: str
+
+
+
