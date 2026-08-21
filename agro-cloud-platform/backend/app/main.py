@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.db.session import Base, engine
-from app.api.farmers import router as farmers_router
+from app.api.farmers import router as farmers_router, singular_router as farmer_singular_router
 from app.api.farms import router as farms_router
 from app.api.telemetry import router as telemetry_router
 from app.api.leaf_scans import router as leaf_scans_router
@@ -61,6 +61,7 @@ def health():
 
 # Register Resource Routers
 app.include_router(farmers_router)
+app.include_router(farmer_singular_router)
 app.include_router(farms_router)
 app.include_router(telemetry_router)
 app.include_router(leaf_scans_router)

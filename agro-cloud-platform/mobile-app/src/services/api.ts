@@ -176,6 +176,32 @@ export interface PriceForecastResult {
   source: string;
 }
 
+export interface HistoryItem {
+  id: string;
+  item_type: 'leaf_scan' | 'advisory' | string;
+  farm_id: number;
+  farm_name: string;
+  crop_type: string;
+  timestamp: string;
+  title: string;
+  message: string;
+  image_url?: string;
+  predicted_disease?: string;
+  confidence_score?: number;
+  advisory_text?: string;
+  advisory_type?: string;
+  is_read?: boolean;
+}
+
+export interface FarmerHistoryResponse {
+  farmer_id: number;
+  farmer_name: string;
+  total_items: number;
+  leaf_scans_count: number;
+  advisories_count: number;
+  timeline: HistoryItem[];
+}
+
 const STORAGE_KEYS = {
   FARMERS: 'AGRO_OFFLINE_FARMERS',
   FARMS: 'AGRO_OFFLINE_FARMS',
@@ -183,6 +209,7 @@ const STORAGE_KEYS = {
   ADVISORY: 'AGRO_OFFLINE_ADVISORY',
   MANDI_PRICES: 'AGRO_OFFLINE_MANDI_PRICES',
   PRICE_FORECAST: 'AGRO_OFFLINE_PRICE_FORECAST',
+  HISTORY: 'KRISHI_OFFLINE_HISTORY',
 };
 
 // Friendly user error message formatter
@@ -292,6 +319,58 @@ export const AgroApiService = {
       throw new Error(errText || `Server returned status ${response.status}`);
     } catch (err: any) {
       console.warn('Backend createFarm failed:', err?.message || err);
+      throw new Error(formatFriendlyErrorMessage(err));
+    }
+  },
+
+  // Update existing farmer record
+  async updateFarmer(farmerId: number, data: {
+    name?: string;
+    phone?: string;
+    preferred_language?: string;
+    region?: string;
+    experience_years?: number;
+  }): Promise<Farmer> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farmers/${farmerId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }, 8000);
+
+      if (response.ok) {
+        return await response.json();
+      }
+      const errText = await response.text().catch(() => '');
+      throw new Error(errText || `Server returned status ${response.status}`);
+    } catch (err: any) {
+      console.warn('Backend updateFarmer failed:', err?.message || err);
+      throw new Error(formatFriendlyErrorMessage(err));
+    }
+  },
+
+  // Update existing farm record
+  async updateFarm(farmId: number, data: {
+    name?: string;
+    crop_type?: string;
+    area_acres?: number;
+    irrigation_source?: string;
+    preferred_season?: string;
+  }): Promise<Farm> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farms/${farmId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }, 8000);
+
+      if (response.ok) {
+        return await response.json();
+      }
+      const errText = await response.text().catch(() => '');
+      throw new Error(errText || `Server returned status ${response.status}`);
+    } catch (err: any) {
+      console.warn('Backend updateFarm failed:', err?.message || err);
       throw new Error(formatFriendlyErrorMessage(err));
     }
   },
@@ -515,6 +594,31 @@ export const AgroApiService = {
       projected_max_price: 2470.0,
       best_time_to_sell_recommendation: `Optimal selling window for ${crop} at ${mandi}: Sell in 7 days to capture peak price of INR 2,470.00/quintal.`,
       source: 'Krishi Setu AI Engine (Offline Cache)'
+    };
+    return { data, isOffline: true };
+  },
+
+  // Get combined farmer history (leaf scans + advisories)
+  async getFarmerHistory(farmerId: number = 1): Promise<{ data: FarmerHistoryResponse; isOffline: boolean }> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farmer/${farmerId}/history`, {}, 7000);
+      if (response.ok) {
+        const data: FarmerHistoryResponse = await response.json();
+        await AsyncStorage.setItem(`${STORAGE_KEYS.HISTORY}_${farmerId}`, JSON.stringify(data));
+        return { data, isOffline: false };
+      }
+    } catch (e) {
+      console.warn('Network error fetching farmer history, loading offline cache.');
+    }
+
+    const cached = await AsyncStorage.getItem(`${STORAGE_KEYS.HISTORY}_${farmerId}`);
+    const data: FarmerHistoryResponse = cached ? JSON.parse(cached) : {
+      farmer_id: farmerId,
+      farmer_name: 'Registered Farmer',
+      total_items: 0,
+      leaf_scans_count: 0,
+      advisories_count: 0,
+      timeline: []
     };
     return { data, isOffline: true };
   }

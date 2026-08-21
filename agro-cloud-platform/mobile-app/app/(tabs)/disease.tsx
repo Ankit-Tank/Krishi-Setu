@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View, Image } from 'react-native';
 import { Card, Text, Title, Paragraph, Button, ActivityIndicator, Divider, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { AgroApiService, IdentityService, LeafScanResponse } from '../../src/services/api';
 import { NotificationService } from '../../src/services/notifications';
 
 export default function DiseaseScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [scanResult, setScanResult] = useState<LeafScanResponse | null>(null);
@@ -126,6 +128,16 @@ export default function DiseaseScreen() {
               Choose Gallery
             </Button>
           </View>
+
+          <Button
+            mode="text"
+            icon="history"
+            onPress={() => router.push('/history')}
+            style={{ marginTop: 8 }}
+            labelStyle={{ fontSize: 12, color: '#2E7D32', fontWeight: 'bold' }}
+          >
+            📜 View Past Scan & Activity History
+          </Button>
         </Card.Content>
       </Card>
 

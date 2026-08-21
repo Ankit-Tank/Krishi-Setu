@@ -251,3 +251,35 @@ class PriceForecastResult(BaseModel):
     projected_max_price: float
     best_time_to_sell_recommendation: str
     source: str = "Agro-Cloud AI Engine"
+
+
+# ----------------------------------------------------
+# Farmer Timeline / History Schemas
+# ----------------------------------------------------
+class HistoryItem(BaseModel):
+    id: str
+    item_type: str  # "leaf_scan" or "advisory"
+    farm_id: int
+    farm_name: str
+    crop_type: str
+    timestamp: datetime
+    title: str
+    message: str
+    # Leaf scan specific fields
+    image_url: Optional[str] = None
+    predicted_disease: Optional[str] = None
+    confidence_score: Optional[float] = None
+    advisory_text: Optional[str] = None
+    # Advisory specific fields
+    advisory_type: Optional[str] = None
+    is_read: Optional[bool] = None
+
+
+class FarmerHistoryResponse(BaseModel):
+    farmer_id: int
+    farmer_name: str
+    total_items: int
+    leaf_scans_count: int
+    advisories_count: int
+    timeline: List[HistoryItem]
+
