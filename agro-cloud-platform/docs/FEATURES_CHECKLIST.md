@@ -1,0 +1,20 @@
+# 📋 Smart India Hackathon (SIH) Features Compliance Matrix
+
+**Project**: Agro-Cloud: Cloud-Native Agri-Advisory & Market Linkage Ecosystem
+
+| Problem Statement Requirement | Feature Implemented | Source Code Location | Verification Status |
+| :--- | :--- | :--- | :--- |
+| **Monorepo & Cloud Architecture** | Modular 4-tier monorepo structure with FastAPI backend, AI microservice, Expo mobile app, and Docker Compose orchestration. | `backend/`, `ai-engine/`, `mobile-app/`, `docker-compose.yml` | ✅ FULL COVERAGE |
+| **Backend REST API** | FastAPI backend powered by SQLAlchemy ORM with PostgreSQL database & SQLite local dev fallback (`DATABASE_URL`). | `backend/app/main.py`, `backend/app/db/session.py`, `backend/app/models/models.py` | ✅ FULL COVERAGE |
+| **IoT Telemetry Ingestion** | Sensor data ingestion for soil moisture, soil pH, ambient temp, humidity, and NPK nitrogen, phosphorus, potassium levels. | `backend/app/api/telemetry.py`, `backend/app/models/models.py` (`TelemetryReading`) | ✅ FULL COVERAGE |
+| **Plant Pathology AI Engine** | Multi-modal deep learning plant disease detection using HuggingFace Inference API (`mobilenet_v2`) with offline PIL/NumPy color & texture vision fallback. | `ai-engine/app/services/disease_detector.py`, `ai-engine/app/main.py` (`POST /predict/disease`) | ✅ FULL COVERAGE |
+| **Precision NPK & Irrigation Advisory** | Transparent rule-based agronomic advisory microservice evaluating sensor readings against crop-specific thresholds (Wheat, Rice, Cotton, Soybean, Maize). | `ai-engine/app/services/agri_advisor.py`, `backend/app/api/advisory.py` | ✅ FULL COVERAGE |
+| **14-Day Mandi Price Forecasting** | Time-series spot price forecasting using Facebook Prophet models to compute projected peak prices and optimal selling windows. | `ai-engine/app/services/yield_forecaster.py`, `backend/app/api/market.py` (`GET /market/price-forecast`) | ✅ FULL COVERAGE |
+| **Harvest Yield Window Estimation** | Crop life-cycle growth stage calculation and optimal harvest date window prediction. | `ai-engine/app/services/yield_forecaster.py`, `backend/app/api/market.py` (`GET /market/yield-forecast/{farm_id}`) | ✅ FULL COVERAGE |
+| **Smart Buyer-Farmer Matching** | Multi-factor match ranking algorithm evaluating offered price, distance to mandi, and real-time Mandi demand urgency (`HIGH`, `MEDIUM`, `NORMAL`), with human-readable explanations. | `backend/app/services/buyer_matcher.py`, `backend/app/api/market.py` (`GET /market/matches/{id}`) | ✅ FULL COVERAGE |
+| **Logistics Channel Provisioning** | Trade confirmation flow updating listing status to `matched` and provisioning a `LogisticsRecord` with pickup date, transporter name, and transit hours. | `backend/app/api/market.py` (`POST /market/trade-listing/{id}/confirm`), `backend/app/models/models.py` (`LogisticsRecord`) | ✅ FULL COVERAGE |
+| **Multilingual Mobile App** | React Native Expo app with dynamic `i18next` language switching for English, Hindi, Marathi, and Telugu. | `mobile-app/src/i18n/index.ts`, `mobile-app/app/(tabs)/_layout.tsx` | ✅ FULL COVERAGE |
+| **Offline-First Resilience** | Client-side `@react-native-async-storage/async-storage` caching with NetInfo connectivity detection & offline status banner. | `mobile-app/src/services/api.ts`, `mobile-app/app/(tabs)/index.tsx` | ✅ FULL COVERAGE |
+| **Localized Push Notifications** | `expo-notifications` integration triggering local push notifications for high-priority disease and irrigation advisories. | `mobile-app/src/services/notifications.ts`, `mobile-app/app/(tabs)/index.tsx` | ✅ FULL COVERAGE |
+| **Monsoon Earth Design System** | Custom Indian soil & monsoon sky visual palette (Terracotta Clay `#C1502E`, Monsoon Indigo `#2B3A67`, Turmeric Gold `#E8A63A`, Warm Ivory `#F7F1E8`). | `mobile-app/src/theme/theme.ts` | ✅ FULL COVERAGE |
+| **One-Command Setup & Seed** | Clean DB seeding script (`seed.py`) populating 5 farmers, 8 farms, 240 telemetry readings, 20 mandi price trends, 3 trade listings, and candidate buyer matches. | `backend/seed.py`, `SETUP.md` | ✅ FULL COVERAGE |

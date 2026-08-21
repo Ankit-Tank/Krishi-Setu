@@ -1,0 +1,61 @@
+[
+  {
+    "id": "DIS-TOMATO-001",
+    "crop": "Tomato",
+    "disease_name": "Early Blight (Alternaria solani)",
+    "severity": "MODERATE",
+    "confidence_score": 0.94,
+    "symptoms": [
+      "Dark brown to black spots with concentric rings on older leaves",
+      "Yellow halos surrounding leaf lesions",
+      "Stem lesions causing collar rot in severe cases"
+    ],
+    "organic_treatment": "Spray neem seed kernel extract (5%) or copper oxychloride solution; prune affected lower foliage and improve air circulation.",
+    "chemical_treatment": "Foliar spray of Mancozeb 75% WP @ 2.5 g/L or Azoxystrobin 23% SC @ 1 ml/L.",
+    "prevention": "Rotate crops with non-solanaceous plants, avoid overhead sprinkler irrigation, and use mulch to prevent soil splashing."
+  },
+  {
+    "id": "DIS-PADDY-002",
+    "crop": "Paddy (Rice)",
+    "disease_name": "Rice Blast (Magnaporthe oryzae)",
+    "severity": "HIGH",
+    "confidence_score": 0.96,
+    "symptoms": [
+      "Spindle-shaped or elliptical lesions with grayish centers and dark brown borders",
+      "Neck rot causing whiteheads or empty panicles",
+      "Rapid wilting during high humidity periods"
+    ],
+    "organic_treatment": "Spray Pseudomonas fluorescens @ 10 g/L or botanicals like garlic bulb extract.",
+    "chemical_treatment": "Foliar spray of Tricyclazole 75% WP @ 0.6 g/L or Isoprothiolane 40% EC @ 1.5 ml/L.",
+    "prevention": "Avoid excess nitrogen fertilizer application, maintain optimal water drainage, and use blast-resistant seed varieties."
+  },
+  {
+    "id": "DIS-WHEAT-003",
+    "crop": "Wheat",
+    "disease_name": "Yellow Rust / Stripe Rust (Puccinia striiformis)",
+    "severity": "CRITICAL",
+    "confidence_score": 0.92,
+    "symptoms": [
+      "Linear stripes of bright yellow-orange pustules along leaf veins",
+      "Powdery yellow spores rubbing off onto fingers",
+      "Premature leaf drying and stunted grain filling"
+    ],
+    "organic_treatment": "Early sanitation and biological control using Trichoderma viride seed treatment.",
+    "chemical_treatment": "Spray Propiconazole 25% EC (Tilt) @ 1 ml/L immediately at first sign of pustules.",
+    "prevention": "Sow rust-resistant wheat varieties (e.g., HD-2967, DBW-187) and monitor early season cool humid conditions."
+  },
+  {
+    "id": "DIS-COTTON-004",
+    "crop": "Cotton",
+    "disease_name": "Bacterial Blight / Angular Leaf Spot (Xanthomonas citri pv. malvacearum)",
+    "severity": "MODERATE",
+    "confidence_score": 0.89,
+    "symptoms": [
+      "Water-soaked angular spots bounded by leaf veinlets",
+      "Black arm symptoms on stems and rotting of young bolls"
+    ],
+    "organic_treatment": "Seed treatment with cow urine slurry and copper-based biopesticides.",
+    "chemical_treatment": "Foliar spray of Copper Oxychloride 50% WP (2.5 g/L) + Streptocycline (100 mg/L).",
+    "prevention": "Delinting of seeds with sulfuric acid and destroying post-harvest crop residues."
+  }
+]

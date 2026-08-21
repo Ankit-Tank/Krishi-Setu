@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: agro_cloud_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-agro_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agro_password}
+      POSTGRES_DB: ${POSTGRES_DB:-agro_cloud_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-agro_user} -d ${POSTGRES_DB:-agro_cloud_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agro_network
+
+  # Agro-Cloud FastAPI Backend
+  backend:
+    build:
+      context: ./agro-cloud-platform/backend
+      dockerfile: Dockerfile
+    container_name: agro_cloud_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://agro_user:agro_password@postgres:5432/agro_cloud_db
+      - AI_ENGINE_URL=http://ai-engine:8500
+      - APP_ENV=production
+      - API_PORT=8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ai-engine:
+        condition: service_started
+    volumes:
+      - ./agro-cloud-platform/backend:/app
+    networks:
+      - agro_network
+
+  # Agro-Cloud AI & ML Engine
+  ai-engine:
+    build:
+      context: ./agro-cloud-platform/ai-engine
+      dockerfile: Dockerfile
+    container_name: agro_cloud_ai_engine
+    restart: always
+    environment:
+      - APP_ENV=production
+      - AI_SERVICE_PORT=8500
+    ports:
+      - "8500:8500"
+    volumes:
+      - ./agro-cloud-platform/ai-engine:/app
+    networks:
+      - agro_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  agro_network:
+    driver: bridge
