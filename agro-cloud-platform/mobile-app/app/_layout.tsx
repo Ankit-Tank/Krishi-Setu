@@ -13,6 +13,7 @@ export default function RootLayout() {
         <StatusBar style="light" backgroundColor="#1B5E20" />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         </Stack>
       </PaperProvider>
     </SafeAreaProvider>

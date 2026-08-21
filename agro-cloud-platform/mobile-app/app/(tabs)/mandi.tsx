@@ -4,6 +4,7 @@ import { Card, Text, Title, Paragraph, Chip, Searchbar, ActivityIndicator, Butto
 import { useTranslation } from 'react-i18next';
 import {
   AgroApiService,
+  IdentityService,
   MandiPrice,
   PriceForecastResult,
   TradeListingResponse,
@@ -21,6 +22,7 @@ export default function MandiScreen() {
   // Trade listing form states
   const [quantity, setQuantity] = useState('50');
   const [cropType, setCropType] = useState('Wheat');
+  const [farmerId, setFarmerId] = useState(1);
   const [listingSubmitting, setListingSubmitting] = useState(false);
   const [createdListing, setCreatedListing] = useState<TradeListingResponse | null>(null);
   const [buyerMatches, setBuyerMatches] = useState<BuyerMatchResponse[]>([]);
@@ -35,9 +37,16 @@ export default function MandiScreen() {
 
   const fetchMarketData = async () => {
     setLoading(true);
+    const identity = await IdentityService.getSavedIdentity();
+    const activeCrop = identity?.crop_type || 'Wheat';
+    const activeFarmerId = identity?.farmer_id || 1;
+
+    setCropType(activeCrop);
+    setFarmerId(activeFarmerId);
+
     const [pricesRes, forecastRes] = await Promise.all([
       AgroApiService.getMandiPrices(),
-      AgroApiService.get14DayPriceForecast('Wheat', 'Khanna Mandi')
+      AgroApiService.get14DayPriceForecast(activeCrop, 'Khanna Mandi')
     ]);
     setPrices(pricesRes.data);
     setForecast(forecastRes.data);
@@ -50,7 +59,7 @@ export default function MandiScreen() {
     setConfirmedTrade(null);
     try {
       const listing = await AgroApiService.createTradeListing(
-        1,
+        farmerId,
         cropType,
         Number(quantity),
         new Date().toISOString().split('T')[0]

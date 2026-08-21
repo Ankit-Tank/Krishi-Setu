@@ -4,7 +4,9 @@ import urllib.request
 import urllib.parse
 from PIL import Image
 
-BASE_URL = "http://127.0.0.1:8001"
+import os
+
+BASE_URL = os.getenv("AI_ENGINE_URL", "http://127.0.0.1:8500")
 
 
 def test_health():

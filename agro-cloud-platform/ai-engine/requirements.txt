@@ -12,3 +12,6 @@ python-multipart>=0.0.9
 python-dotenv>=1.0.1
 ai-edge-litert>=2.2.0
 tflite>=2.18.0
+torch>=2.2.0
+torchvision>=0.17.0
+transformers>=4.40.0

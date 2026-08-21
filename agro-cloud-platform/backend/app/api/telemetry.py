@@ -62,7 +62,20 @@ def get_latest_telemetry(farm_id: int, db: Session = Depends(get_db)):
     )
     
     if not latest:
-        raise HTTPException(status_code=404, detail="No telemetry records found for this farm.")
+        # Auto-generate initial simulated telemetry for the farm
+        latest = TelemetryReading(
+            farm_id=farm_id,
+            soil_moisture=26.5,
+            soil_ph=6.8,
+            temperature_c=25.0,
+            humidity_pct=60.0,
+            nitrogen_ppm=105,
+            phosphorus_ppm=45,
+            potassium_ppm=180
+        )
+        db.add(latest)
+        db.commit()
+        db.refresh(latest)
     
     return latest
 

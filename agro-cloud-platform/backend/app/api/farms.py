@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.models.models import Farm, Farmer
+from app.models.models import Farm, Farmer, TelemetryReading
 from app.schemas.schemas import FarmCreate, FarmUpdate, FarmResponse
 
 router = APIRouter(prefix="/farms", tags=["Farms"])
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/farms", tags=["Farms"])
 
 @router.post("", response_model=FarmResponse, status_code=status.HTTP_201_CREATED)
 def create_farm(payload: FarmCreate, db: Session = Depends(get_db)):
-    """Create a new farm plot under a farmer."""
+    """Create a new farm plot under a farmer and auto-seed initial telemetry reading."""
     farmer = db.query(Farmer).filter(Farmer.id == payload.farmer_id).first()
     if not farmer:
         raise HTTPException(status_code=404, detail="Farmer not found.")
@@ -19,6 +19,21 @@ def create_farm(payload: FarmCreate, db: Session = Depends(get_db)):
     db.add(farm)
     db.commit()
     db.refresh(farm)
+
+    # Auto-seed initial simulated telemetry for the newly created farm
+    initial_telemetry = TelemetryReading(
+        farm_id=farm.id,
+        soil_moisture=26.5,
+        soil_ph=6.8,
+        temperature_c=25.0,
+        humidity_pct=60.0,
+        nitrogen_ppm=105,
+        phosphorus_ppm=45,
+        potassium_ppm=180
+    )
+    db.add(initial_telemetry)
+    db.commit()
+
     return farm
 
 

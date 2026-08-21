@@ -3,7 +3,7 @@ import { StyleSheet, ScrollView, View, Image } from 'react-native';
 import { Card, Text, Title, Paragraph, Button, ActivityIndicator, Divider, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
-import { AgroApiService, LeafScanResponse } from '../../src/services/api';
+import { AgroApiService, IdentityService, LeafScanResponse } from '../../src/services/api';
 import { NotificationService } from '../../src/services/notifications';
 
 export default function DiseaseScreen() {
@@ -58,8 +58,11 @@ export default function DiseaseScreen() {
     setAnalyzing(true);
     setScanResult(null);
 
+    const identity = await IdentityService.getSavedIdentity();
+    const farmId = identity?.farm_id || 1;
+
     try {
-      const result = await AgroApiService.uploadLeafScan(1, uri);
+      const result = await AgroApiService.uploadLeafScan(farmId, uri);
       setScanResult(result);
 
       // Trigger local notification if disease diagnosed

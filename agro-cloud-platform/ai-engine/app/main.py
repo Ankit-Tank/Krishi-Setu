@@ -69,9 +69,9 @@ def health():
 async def predict_disease(file: UploadFile = File(...)):
     """
     Accepts an uploaded leaf image file.
-    Queries HuggingFace Inference API (pretrained model: linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification).
-    If HF API call fails or token is unconfigured, gracefully falls back to local PIL/NumPy vision heuristics.
-    Returns {disease_name, confidence, recommended_action}.
+    Runs primary inference with local Hugging Face MobileNetV2 model (linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification).
+    Gracefully falls back to custom TFLite INT8 model, and finally local vision heuristics.
+    Returns {disease_name, confidence, recommended_action, source}.
     """
     try:
         image_bytes = await file.read()

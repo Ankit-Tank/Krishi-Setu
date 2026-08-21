@@ -1,15 +1,42 @@
-import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, ScrollView, View, Alert } from 'react-native';
 import { Card, Text, Title, Paragraph, Button, RadioButton, Divider, Avatar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
+import { IdentityService, FarmerIdentity } from '../../src/services/api';
 
 export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
+  const [identity, setIdentity] = useState<FarmerIdentity | null>(null);
   const [language, setLanguage] = useState(i18n.language || 'hi');
+
+  useEffect(() => {
+    loadIdentity();
+  }, []);
+
+  const loadIdentity = async () => {
+    const saved = await IdentityService.getSavedIdentity();
+    setIdentity(saved);
+  };
 
   const changeLanguage = (lang: string) => {
     setLanguage(lang);
     i18n.changeLanguage(lang);
+  };
+
+  const handleResetData = async () => {
+    await IdentityService.clearIdentity();
+    router.replace('/onboarding');
+  };
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'KS';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   };
 
   return (
@@ -17,11 +44,19 @@ export default function ProfileScreen() {
       {/* Profile Header */}
       <Card style={styles.card}>
         <Card.Content style={styles.profileRow}>
-          <Avatar.Text size={56} label="RP" style={{ backgroundColor: '#2E7D32' }} />
-          <View style={{ marginLeft: 14 }}>
-            <Title style={styles.name}>Ramesh Patel</Title>
-            <Paragraph style={styles.subText}>📱 +91 98765 43210 | Punjab (Ludhiana)</Paragraph>
-            <Paragraph style={styles.subText}>🌾 Registered Fields: 2 (Wheat, Cotton)</Paragraph>
+          <Avatar.Text
+            size={56}
+            label={getInitials(identity?.farmer_name)}
+            style={{ backgroundColor: '#2E7D32' }}
+          />
+          <View style={{ marginLeft: 14, flex: 1 }}>
+            <Title style={styles.name}>{identity?.farmer_name || 'Farmer'}</Title>
+            <Paragraph style={styles.subText}>
+              📱 +91 {identity?.phone || 'N/A'} | 📍 {identity?.region || 'Punjab'}
+            </Paragraph>
+            <Paragraph style={styles.subText}>
+              🌾 {identity?.farm_name || 'My Farm Plot'} ({identity?.crop_type || 'Wheat'}, {identity?.area_acres || 0} Acres)
+            </Paragraph>
           </View>
         </Card.Content>
       </Card>
@@ -52,15 +87,28 @@ export default function ProfileScreen() {
         </Card.Content>
       </Card>
 
-      {/* Offline Caching & Connectivity Status */}
+      {/* System & Reset Option */}
       <Card style={styles.card}>
         <Card.Content>
-          <Title style={styles.sectionTitle}>💾 System & Storage</Title>
+          <Title style={styles.sectionTitle}>⚙️ Settings & Device Data</Title>
           <Paragraph style={styles.cacheText}>
-            ✅ {t('profile.offlineCache')}: Powered by `@react-native-async-storage/async-storage`
+            ✅ Local Storage: Device Identity Saved in `@agro_farmer_identity`
           </Paragraph>
-          <Divider style={{ marginVertical: 10 }} />
-          <Paragraph style={styles.infoText}>Cloud API Status: Connected to Agro-Cloud Engine</Paragraph>
+          <Paragraph style={styles.infoText}>
+            Farmer ID: #{identity?.farmer_id || 'N/A'} | Farm ID: #{identity?.farm_id || 'N/A'}
+          </Paragraph>
+
+          <Divider style={{ marginVertical: 12 }} />
+
+          <Button
+            mode="outlined"
+            onPress={handleResetData}
+            icon="refresh"
+            textColor="#D32F2F"
+            style={{ borderColor: '#D32F2F', borderRadius: 8 }}
+          >
+            Reset My Data / Re-run Onboarding
+          </Button>
         </Card.Content>
       </Card>
     </ScrollView>

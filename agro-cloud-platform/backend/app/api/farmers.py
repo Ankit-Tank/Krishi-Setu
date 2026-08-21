@@ -10,10 +10,15 @@ router = APIRouter(prefix="/farmers", tags=["Farmers"])
 
 @router.post("", response_model=FarmerResponse, status_code=status.HTTP_201_CREATED)
 def create_farmer(payload: FarmerCreate, db: Session = Depends(get_db)):
-    """Create a new farmer profile."""
+    """Create a new farmer profile or update if existing by phone."""
     existing = db.query(Farmer).filter(Farmer.phone == payload.phone).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Farmer with this phone number already exists.")
+        existing.name = payload.name
+        existing.region = payload.region
+        existing.preferred_language = payload.preferred_language
+        db.commit()
+        db.refresh(existing)
+        return existing
     
     farmer = Farmer(**payload.model_dump())
     db.add(farmer)

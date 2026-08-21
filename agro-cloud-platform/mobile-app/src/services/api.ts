@@ -6,6 +6,47 @@ export const API_BASE_URL = Platform.OS === 'web'
   ? 'http://localhost:8000'
   : 'http://192.168.1.12:8000';
 
+export interface FarmerIdentity {
+  farmer_id: number;
+  farm_id: number;
+  farmer_name: string;
+  phone: string;
+  farm_name: string;
+  crop_type: string;
+  area_acres: number;
+  region: string;
+}
+
+const IDENTITY_STORAGE_KEY = '@agro_farmer_identity';
+
+export const IdentityService = {
+  async getSavedIdentity(): Promise<FarmerIdentity | null> {
+    try {
+      const raw = await AsyncStorage.getItem(IDENTITY_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      console.warn('Error reading farmer identity from AsyncStorage:', e);
+      return null;
+    }
+  },
+
+  async saveIdentity(identity: FarmerIdentity): Promise<void> {
+    try {
+      await AsyncStorage.setItem(IDENTITY_STORAGE_KEY, JSON.stringify(identity));
+    } catch (e) {
+      console.warn('Error saving farmer identity to AsyncStorage:', e);
+    }
+  },
+
+  async clearIdentity(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(IDENTITY_STORAGE_KEY);
+    } catch (e) {
+      console.warn('Error clearing farmer identity from AsyncStorage:', e);
+    }
+  }
+};
+
 export interface Farmer {
   id: number;
   name: string;
@@ -138,7 +179,78 @@ const STORAGE_KEYS = {
   PRICE_FORECAST: 'AGRO_OFFLINE_PRICE_FORECAST',
 };
 
+// Helper for network calls with abort timeout
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs: number = 10000): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error(`Network timeout (${timeoutMs / 1000}s) connecting to ${url}`);
+    }
+    throw err;
+  }
+}
+
 export const AgroApiService = {
+  // Create a new farmer record on the real backend
+  async createFarmer(data: { name: string; phone: string; preferred_language?: string; region?: string }): Promise<Farmer> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farmers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          phone: data.phone,
+          preferred_language: data.preferred_language || 'hi',
+          region: data.region || 'Punjab'
+        })
+      }, 10000);
+
+      if (response.ok) {
+        return await response.json();
+      }
+      const errText = await response.text().catch(() => '');
+      throw new Error(`Server returned status ${response.status}: ${errText || response.statusText}`);
+    } catch (err: any) {
+      console.warn('Backend createFarmer failed:', err?.message || err);
+      throw err;
+    }
+  },
+
+  // Create a new farm record on the real backend
+  async createFarm(data: { farmer_id: number; name: string; crop_type: string; area_acres: number; latitude?: number; longitude?: number }): Promise<Farm> {
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farms`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          farmer_id: data.farmer_id,
+          name: data.name,
+          crop_type: data.crop_type,
+          area_acres: data.area_acres,
+          latitude: data.latitude || 30.7,
+          longitude: data.longitude || 76.2
+        })
+      }, 10000);
+
+      if (response.ok) {
+        return await response.json();
+      }
+      const errText = await response.text().catch(() => '');
+      throw new Error(`Server returned status ${response.status}: ${errText || response.statusText}`);
+    } catch (err: any) {
+      console.warn('Backend createFarm failed:', err?.message || err);
+      throw err;
+    }
+  },
   // Get all registered farmers
   async getFarmers(): Promise<{ data: Farmer[]; isOffline: boolean }> {
     try {

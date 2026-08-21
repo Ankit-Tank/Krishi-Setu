@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { Card, Text, Title, Paragraph, Chip, Button, ActivityIndicator, Banner, Menu } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { AgroApiService, Farm, TelemetryReading, AdvisoryRecord } from '../../src/services/api';
+import { useRouter } from 'expo-router';
+import { AgroApiService, IdentityService, FarmerIdentity, Farm, TelemetryReading, AdvisoryRecord } from '../../src/services/api';
 import { NotificationService } from '../../src/services/notifications';
 
 export default function DashboardScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const [identity, setIdentity] = useState<FarmerIdentity | null>(null);
   const [farms, setFarms] = useState<Farm[]>([]);
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
   const [telemetry, setTelemetry] = useState<TelemetryReading | null>(null);
@@ -21,15 +24,36 @@ export default function DashboardScreen() {
 
   const loadDashboardData = async () => {
     setLoading(true);
-    
-    // Fetch Farms
-    const farmsRes = await AgroApiService.getFarms(1);
+
+    // 1. Check Saved Per-Device Identity
+    const savedIdentity = await IdentityService.getSavedIdentity();
+    if (!savedIdentity) {
+      router.replace('/onboarding');
+      return;
+    }
+    setIdentity(savedIdentity);
+
+    // 2. Fetch Farms for Saved Farmer ID
+    const farmsRes = await AgroApiService.getFarms(savedIdentity.farmer_id);
     setFarms(farmsRes.data);
-    const farm = farmsRes.data.length > 0 ? farmsRes.data[0] : null;
+
+    // Default to farm matched from savedIdentity or first returned farm
+    let farm = farmsRes.data.find(f => f.id === savedIdentity.farm_id) || (farmsRes.data.length > 0 ? farmsRes.data[0] : null);
+    if (!farm && savedIdentity.farm_id) {
+      farm = {
+        id: savedIdentity.farm_id,
+        farmer_id: savedIdentity.farmer_id,
+        name: savedIdentity.farm_name,
+        area_acres: savedIdentity.area_acres,
+        crop_type: savedIdentity.crop_type,
+        latitude: 30.7,
+        longitude: 76.2
+      };
+    }
     setSelectedFarm(farm);
 
     if (farm) {
-      // Fetch Telemetry & Advisories
+      // 3. Fetch Telemetry & Advisories for Selected Farm
       const [telRes, advRes] = await Promise.all([
         AgroApiService.getLatestTelemetry(farm.id),
         AgroApiService.getAdvisories(farm.id)
@@ -83,7 +107,9 @@ export default function DashboardScreen() {
       {/* Farm Selector Header */}
       <Card style={styles.bannerCard}>
         <Card.Content>
-          <Text style={styles.welcomeText}>{t('dashboard.welcome')}</Text>
+          <Text style={styles.welcomeText}>
+            Welcome, {identity?.farmer_name || 'Farmer'} 👋
+          </Text>
           <View style={styles.farmSelectorRow}>
             <Title style={styles.farmTitle} numberOfLines={1} ellipsizeMode="tail">
               🚜 {selectedFarm ? selectedFarm.name : 'Select Farm'}
