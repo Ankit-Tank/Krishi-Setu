@@ -74,17 +74,13 @@ export default function SampleFarmsModal({
               <View style={styles.realHeaderRow}>
                 <View style={{ flex: 1 }}>
                   <View style={styles.badgeRow}>
-                    <Chip
-                      icon="account-check"
-                      style={styles.realBadge}
-                      textStyle={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 11 }}
-                    >
-                      MY REAL ONBOARDED FARM
-                    </Chip>
+                    <View style={styles.realBadge}>
+                      <Text style={styles.realBadgeText}>MY REAL ONBOARDED FARM</Text>
+                    </View>
                     {!activeSampleFarmId && (
-                      <Chip style={styles.activeChip} textStyle={{ color: '#1B5E20', fontSize: 10, fontWeight: 'bold' }}>
-                        ACTIVE VIEW
-                      </Chip>
+                      <View style={styles.activeChip}>
+                        <Text style={styles.activeChipText}>ACTIVE VIEW</Text>
+                      </View>
                     )}
                   </View>
                   <Title style={styles.realFarmName}>
@@ -163,7 +159,7 @@ export default function SampleFarmsModal({
                   <View style={styles.cardTopRow}>
                     <View style={{ flex: 1 }}>
                       <View style={styles.badgeRow}>
-                        <Chip
+                        <View
                           style={[
                             styles.conditionChip,
                             farm.condition_severity === 'critical'
@@ -172,13 +168,25 @@ export default function SampleFarmsModal({
                               ? styles.chipWarning
                               : styles.chipOptimal,
                           ]}
-                          textStyle={styles.conditionChipText}
                         >
-                          {farm.condition_label}
-                        </Chip>
-                        <Chip style={styles.cropBadge} textStyle={{ fontSize: 10, color: '#333' }}>
-                          🌾 {farm.crop_type}
-                        </Chip>
+                          <Text
+                            style={[
+                              styles.conditionChipText,
+                              farm.condition_severity === 'critical'
+                                ? { color: '#B71C1C' }
+                                : farm.condition_severity === 'warning'
+                                ? { color: '#E65100' }
+                                : { color: '#1B5E20' },
+                            ]}
+                          >
+                            {farm.condition_label}
+                          </Text>
+                        </View>
+                        <View style={styles.cropBadge}>
+                          <Text style={{ fontSize: 10, color: '#333', fontWeight: 'bold' }}>
+                            🌾 {farm.crop_type}
+                          </Text>
+                        </View>
                       </View>
 
                       <Title style={styles.farmTitle}>{farm.name}</Title>
@@ -292,11 +300,27 @@ const styles = StyleSheet.create({
   },
   realBadge: {
     backgroundColor: '#2E7D32',
-    height: 26,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
+  },
+  realBadgeText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 10,
+    letterSpacing: 0.3,
   },
   activeChip: {
     backgroundColor: '#C8E6C9',
-    height: 26,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
+  },
+  activeChipText: {
+    color: '#1B5E20',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 0.3,
   },
   realFarmName: {
     fontSize: 18,
@@ -344,7 +368,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#D0D8D0',
-    height: 32,
   },
   filterChipActive: {
     backgroundColor: '#2E7D32',
@@ -377,7 +400,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   conditionChip: {
-    height: 26,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
   },
   conditionChipText: {
     fontSize: 10.5,
@@ -394,7 +419,9 @@ const styles = StyleSheet.create({
   },
   cropBadge: {
     backgroundColor: '#F5F5F5',
-    height: 26,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
   },
   farmTitle: {
     fontSize: 16,

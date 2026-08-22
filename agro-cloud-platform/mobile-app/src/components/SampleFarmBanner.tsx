@@ -16,26 +16,32 @@ export default function SampleFarmBanner({ sampleFarm, onExitSampleMode }: Sampl
       <Card.Content style={styles.bannerContent}>
         <View style={styles.topRow}>
           <View style={styles.badgeRow}>
-            <Chip
-              icon="flask-outline"
-              style={styles.sampleChip}
-              textStyle={styles.sampleChipText}
-            >
-              SAMPLE DATA
-            </Chip>
-            <Chip
+            <View style={styles.sampleBadge}>
+              <Text style={styles.sampleBadgeText}>🧪 SAMPLE DATA</Text>
+            </View>
+            <View
               style={[
-                styles.conditionChip,
+                styles.conditionBadge,
                 sampleFarm.condition_severity === 'critical'
-                  ? styles.chipCritical
+                  ? styles.badgeCritical
                   : sampleFarm.condition_severity === 'warning'
-                  ? styles.chipWarning
-                  : styles.chipOptimal,
+                  ? styles.badgeWarning
+                  : styles.badgeOptimal,
               ]}
-              textStyle={styles.conditionChipText}
             >
-              {sampleFarm.condition_label}
-            </Chip>
+              <Text
+                style={[
+                  styles.conditionBadgeText,
+                  sampleFarm.condition_severity === 'critical'
+                    ? styles.badgeTextCritical
+                    : sampleFarm.condition_severity === 'warning'
+                    ? styles.badgeTextWarning
+                    : styles.badgeTextOptimal,
+                ]}
+              >
+                {sampleFarm.condition_label}
+              </Text>
+            </View>
           </View>
           <Button
             mode="contained-tonal"
@@ -84,30 +90,48 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 6,
   },
-  sampleChip: {
+  sampleBadge: {
     backgroundColor: '#FF6F00',
-    height: 26,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
   },
-  sampleChipText: {
+  sampleBadgeText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 10,
+    letterSpacing: 0.3,
   },
-  conditionChip: {
-    height: 26,
+  conditionBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
+    borderWidth: 1,
   },
-  conditionChipText: {
+  conditionBadgeText: {
     fontSize: 10,
     fontWeight: 'bold',
   },
-  chipCritical: {
+  badgeCritical: {
     backgroundColor: '#FFCDD2',
+    borderColor: '#E57373',
   },
-  chipWarning: {
+  badgeTextCritical: {
+    color: '#B71C1C',
+  },
+  badgeWarning: {
     backgroundColor: '#FFE082',
+    borderColor: '#FFD54F',
   },
-  chipOptimal: {
+  badgeTextWarning: {
+    color: '#E65100',
+  },
+  badgeOptimal: {
     backgroundColor: '#C8E6C9',
+    borderColor: '#A5D6A7',
+  },
+  badgeTextOptimal: {
+    color: '#1B5E20',
   },
   exitButton: {
     backgroundColor: '#E8F5E9',

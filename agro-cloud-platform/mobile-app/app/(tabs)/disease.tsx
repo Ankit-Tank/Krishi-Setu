@@ -320,12 +320,11 @@ export default function DiseaseScreen() {
 
               <View style={styles.statusTextCol}>
                 <View style={styles.statusBadgeRow}>
-                  <Chip
-                    style={[styles.statusChip, { backgroundColor: severity.badgeBg }]}
-                    textStyle={{ color: severity.badgeColor, fontWeight: '700', fontSize: 11 }}
-                  >
-                    {severity.badgeText}
-                  </Chip>
+                  <View style={[styles.statusPill, { backgroundColor: severity.badgeBg }]}>
+                    <Text style={[styles.statusPillText, { color: severity.badgeColor }]}>
+                      {severity.badgeText}
+                    </Text>
+                  </View>
                 </View>
                 <Title style={[styles.statusHeadline, { color: severity.color }]}>
                   {severity.headline}
@@ -493,8 +492,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: Spacing.xxs,
   },
-  statusChip: {
-    height: 24,
+  statusPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: BorderRadius.xs,
+    alignSelf: 'flex-start',
+  },
+  statusPillText: {
+    fontWeight: '700',
+    fontSize: 11,
   },
   statusHeadline: {
     fontSize: 17,

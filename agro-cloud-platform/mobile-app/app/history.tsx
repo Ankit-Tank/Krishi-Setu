@@ -279,9 +279,11 @@ export default function HistoryScreen() {
                     {/* Timestamp & Farm Meta Header */}
                     <View style={styles.timelineItemMeta}>
                       <Text style={styles.timelineTimestampText}>🕒 {formatTimestamp(item.timestamp)}</Text>
-                      <Chip style={styles.farmPill} textStyle={styles.farmPillText}>
-                        🌾 {item.farm_name} ({item.crop_type})
-                      </Chip>
+                      <View style={styles.farmPill}>
+                        <Text style={styles.farmPillText}>
+                          🌾 {item.farm_name} ({item.crop_type})
+                        </Text>
+                      </View>
                     </View>
 
                     {/* Entry Content Card */}
@@ -290,20 +292,15 @@ export default function HistoryScreen() {
                         {/* Type Badge Row */}
                         <View style={styles.itemBadgeRow}>
                           {isLeafScan ? (
-                            <Chip
-                              icon="microscope"
-                              style={styles.leafScanChip}
-                              textStyle={styles.leafScanChipText}
-                            >
-                              LEAF SCAN DIAGNOSIS
-                            </Chip>
+                            <View style={styles.leafScanChip}>
+                              <Text style={styles.leafScanChipText}>🔬 LEAF SCAN DIAGNOSIS</Text>
+                            </View>
                           ) : (
-                            <Chip
-                              style={[styles.advisoryTypeChip, { backgroundColor: badge.bg }]}
-                              textStyle={{ color: badge.text, fontSize: 10, fontWeight: '700' }}
-                            >
-                              {badge.label}
-                            </Chip>
+                            <View style={[styles.advisoryTypeChip, { backgroundColor: badge.bg }]}>
+                              <Text style={[styles.advisoryTypeChipText, { color: badge.text }]}>
+                                {badge.label}
+                              </Text>
+                            </View>
                           )}
                         </View>
 
@@ -566,7 +563,9 @@ const styles = StyleSheet.create({
   },
   farmPill: {
     backgroundColor: Colors.surfaceSubtle,
-    height: 22,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 4,
   },
   farmPillText: {
     fontSize: 9.5,
@@ -588,15 +587,24 @@ const styles = StyleSheet.create({
   },
   leafScanChip: {
     backgroundColor: Colors.primaryTint,
-    height: 24,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 4,
   },
   leafScanChipText: {
     color: Colors.primaryDark,
     fontSize: 9.5,
     fontWeight: '700',
+    letterSpacing: 0.3,
   },
   advisoryTypeChip: {
-    height: 24,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 4,
+  },
+  advisoryTypeChipText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
   leafScanBody: {
     flexDirection: 'row',

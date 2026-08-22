@@ -38,6 +38,21 @@ function formatDateShort(dateStr: string): string {
   return dateStr;
 }
 
+function formatForecastDayName(name: string): string {
+  if (!name) return '';
+  const lower = name.trim().toLowerCase();
+  if (lower === 'today') return 'Today';
+  if (lower === 'tomorrow') return 'Tomorrow';
+  if (lower.startsWith('mon')) return 'Mon';
+  if (lower.startsWith('tue')) return 'Tue';
+  if (lower.startsWith('wed')) return 'Wed';
+  if (lower.startsWith('thu')) return 'Thu';
+  if (lower.startsWith('fri')) return 'Fri';
+  if (lower.startsWith('sat')) return 'Sat';
+  if (lower.startsWith('sun')) return 'Sun';
+  return name.length > 5 ? name.slice(0, 3) : name;
+}
+
 export default function WeatherCard({
   weather,
   loading,
@@ -64,13 +79,9 @@ export default function WeatherCard({
         <Card.Content>
           <View style={styles.placeholderHeader}>
             <View style={styles.placeholderBadgeRow}>
-              <Chip
-                icon="map-marker"
-                style={styles.gpsPlaceholderBadge}
-                textStyle={{ color: '#546E7A', fontSize: 10, fontWeight: 'bold' }}
-              >
-                LIVE WEATHER
-              </Chip>
+              <View style={styles.gpsPlaceholderBadge}>
+                <Text style={styles.gpsPlaceholderBadgeText}>LIVE WEATHER</Text>
+              </View>
             </View>
             <Text style={styles.placeholderIcon}>🌦️</Text>
             <Title style={styles.placeholderTitle}>Enable Live GPS Weather</Title>
@@ -126,7 +137,7 @@ export default function WeatherCard({
             <Text style={styles.liveBadgeText}>LIVE WEATHER</Text>
             <Text style={styles.liveSourceText}>(Real GPS)</Text>
           </View>
-          <Text style={styles.locationText} numberOfLines={1}>
+          <Text style={styles.locationText} numberOfLines={2}>
             📍 {weather.city_name || 'Farm Location'}
             {weather.country ? `, ${weather.country}` : ''}
           </Text>
@@ -234,8 +245,8 @@ export default function WeatherCard({
                 key={day.date}
                 style={[styles.forecastDayCard, isRainDay ? styles.forecastDayCardRain : null]}
               >
-                <Text style={styles.forecastDayName}>{day.day_name}</Text>
-                <Text style={styles.forecastDateText}>{formatDateShort(day.date)}</Text>
+                <Text style={styles.forecastDayName} numberOfLines={1}>{formatForecastDayName(day.day_name)}</Text>
+                <Text style={styles.forecastDateText} numberOfLines={1}>{formatDateShort(day.date)}</Text>
 
                 {day.icon ? (
                   <Image
@@ -479,9 +490,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FBFF',
     borderRadius: 10,
     paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
     alignItems: 'center',
-    width: 72,
+    minWidth: 80,
     borderWidth: 1,
     borderColor: '#E3F2FD',
   },
@@ -493,11 +504,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: 'bold',
     color: '#0D47A1',
+    textAlign: 'center',
   },
   forecastDateText: {
     fontSize: 9.5,
     color: '#546E7A',
     marginBottom: 2,
+    textAlign: 'center',
   },
   forecastIconImg: {
     width: 32,
@@ -519,8 +532,8 @@ const styles = StyleSheet.create({
   rainProbBadge: {
     backgroundColor: '#E1F5FE',
     borderRadius: 6,
-    paddingHorizontal: 4,
-    paddingVertical: 1,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
     marginTop: 4,
   },
   rainProbText: {
@@ -550,7 +563,14 @@ const styles = StyleSheet.create({
   },
   gpsPlaceholderBadge: {
     backgroundColor: '#ECEFF1',
-    height: 22,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  gpsPlaceholderBadgeText: {
+    color: '#546E7A',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   placeholderIcon: {
     fontSize: 36,

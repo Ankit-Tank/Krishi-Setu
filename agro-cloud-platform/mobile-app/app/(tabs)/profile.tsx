@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
 import {
   Card,
   Text,
@@ -241,15 +241,15 @@ export default function ProfileScreen() {
           </Text>
 
           <View style={styles.heroBadgesRow}>
-            <Chip icon="leaf" style={styles.heroChip} textStyle={styles.heroChipText}>
-              {cropType} ({areaAcres} Ac)
-            </Chip>
-            <Chip icon="water" style={styles.heroChip} textStyle={styles.heroChipText}>
-              {irrigationSource.toUpperCase()}
-            </Chip>
-            <Chip icon="calendar" style={styles.heroChip} textStyle={styles.heroChipText}>
-              {preferredSeason.toUpperCase()}
-            </Chip>
+            <View style={styles.heroPill}>
+              <Text style={styles.heroPillText}>🌾 {cropType} ({areaAcres} Ac)</Text>
+            </View>
+            <View style={styles.heroPill}>
+              <Text style={styles.heroPillText}>💧 {irrigationSource.toUpperCase()}</Text>
+            </View>
+            <View style={styles.heroPill}>
+              <Text style={styles.heroPillText}>📅 {preferredSeason.toUpperCase()}</Text>
+            </View>
           </View>
         </Card.Content>
       </Card>
@@ -443,17 +443,54 @@ export default function ProfileScreen() {
 
           {/* Language Selector */}
           <Text style={styles.settingItemTitle}>🌐 Preferred Language / भाषा चुनें</Text>
-          <SegmentedButtons
-            value={language}
-            onValueChange={handleLanguageChange}
-            buttons={[
-              { value: 'en', label: 'English' },
-              { value: 'hi', label: 'हिंदी' },
-              { value: 'te', label: 'తెలుగు' },
-              { value: 'mr', label: 'मराठी' },
-            ]}
-            style={styles.segmentedButtons}
-          />
+          <View style={styles.languageGrid}>
+            {[
+              { value: 'en', label: 'English', native: 'English' },
+              { value: 'hi', label: 'हिंदी', native: 'Hindi' },
+              { value: 'te', label: 'తెలుగు', native: 'Telugu' },
+              { value: 'mr', label: 'मराठी', native: 'Marathi' },
+            ].map((item) => {
+              const isSelected = language === item.value;
+              return (
+                <TouchableOpacity
+                  key={item.value}
+                  style={[
+                    styles.languageCard,
+                    isSelected ? styles.languageCardActive : styles.languageCardInactive,
+                  ]}
+                  onPress={() => handleLanguageChange(item.value)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.languageTextContainer}>
+                    <Text
+                      style={[
+                        styles.languageLabel,
+                        isSelected ? styles.languageLabelActive : styles.languageLabelInactive,
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.languageSubLabel,
+                        isSelected ? styles.languageSubLabelActive : styles.languageSubLabelInactive,
+                      ]}
+                    >
+                      {item.native}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.languageRadioDot,
+                      isSelected ? styles.languageRadioDotActive : styles.languageRadioDotInactive,
+                    ]}
+                  >
+                    {isSelected && <View style={styles.languageRadioInner} />}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
 
           {/* Notification Preferences */}
           <View style={styles.switchRow}>
@@ -497,7 +534,7 @@ export default function ProfileScreen() {
             onPress={() => setSampleModalVisible(true)}
             style={{ marginBottom: Spacing.md, borderRadius: BorderRadius.md }}
           >
-            {activeSampleFarmId ? "Explore Sample Farms (Active: Scenario Selected)" : "Browse 12 Sample Farms"}
+            {activeSampleFarmId ? "Simulated Farm Active • Switch Scenario" : "Browse 12 Sample Farms"}
           </Button>
 
           <Divider style={{ marginVertical: Spacing.md }} />
@@ -506,7 +543,9 @@ export default function ProfileScreen() {
           <View style={styles.versionBox}>
             <View style={styles.versionRow}>
               <Text style={styles.versionTitle}>🌱 Krishi Setu Platform</Text>
-              <Chip style={styles.versionChip} textStyle={{ fontSize: 10, color: Colors.primaryDark, fontWeight: '700' }}>v1.0.0</Chip>
+              <View style={styles.versionPill}>
+                <Text style={styles.versionPillText}>v1.0.0</Text>
+              </View>
             </View>
             <Text style={styles.versionDesc}>Precision Advisory & Mandi Linkage (Offline-First Ready)</Text>
             <Text style={styles.versionMeta}>
@@ -612,14 +651,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.sm,
   },
-  heroChip: {
+  heroPill: {
     backgroundColor: Colors.primaryTint,
-    height: 30,
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: 5,
+    borderRadius: BorderRadius.xxl,
   },
-  heroChipText: {
-    fontSize: 11,
+  heroPillText: {
+    fontSize: 11.5,
     color: Colors.primaryDark,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 
   // Feedback banners
@@ -743,6 +784,76 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     marginBottom: Spacing.sm,
   },
+  languageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  languageCard: {
+    width: '48%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.sm + 4,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1.5,
+  },
+  languageCardActive: {
+    backgroundColor: '#E8F5E9',
+    borderColor: Colors.primary,
+  },
+  languageCardInactive: {
+    backgroundColor: Colors.surfaceSubtle,
+    borderColor: Colors.border,
+  },
+  languageTextContainer: {
+    flex: 1,
+  },
+  languageLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  languageLabelActive: {
+    color: Colors.primaryDark,
+  },
+  languageLabelInactive: {
+    color: Colors.textPrimary,
+  },
+  languageSubLabel: {
+    fontSize: 11,
+    marginTop: 1,
+  },
+  languageSubLabelActive: {
+    color: Colors.primary,
+    fontWeight: '600',
+  },
+  languageSubLabelInactive: {
+    color: Colors.textSecondary,
+  },
+  languageRadioDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 4,
+  },
+  languageRadioDotActive: {
+    borderColor: Colors.primary,
+  },
+  languageRadioDotInactive: {
+    borderColor: Colors.borderDark,
+  },
+  languageRadioInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.primary,
+  },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -777,9 +888,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.primaryDark,
   },
-  versionChip: {
+  versionPill: {
     backgroundColor: Colors.primaryTint,
-    height: 22,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: BorderRadius.xs,
+  },
+  versionPillText: {
+    fontSize: 10,
+    color: Colors.primaryDark,
+    fontWeight: '700',
   },
   versionDesc: {
     ...Typography.bodySmall,

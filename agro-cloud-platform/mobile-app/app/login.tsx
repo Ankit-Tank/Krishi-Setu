@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
-import { Text, TextInput, Button, Card, SegmentedButtons } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Text, TextInput, Button, Card } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 
@@ -53,15 +53,54 @@ export default function LoginScreen() {
             <Text variant="labelLarge" style={styles.langLabel}>
               🌐 Select Language / भाषा चुनें:
             </Text>
-            <SegmentedButtons
-              value={lang}
-              onValueChange={handleLanguageChange}
-              buttons={[
-                { value: 'en', label: 'English' },
-                { value: 'hi', label: 'हिंदी' },
-                { value: 'mr', label: 'मराठी' },
-              ]}
-            />
+            <View style={styles.languageGrid}>
+              {[
+                { value: 'en', label: 'English', native: 'English' },
+                { value: 'hi', label: 'हिंदी', native: 'Hindi' },
+                { value: 'te', label: 'తెలుగు', native: 'Telugu' },
+                { value: 'mr', label: 'मराठी', native: 'Marathi' },
+              ].map((item) => {
+                const isSelected = lang === item.value;
+                return (
+                  <TouchableOpacity
+                    key={item.value}
+                    style={[
+                      styles.languageCard,
+                      isSelected ? styles.languageCardActive : styles.languageCardInactive,
+                    ]}
+                    onPress={() => handleLanguageChange(item.value)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.languageTextContainer}>
+                      <Text
+                        style={[
+                          styles.languageLabel,
+                          isSelected ? styles.languageLabelActive : styles.languageLabelInactive,
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.languageSubLabel,
+                          isSelected ? styles.languageSubLabelActive : styles.languageSubLabelInactive,
+                        ]}
+                      >
+                        {item.native}
+                      </Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.languageRadioDot,
+                        isSelected ? styles.languageRadioDotActive : styles.languageRadioDotInactive,
+                      ]}
+                    >
+                      {isSelected && <View style={styles.languageRadioInner} />}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
 
           {step === 'phone' ? (
@@ -166,9 +205,78 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   langLabel: {
-    marginBottom: 8,
+    marginBottom: 10,
     fontWeight: 'bold',
     color: '#2E7D32',
+  },
+  languageGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  languageCard: {
+    width: '48%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1.5,
+  },
+  languageCardActive: {
+    backgroundColor: '#E8F5E9',
+    borderColor: '#2E7D32',
+  },
+  languageCardInactive: {
+    backgroundColor: '#FAFAFA',
+    borderColor: '#E0E0E0',
+  },
+  languageTextContainer: {
+    flex: 1,
+  },
+  languageLabel: {
+    fontSize: 13.5,
+    fontWeight: '700',
+  },
+  languageLabelActive: {
+    color: '#1B5E20',
+  },
+  languageLabelInactive: {
+    color: '#333333',
+  },
+  languageSubLabel: {
+    fontSize: 10.5,
+    marginTop: 1,
+  },
+  languageSubLabelActive: {
+    color: '#2E7D32',
+    fontWeight: '600',
+  },
+  languageSubLabelInactive: {
+    color: '#757575',
+  },
+  languageRadioDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 4,
+  },
+  languageRadioDotActive: {
+    borderColor: '#2E7D32',
+  },
+  languageRadioDotInactive: {
+    borderColor: '#BDBDBD',
+  },
+  languageRadioInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#2E7D32',
   },
   formGroup: {
     marginTop: 10,

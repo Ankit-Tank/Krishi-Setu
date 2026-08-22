@@ -123,7 +123,9 @@ export default function MandiScreen() {
           <Card.Content style={styles.cardContent}>
             <View style={styles.headerRow}>
               <Title style={styles.forecastTitle}>📈 14-Day AI Price Forecast</Title>
-              <Chip style={{ backgroundColor: Colors.primaryTint }} textStyle={{ color: Colors.primary, fontWeight: '700', fontSize: 11 }}>Prophet AI</Chip>
+              <View style={styles.prophetPill}>
+                <Text style={styles.prophetPillText}>Prophet AI</Text>
+              </View>
             </View>
             <Paragraph style={styles.forecastSub}>
               {forecast.crop_name} @ {forecast.mandi_name}
@@ -140,25 +142,48 @@ export default function MandiScreen() {
               </View>
             </View>
 
-            <Text style={styles.recommendationText}>
-              💡 {forecast.best_time_to_sell_recommendation}
-            </Text>
+            <View style={styles.recommendationBox}>
+              <Text style={styles.recommendationLabel}>💡 Optimal Selling Recommendation:</Text>
+              <Text style={styles.recommendationText}>
+                {forecast.best_time_to_sell_recommendation}
+              </Text>
+            </View>
 
-            {/* Simulated Visual Trend Chart Bars */}
-            <Text style={styles.chartTitle}>
-              Price Trajectory Trend (Next 14 Days):
-            </Text>
-            <View style={styles.barChartRow}>
-              {forecast.forecast_prices.slice(0, 7).map((price, idx) => {
-                const heightPct = Math.min(100, Math.max(30, ((price - 2000) / 1000) * 100));
-                return (
-                  <View key={idx} style={styles.barItem}>
-                    <Text style={{ fontSize: 9, color: Colors.textMuted }}>d+{idx + 1}</Text>
-                    <View style={[styles.barVisual, { height: heightPct }]} />
-                    <Text style={{ fontSize: 9, fontWeight: '700', color: Colors.primaryDark }}>{Math.round(price)}</Text>
-                  </View>
-                );
-              })}
+            {/* 7-Day Visual Price Trajectory Chart */}
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>
+                📊 7-Day Price Trajectory (₹ / Quintal)
+              </Text>
+              <View style={styles.barChartRow}>
+                {(() => {
+                  const prices7d = (forecast.forecast_prices || []).slice(0, 7);
+                  const minPrice = prices7d.length ? Math.min(...prices7d) : 2000;
+                  const maxPrice = prices7d.length ? Math.max(...prices7d) : 2400;
+                  const priceRange = maxPrice - minPrice || 1;
+
+                  return prices7d.map((price, idx) => {
+                    const barHeight = Math.round(18 + ((price - minPrice) / priceRange) * 36);
+                    const isPeak = price === maxPrice;
+                    return (
+                      <View key={idx} style={styles.barItem}>
+                        <Text style={[styles.barPriceText, isPeak ? styles.barPriceTextPeak : null]}>
+                          ₹{Math.round(price)}
+                        </Text>
+                        <View
+                          style={[
+                            styles.barVisual,
+                            { height: barHeight },
+                            isPeak ? styles.barVisualPeak : null,
+                          ]}
+                        />
+                        <Text style={[styles.barDayText, isPeak ? styles.barDayTextPeak : null]}>
+                          d+{idx + 1}
+                        </Text>
+                      </View>
+                    );
+                  });
+                })()}
+              </View>
             </View>
           </Card.Content>
         </Card>
@@ -289,19 +314,15 @@ export default function MandiScreen() {
                     </View>
                     <View style={{ flexDirection: 'row', gap: Spacing.xs }}>
                       {isTopMatch && (
-                        <Chip
-                          style={styles.bestMatchChip}
-                          textStyle={styles.bestMatchChipText}
-                        >
-                          BEST MATCH
-                        </Chip>
+                        <View style={styles.bestMatchChip}>
+                          <Text style={styles.bestMatchChipText}>BEST MATCH</Text>
+                        </View>
                       )}
-                      <Chip
-                        style={{ backgroundColor: Colors.primaryTint }}
-                        textStyle={{ color: Colors.primary, fontWeight: '700', fontSize: 11 }}
-                      >
-                        Score: {(match.score || 95).toFixed(1)}
-                      </Chip>
+                      <View style={styles.scorePill}>
+                        <Text style={styles.scorePillText}>
+                          Score: {(match.score || 95).toFixed(1)}
+                        </Text>
+                      </View>
                     </View>
                   </View>
 
@@ -419,39 +440,82 @@ const styles = StyleSheet.create({
     color: Colors.primaryDark,
     marginTop: Spacing.xxs,
   },
-  recommendationText: {
-    fontSize: 13,
-    color: Colors.status.warning.text,
+  recommendationBox: {
     backgroundColor: Colors.status.warning.bg,
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    lineHeight: 18,
     borderWidth: 1,
     borderColor: Colors.status.warning.border,
+    marginBottom: Spacing.sm,
+  },
+  recommendationLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#B78103',
+    marginBottom: 3,
+  },
+  recommendationText: {
+    fontSize: 13,
+    color: Colors.status.warning.text,
+    lineHeight: 18,
+    fontWeight: '500',
+  },
+  chartContainer: {
+    backgroundColor: '#F1F8E9',
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginTop: Spacing.xs,
+    borderWidth: 1,
+    borderColor: '#C8E6C9',
   },
   chartTitle: {
     fontSize: 12,
     fontWeight: '700',
     color: Colors.primaryDark,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
   },
   barChartRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 70,
-    paddingTop: Spacing.sm,
+    height: 95,
+    paddingHorizontal: Spacing.xxs,
   },
   barItem: {
     alignItems: 'center',
-    width: '12%',
+    justifyContent: 'flex-end',
+    flex: 1,
+    height: '100%',
+  },
+  barPriceText: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  barPriceTextPeak: {
+    fontWeight: '800',
+    color: '#1B5E20',
+    fontSize: 9.5,
   },
   barVisual: {
-    width: 12,
-    backgroundColor: Colors.primary,
+    width: 14,
+    backgroundColor: '#81C784',
     borderRadius: BorderRadius.xs,
-    marginVertical: Spacing.xxs,
+    marginBottom: 4,
+  },
+  barVisualPeak: {
+    backgroundColor: '#2E7D32',
+  },
+  barDayText: {
+    fontSize: 9.5,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+  },
+  barDayTextPeak: {
+    fontWeight: '800',
+    color: '#1B5E20',
   },
   sectionHeader: {
     ...Typography.sectionHeader,
@@ -551,16 +615,41 @@ const styles = StyleSheet.create({
     ...Typography.cardTitle,
     color: Colors.primaryDark,
   },
+  prophetPill: {
+    backgroundColor: Colors.primaryTint,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
+  },
+  prophetPillText: {
+    color: Colors.primary,
+    fontWeight: '700',
+    fontSize: 11,
+  },
   bestMatchChip: {
     backgroundColor: '#FFF8E1',
     borderWidth: 1,
     borderColor: '#FFD54F',
-    height: 26,
+    paddingHorizontal: 7,
+    paddingVertical: 3.5,
+    borderRadius: 6,
   },
   bestMatchChipText: {
     color: '#E65100',
     fontWeight: '800',
     fontSize: 10,
+    letterSpacing: 0.3,
+  },
+  scorePill: {
+    backgroundColor: Colors.primaryTint,
+    paddingHorizontal: 7,
+    paddingVertical: 3.5,
+    borderRadius: 6,
+  },
+  scorePillText: {
+    color: Colors.primary,
+    fontWeight: '700',
+    fontSize: 11,
   },
   labeledDetailRow: {
     flexDirection: 'row',

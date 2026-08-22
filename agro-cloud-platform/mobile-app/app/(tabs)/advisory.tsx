@@ -128,7 +128,6 @@ export default function AdvisoryScreen() {
         />
       )}
 
-      {/* 2. OVERVIEW AI ADVISORY CARD */}
       <Card style={[styles.headerCard, activeSampleFarm ? styles.headerCardSample : null]}>
         <Card.Content style={styles.cardContent}>
           <View style={styles.headerTitleRow}>
@@ -136,9 +135,9 @@ export default function AdvisoryScreen() {
               {activeSampleFarm ? '🧪 Simulated Agronomic Prescription' : '🌱 Precision Agronomic Prescription'}
             </Title>
             {activeSampleFarm && (
-              <Chip style={styles.sampleBadge} textStyle={{ color: '#FFF', fontSize: 10, fontWeight: 'bold' }}>
-                SAMPLE SCENARIO
-              </Chip>
+              <View style={styles.sampleBadge}>
+                <Text style={styles.sampleBadgeText}>SAMPLE SCENARIO</Text>
+              </View>
             )}
           </View>
 
@@ -155,19 +154,16 @@ export default function AdvisoryScreen() {
             <ActivityIndicator style={{ marginVertical: Spacing.lg }} color={Colors.primary} />
           ) : (
             <View style={{ marginTop: Spacing.sm }}>
-              {/* Irrigation Advice */}
               <View style={styles.adviceBoxIrrigation}>
                 <Text style={styles.adviceBoxIrrigationTitle}>💧 Irrigation Prescription:</Text>
                 <Text style={styles.adviceBoxIrrigationText}>{advisoryData?.irrigation_advice}</Text>
               </View>
 
-              {/* NPK Advice */}
               <View style={styles.adviceBoxNpk}>
                 <Text style={styles.adviceBoxNpkTitle}>🧪 NPK Nutrient Prescription:</Text>
                 <Text style={styles.adviceBoxNpkText}>{advisoryData?.npk_advice}</Text>
               </View>
 
-              {/* Action Items for Sample Farms */}
               {activeSampleFarm?.advisory.action_items && (
                 <View style={styles.adviceBoxChecklist}>
                   <Text style={styles.adviceBoxChecklistTitle}>📋 Recommended Action Checklist:</Text>
@@ -183,7 +179,6 @@ export default function AdvisoryScreen() {
         </Card.Content>
       </Card>
 
-      {/* 3. ADVISORY RECORDS TIMELINE */}
       <Title style={styles.sectionHeader}>
         {activeSampleFarm ? `📋 Scenario Advisory Logs (${records.length})` : `📋 All Advisory Logs (${records.length})`}
       </Title>
@@ -200,9 +195,9 @@ export default function AdvisoryScreen() {
                 </View>
 
                 {rec.is_read ? (
-                  <Chip icon="check-all" style={styles.readChip} textStyle={{ fontSize: 10 }}>Read</Chip>
+                  <View style={styles.readBadge}><Text style={styles.readBadgeText}>✓ Read</Text></View>
                 ) : (
-                  <Chip style={{ backgroundColor: Colors.status.critical.bg }} textStyle={{ fontSize: 10, color: Colors.status.critical.text, fontWeight: '700' }}>UNREAD</Chip>
+                  <View style={styles.unreadBadge}><Text style={styles.unreadBadgeText}>UNREAD</Text></View>
                 )}
               </View>
 
@@ -264,7 +259,15 @@ const styles = StyleSheet.create({
   },
   sampleBadge: {
     backgroundColor: '#FF6F00',
-    height: 22,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
+  },
+  sampleBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 0.3,
   },
   subText: {
     ...Typography.bodySmall,
@@ -345,8 +348,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.xs + 2,
   },
-  readChip: {
+  readBadge: {
     backgroundColor: '#F5F5F5',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  readBadgeText: {
+    fontSize: 10,
+    color: '#616161',
+    fontWeight: 'bold',
+  },
+  unreadBadge: {
+    backgroundColor: Colors.status.critical.bg,
+    borderColor: Colors.status.critical.border,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  unreadBadgeText: {
+    fontSize: 10,
+    color: Colors.status.critical.text,
+    fontWeight: '700',
   },
   recordMessage: {
     ...Typography.body,

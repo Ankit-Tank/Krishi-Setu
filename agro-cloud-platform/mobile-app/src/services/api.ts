@@ -1,10 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-// Backend API URL: Using local network IP (192.168.1.12:8000) for Expo Go phone connection & web preview
-export const API_BASE_URL = Platform.OS === 'web'
-  ? 'http://localhost:8000'
-  : 'http://192.168.1.12:8000';
+// Backend API URL: Using public ngrok tunnel for phone connection over cellular/any WiFi
+export const API_BASE_URL = 'https://showdown-scorebook-disabled.ngrok-free.dev';
 
 export interface FarmerIdentity {
   farmer_id: number;
@@ -324,8 +322,13 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutM
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   try {
+    const headers = {
+      'ngrok-skip-browser-warning': 'true',
+      ...(options.headers || {}),
+    };
     const response = await fetch(url, {
       ...options,
+      headers,
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
@@ -472,7 +475,7 @@ export const AgroApiService = {
   // Get all registered farmers
   async getFarmers(): Promise<{ data: Farmer[]; isOffline: boolean }> {
     try {
-      const response = await fetchWithTimeout(`${API_BASE_URL}/farmers/`, {}, 6000);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farmers`, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(STORAGE_KEYS.FARMERS, JSON.stringify(data));
@@ -491,7 +494,7 @@ export const AgroApiService = {
   // Get farms for farmer
   async getFarms(farmerId: number = 1): Promise<{ data: Farm[]; isOffline: boolean }> {
     try {
-      const response = await fetchWithTimeout(`${API_BASE_URL}/farms/?farmer_id=${farmerId}`, {}, 6000);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/farms?farmer_id=${farmerId}`, {}, 6000);
       if (response.ok) {
         const data = await response.json();
         await AsyncStorage.setItem(`${STORAGE_KEYS.FARMS}_${farmerId}`, JSON.stringify(data));

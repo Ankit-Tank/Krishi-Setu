@@ -45,19 +45,21 @@ export default function SmartSummaryCard({
           </View>
 
           <View style={styles.headerActions}>
-            <Chip
+            <View
               style={[
-                styles.urgencyChip,
-                isUrgent ? styles.urgencyChipHigh : styles.urgencyChipNormal,
+                styles.urgencyPill,
+                isUrgent ? styles.urgencyPillHigh : styles.urgencyPillNormal,
               ]}
-              textStyle={{
-                color: isUrgent ? '#FFD54F' : '#E8F5E9',
-                fontSize: 10,
-                fontWeight: 'bold',
-              }}
             >
-              {isUrgent ? 'ACTION REQUIRED' : 'ON TRACK'}
-            </Chip>
+              <Text
+                style={[
+                  styles.urgencyPillText,
+                  { color: isUrgent ? '#FFD54F' : '#E8F5E9' },
+                ]}
+              >
+                {isUrgent ? 'ACTION REQUIRED' : 'ON TRACK'}
+              </Text>
+            </View>
 
             <TouchableOpacity
               style={styles.refreshBtn}
@@ -104,7 +106,7 @@ export default function SmartSummaryCard({
                   ? styles.pillarValueWarning
                   : styles.pillarValueNormal,
               ]}
-              numberOfLines={1}
+              numberOfLines={2}
             >
               {summary.disease.status === 'DISEASED'
                 ? (summary.disease.predicted_disease || 'Infected')
@@ -136,7 +138,7 @@ export default function SmartSummaryCard({
                   ? styles.pillarValueWarning
                   : styles.pillarValueNormal,
               ]}
-              numberOfLines={1}
+              numberOfLines={2}
             >
               {summary.soil_irrigation.moisture_status === 'LOW'
                 ? `Low (${summary.soil_irrigation.moisture_pct ?? 24}%)`
@@ -156,7 +158,7 @@ export default function SmartSummaryCard({
               <Text style={styles.pillarIcon}>🏛️</Text>
               <Text style={styles.pillarLabel}>Best Mandi</Text>
             </View>
-            <Text style={styles.pillarValueMarket} numberOfLines={1}>
+            <Text style={styles.pillarValueMarket} numberOfLines={2}>
               ₹{Math.round(summary.market.best_price_per_quintal)}/q • {summary.market.distance_km}km
             </Text>
           </TouchableOpacity>
@@ -267,14 +269,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs + 2,
   },
-  urgencyChip: {
-    height: 22,
+  urgencyPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: BorderRadius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  urgencyChipHigh: {
+  urgencyPillHigh: {
     backgroundColor: Colors.status.critical.main,
   },
-  urgencyChipNormal: {
+  urgencyPillNormal: {
     backgroundColor: Colors.primary,
+  },
+  urgencyPillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
   refreshBtn: {
     width: 26,
@@ -344,8 +355,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   pillarValue: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '800',
+    lineHeight: 13.5,
+    minHeight: 27,
   },
   pillarValueWarning: {
     color: '#FFCC80',
@@ -354,9 +367,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   pillarValueMarket: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '800',
     color: '#FFE082',
+    lineHeight: 13.5,
+    minHeight: 27,
   },
   actionRow: {
     flexDirection: 'row',

@@ -283,14 +283,14 @@ export default function DashboardScreen() {
               {activeSampleFarm ? '🧪 EXPLORING SAMPLE PROFILE' : `Welcome, ${identity?.farmer_name || 'Farmer'} 👋`}
             </Text>
             {activeSampleFarm && (
-              <Chip style={styles.sampleHeroBadge} textStyle={{ color: '#FFF', fontSize: 10, fontWeight: 'bold' }}>
-                SIMULATED DATA
-              </Chip>
+              <View style={styles.sampleHeroBadge}>
+                <Text style={styles.sampleHeroBadgeText}>SIMULATED DATA</Text>
+              </View>
             )}
           </View>
 
           <View style={styles.farmSelectorRow}>
-            <Title style={styles.farmTitle} numberOfLines={1} ellipsizeMode="tail">
+            <Title style={styles.farmTitle} numberOfLines={2}>
               {activeSampleFarm
                 ? `🌾 ${activeSampleFarm.name}`
                 : `🚜 ${selectedFarm ? selectedFarm.name : 'My Farm Plot'}`}
@@ -352,14 +352,16 @@ export default function DashboardScreen() {
           onPress={() => setSampleModalVisible(true)}
           activeOpacity={0.8}
         >
-          <Text style={{ fontSize: 20 }}>🧪</Text>
-          <View style={{ flex: 1, marginLeft: 8 }}>
-            <Text style={styles.quickActionTitle}>Sample Explorer</Text>
-            <Text style={styles.quickActionDesc}>12 Real Scenarios</Text>
+          <View style={styles.quickActionHeader}>
+            <Text style={{ fontSize: 22 }}>🧪</Text>
+            <View style={[styles.quickActionBadge, { backgroundColor: '#C8E6C9' }]}>
+              <Text style={[styles.quickActionBadgeText, { color: '#1B5E20' }]}>
+                {activeSampleFarm ? "ACTIVE" : "BROWSE"}
+              </Text>
+            </View>
           </View>
-          <Chip style={{ backgroundColor: '#C8E6C9', height: 22 }} textStyle={{ fontSize: 9, color: '#1B5E20', fontWeight: 'bold' }}>
-            {activeSampleFarm ? "ACTIVE" : "BROWSE"}
-          </Chip>
+          <Text style={styles.quickActionTitle} numberOfLines={1}>Sample Explorer</Text>
+          <Text style={styles.quickActionDesc} numberOfLines={1}>12 Real Scenarios</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -367,14 +369,16 @@ export default function DashboardScreen() {
           onPress={() => router.push('/history')}
           activeOpacity={0.8}
         >
-          <Text style={{ fontSize: 20 }}>📜</Text>
-          <View style={{ flex: 1, marginLeft: 8 }}>
-            <Text style={[styles.quickActionTitle, { color: '#4527A0' }]}>My History</Text>
-            <Text style={[styles.quickActionDesc, { color: '#5E35B1' }]}>Scans & Timeline</Text>
+          <View style={styles.quickActionHeader}>
+            <Text style={{ fontSize: 22 }}>📜</Text>
+            <View style={[styles.quickActionBadge, { backgroundColor: '#D1C4E9' }]}>
+              <Text style={[styles.quickActionBadgeText, { color: '#4527A0' }]}>
+                VIEW
+              </Text>
+            </View>
           </View>
-          <Chip style={{ backgroundColor: '#D1C4E9', height: 22 }} textStyle={{ fontSize: 9, color: '#4527A0', fontWeight: 'bold' }}>
-            VIEW
-          </Chip>
+          <Text style={[styles.quickActionTitle, { color: '#4527A0' }]} numberOfLines={1}>My History</Text>
+          <Text style={[styles.quickActionDesc, { color: '#5E35B1' }]} numberOfLines={1}>Scans & Timeline</Text>
         </TouchableOpacity>
       </View>
 
@@ -385,9 +389,9 @@ export default function DashboardScreen() {
           <Text style={styles.sectionSubHeader}>Hardware IoT node telemetry stream</Text>
         </View>
         {activeSampleFarm && (
-          <Chip style={styles.sampleTag} textStyle={{ fontSize: 10, color: '#E65100', fontWeight: 'bold' }}>
-            Sample Preset
-          </Chip>
+          <View style={styles.sampleTag}>
+            <Text style={styles.sampleTagText}>Sample Preset</Text>
+          </View>
         )}
       </View>
 
@@ -401,27 +405,39 @@ export default function DashboardScreen() {
               <Text style={styles.cardIcon}>💧</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.moisture')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.soil_moisture ?? 26.5}%</Title>
-              <Chip
-                icon="water"
-                style={
+              <View
+                style={[
+                  styles.sensorPill,
                   (telemetry?.soil_moisture ?? 26.5) < 20
-                    ? styles.chipCritical
+                    ? styles.pillCritical
                     : (telemetry?.soil_moisture ?? 26.5) < 30
-                    ? styles.chipWarning
+                    ? styles.pillWarning
                     : (telemetry?.soil_moisture ?? 26.5) > 50
-                    ? styles.chipWaterlogged
-                    : styles.chipGood
-                }
-                textStyle={{ fontSize: 10 }}
+                    ? styles.pillWaterlogged
+                    : styles.pillGood,
+                ]}
               >
-                {(telemetry?.soil_moisture ?? 26.5) < 20
-                  ? 'Severe Drought'
-                  : (telemetry?.soil_moisture ?? 26.5) < 30
-                  ? 'Irrigate Soon'
-                  : (telemetry?.soil_moisture ?? 26.5) > 50
-                  ? 'Waterlogged'
-                  : 'Optimal'}
-              </Chip>
+                <Text
+                  style={[
+                    styles.sensorPillText,
+                    (telemetry?.soil_moisture ?? 26.5) < 20
+                      ? styles.pillTextCritical
+                      : (telemetry?.soil_moisture ?? 26.5) < 30
+                      ? styles.pillTextWarning
+                      : (telemetry?.soil_moisture ?? 26.5) > 50
+                      ? styles.pillTextWaterlogged
+                      : styles.pillTextGood,
+                  ]}
+                >
+                  {(telemetry?.soil_moisture ?? 26.5) < 20
+                    ? '⚠️ Severe Drought'
+                    : (telemetry?.soil_moisture ?? 26.5) < 30
+                    ? '💧 Irrigate Soon'
+                    : (telemetry?.soil_moisture ?? 26.5) > 50
+                    ? '🌊 Waterlogged'
+                    : '✅ Optimal'}
+                </Text>
+              </View>
             </Card.Content>
           </Card>
 
@@ -441,12 +457,21 @@ export default function DashboardScreen() {
               <Text style={styles.cardIcon}>🟢</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.nitrogen')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.nitrogen_ppm ?? 105} ppm</Title>
-              <Chip
-                style={(telemetry?.nitrogen_ppm ?? 105) < 60 ? styles.chipCritical : styles.chipGood}
-                textStyle={{ fontSize: 10 }}
+              <View
+                style={[
+                  styles.sensorPill,
+                  (telemetry?.nitrogen_ppm ?? 105) < 60 ? styles.pillCritical : styles.pillGood,
+                ]}
               >
-                {(telemetry?.nitrogen_ppm ?? 105) < 60 ? 'Deficient' : 'Active NPK'}
-              </Chip>
+                <Text
+                  style={[
+                    styles.sensorPillText,
+                    (telemetry?.nitrogen_ppm ?? 105) < 60 ? styles.pillTextCritical : styles.pillTextGood,
+                  ]}
+                >
+                  {(telemetry?.nitrogen_ppm ?? 105) < 60 ? '⚠️ Deficient' : '🌿 Active NPK'}
+                </Text>
+              </View>
             </Card.Content>
           </Card>
 
@@ -456,22 +481,33 @@ export default function DashboardScreen() {
               <Text style={styles.cardIcon}>🧪</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.ph')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.soil_ph ?? 6.8}</Title>
-              <Chip
-                style={
+              <View
+                style={[
+                  styles.sensorPill,
                   (telemetry?.soil_ph ?? 6.8) < 6.0
-                    ? styles.chipWarning
+                    ? styles.pillWarning
                     : (telemetry?.soil_ph ?? 6.8) > 8.0
-                    ? styles.chipWarning
-                    : styles.chipGood
-                }
-                textStyle={{ fontSize: 10 }}
+                    ? styles.pillWarning
+                    : styles.pillGood,
+                ]}
               >
-                {(telemetry?.soil_ph ?? 6.8) < 6.0
-                  ? 'Acidic'
-                  : (telemetry?.soil_ph ?? 6.8) > 8.0
-                  ? 'Alkaline'
-                  : 'Balanced'}
-              </Chip>
+                <Text
+                  style={[
+                    styles.sensorPillText,
+                    (telemetry?.soil_ph ?? 6.8) < 6.0
+                      ? styles.pillTextWarning
+                      : (telemetry?.soil_ph ?? 6.8) > 8.0
+                      ? styles.pillTextWarning
+                      : styles.pillTextGood,
+                  ]}
+                >
+                  {(telemetry?.soil_ph ?? 6.8) < 6.0
+                    ? '⚠️ Acidic'
+                    : (telemetry?.soil_ph ?? 6.8) > 8.0
+                    ? '⚠️ Alkaline'
+                    : '🧪 Balanced'}
+                </Text>
+              </View>
             </Card.Content>
           </Card>
         </View>
@@ -485,7 +521,7 @@ export default function DashboardScreen() {
         <Card key={adv.id} style={styles.advisoryCard}>
           <Card.Content style={styles.advisoryCardContent}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
-              <Text style={{ fontWeight: 'bold', color: adv.type === 'disease' ? '#D32F2F' : '#2E7D32', flex: 1, flexShrink: 1, marginRight: 8 }} numberOfLines={1} ellipsizeMode="tail">
+              <Text style={{ fontWeight: 'bold', color: adv.type === 'disease' ? '#D32F2F' : '#2E7D32', flex: 1, flexShrink: 1, marginRight: 8 }} numberOfLines={2}>
                 {adv.type === 'disease' ? '🔴 Disease Alert' : adv.type === 'irrigation' ? '💧 Irrigation Advisory' : '🟢 NPK Advice'}
               </Text>
               {!adv.is_read && <Chip style={{ backgroundColor: '#FFEBEE' }} textStyle={{ fontSize: 10 }}>NEW</Chip>}
@@ -555,18 +591,33 @@ const styles = StyleSheet.create({
   },
   quickActionCard: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.sm + 2,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     ...Shadows.card,
   },
+  quickActionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  quickActionBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: BorderRadius.sm,
+  },
+  quickActionBadgeText: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
   quickActionTitle: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '700',
     color: Colors.primaryDark,
+    marginTop: 2,
   },
   quickActionDesc: {
     fontSize: 10.5,
@@ -600,7 +651,15 @@ const styles = StyleSheet.create({
   },
   sampleHeroBadge: {
     backgroundColor: '#FF6F00',
-    height: 22,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: BorderRadius.sm,
+  },
+  sampleHeroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 9.5,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
   farmSelectorRow: {
     flexDirection: 'row',
@@ -640,7 +699,16 @@ const styles = StyleSheet.create({
   },
   sampleTag: {
     backgroundColor: Colors.status.warning.bg,
-    height: 24,
+    borderColor: Colors.status.warning.border,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: BorderRadius.sm,
+  },
+  sampleTagText: {
+    fontSize: 10,
+    color: '#E65100',
+    fontWeight: 'bold',
   },
   grid: {
     flexDirection: 'row',
@@ -673,29 +741,45 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     marginVertical: Spacing.xs,
   },
-  chipGood: {
+  sensorPill: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: Spacing.xs + 3,
+    paddingVertical: 3.5,
+    borderRadius: BorderRadius.sm,
+    marginTop: Spacing.xs,
+    borderWidth: 1,
+  },
+  sensorPillText: {
+    fontSize: 10.5,
+    fontWeight: '700',
+  },
+  pillGood: {
     backgroundColor: Colors.status.healthy.bg,
-    alignSelf: 'flex-start',
-    marginTop: Spacing.xs,
-    height: 24,
+    borderColor: Colors.status.healthy.border,
   },
-  chipWarning: {
+  pillTextGood: {
+    color: Colors.status.healthy.text,
+  },
+  pillWarning: {
     backgroundColor: Colors.status.warning.bg,
-    alignSelf: 'flex-start',
-    marginTop: Spacing.xs,
-    height: 24,
+    borderColor: Colors.status.warning.border,
   },
-  chipCritical: {
+  pillTextWarning: {
+    color: Colors.status.warning.text,
+  },
+  pillCritical: {
     backgroundColor: Colors.status.critical.bg,
-    alignSelf: 'flex-start',
-    marginTop: Spacing.xs,
-    height: 24,
+    borderColor: Colors.status.critical.border,
   },
-  chipWaterlogged: {
+  pillTextCritical: {
+    color: Colors.status.critical.text,
+  },
+  pillWaterlogged: {
     backgroundColor: Colors.status.waterlogged.bg,
-    alignSelf: 'flex-start',
-    marginTop: Spacing.xs,
-    height: 24,
+    borderColor: Colors.status.waterlogged.border,
+  },
+  pillTextWaterlogged: {
+    color: Colors.status.waterlogged.text,
   },
   advisoryCard: {
     marginBottom: Spacing.sm + 2,
