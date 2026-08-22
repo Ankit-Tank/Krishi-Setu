@@ -3,6 +3,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Text } from 'react-native-paper';
+import { Colors, Spacing, BorderRadius, Typography } from '../../src/theme/theme';
 
 function HeaderBrandTitle({ screenTitle }: { screenTitle?: string }) {
   return (
@@ -27,18 +28,33 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#2B3A67', // Monsoon Indigo header
+          backgroundColor: Colors.primaryDark,
+          elevation: 4,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.15,
+          shadowRadius: 4,
         },
-        headerTintColor: '#F7F1E8', // Warm Ivory text
-        tabBarActiveTintColor: '#C1502E', // Terracotta Clay active tab
-        tabBarInactiveTintColor: '#666666',
+        headerTintColor: Colors.textInverse,
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginBottom: 4,
+        },
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: Colors.surface,
           borderTopWidth: 1,
-          borderTopColor: '#E8A63A', // Turmeric Gold border accent
-          height: 62,
-          paddingBottom: 8,
-          paddingTop: 6,
+          borderTopColor: Colors.border,
+          height: 64,
+          paddingBottom: Spacing.sm,
+          paddingTop: Spacing.xs + 2,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 4,
         },
       }}
     >
@@ -90,13 +106,13 @@ const styles = StyleSheet.create({
   headerBrandContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: Spacing.xs,
   },
   headerLogo: {
     width: 32,
     height: 32,
-    borderRadius: 8,
-    marginRight: 10,
+    borderRadius: BorderRadius.sm,
+    marginRight: Spacing.sm + 2,
     backgroundColor: '#FFFFFF',
   },
   headerTextCol: {
@@ -104,13 +120,13 @@ const styles = StyleSheet.create({
   },
   headerBrandName: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#F7F1E8',
+    fontWeight: '700',
+    color: '#FFFFFF',
     letterSpacing: 0.3,
   },
   headerScreenName: {
     fontSize: 11,
-    color: '#E8A63A',
+    color: Colors.textGold,
     fontWeight: '600',
   },
 });

@@ -19,6 +19,7 @@ import { IdentityService, AgroApiService, FarmerIdentity, formatFriendlyErrorMes
 import { SampleFarm } from '../../src/data/sampleFarms';
 import { SampleFarmState } from '../../src/services/sampleFarmState';
 import SampleFarmsModal from '../../src/components/SampleFarmsModal';
+import { Colors, Spacing, BorderRadius, Typography, Shadows, CommonStyles } from '../../src/theme/theme';
 
 const COMMON_CROPS = ['Wheat', 'Rice', 'Cotton', 'Maize', 'Sugarcane', 'Mustard'];
 
@@ -209,8 +210,8 @@ export default function ProfileScreen() {
   if (initialLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2E7D32" />
-        <Text style={{ marginTop: 12, color: '#2E7D32', fontWeight: 'bold' }}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+        <Text style={{ marginTop: Spacing.md, color: Colors.primary, fontWeight: '700' }}>
           Loading profile...
         </Text>
       </View>
@@ -272,12 +273,12 @@ export default function ProfileScreen() {
 
       {/* 2. SECTION 1: FARMER & FARM INFORMATION */}
       <Card style={styles.sectionCard}>
-        <Card.Content>
+        <Card.Content style={styles.cardContent}>
           <View style={styles.sectionHeaderRow}>
             <View style={styles.sectionIconBox}>
               <Text style={{ fontSize: 18 }}>👨‍🌾</Text>
             </View>
-            <View style={{ flex: 1, marginLeft: 10 }}>
+            <View style={{ flex: 1, marginLeft: Spacing.sm + 2 }}>
               <Title style={styles.sectionTitle}>Farmer & Farm Information</Title>
               <Text style={styles.sectionSubtitle}>Edit your personal identity and agricultural plot configuration</Text>
             </View>
@@ -293,6 +294,8 @@ export default function ProfileScreen() {
             value={farmerName}
             onChangeText={setFarmerName}
             mode="outlined"
+            outlineColor={Colors.border}
+            activeOutlineColor={Colors.primary}
             style={styles.input}
             left={<TextInput.Icon icon="account" />}
           />
@@ -304,6 +307,8 @@ export default function ProfileScreen() {
             keyboardType="phone-pad"
             maxLength={10}
             mode="outlined"
+            outlineColor={Colors.border}
+            activeOutlineColor={Colors.primary}
             style={styles.input}
             left={<TextInput.Icon icon="phone" />}
           />
@@ -314,7 +319,9 @@ export default function ProfileScreen() {
               value={region}
               onChangeText={setRegion}
               mode="outlined"
-              style={[styles.input, { flex: 1, marginRight: 6 }]}
+              outlineColor={Colors.border}
+              activeOutlineColor={Colors.primary}
+              style={[styles.input, { flex: 1, marginRight: Spacing.xs + 2 }]}
               left={<TextInput.Icon icon="map-marker" />}
             />
             <TextInput
@@ -324,19 +331,23 @@ export default function ProfileScreen() {
               keyboardType="number-pad"
               maxLength={2}
               mode="outlined"
+              outlineColor={Colors.border}
+              activeOutlineColor={Colors.primary}
               style={[styles.input, { width: 110 }]}
               left={<TextInput.Icon icon="clock-outline" />}
             />
           </View>
 
           {/* Sub-Group: Farm Plot Details */}
-          <Text style={[styles.subGroupTitle, { marginTop: 14 }]}>Farm Plot Details</Text>
+          <Text style={[styles.subGroupTitle, { marginTop: Spacing.md }]}>Farm Plot Details</Text>
 
           <TextInput
             label="Farm / Plot Name *"
             value={farmName}
             onChangeText={setFarmName}
             mode="outlined"
+            outlineColor={Colors.border}
+            activeOutlineColor={Colors.primary}
             style={styles.input}
             left={<TextInput.Icon icon="home-variant" />}
           />
@@ -366,6 +377,8 @@ export default function ProfileScreen() {
             onChangeText={setAreaAcres}
             keyboardType="decimal-pad"
             mode="outlined"
+            outlineColor={Colors.border}
+            activeOutlineColor={Colors.primary}
             style={styles.input}
             left={<TextInput.Icon icon="ruler-square" />}
           />
@@ -405,6 +418,7 @@ export default function ProfileScreen() {
             loading={saving}
             disabled={saving}
             style={styles.saveButton}
+            buttonColor={Colors.primary}
             contentStyle={styles.buttonContent}
           >
             Save Profile Changes
@@ -414,12 +428,12 @@ export default function ProfileScreen() {
 
       {/* 3. SECTION 2: APP SETTINGS */}
       <Card style={styles.sectionCard}>
-        <Card.Content>
+        <Card.Content style={styles.cardContent}>
           <View style={styles.sectionHeaderRow}>
             <View style={styles.sectionIconBox}>
               <Text style={{ fontSize: 18 }}>⚙️</Text>
             </View>
-            <View style={{ flex: 1, marginLeft: 10 }}>
+            <View style={{ flex: 1, marginLeft: Spacing.sm + 2 }}>
               <Title style={styles.sectionTitle}>App Settings</Title>
               <Text style={styles.sectionSubtitle}>Language, notifications & sample farms simulation</Text>
             </View>
@@ -443,56 +457,56 @@ export default function ProfileScreen() {
 
           {/* Notification Preferences */}
           <View style={styles.switchRow}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
+            <View style={{ flex: 1, paddingRight: Spacing.sm + 2 }}>
               <Text style={styles.switchTitle}>🔔 Advisory & Disease Alerts</Text>
               <Text style={styles.switchSubtitle}>Receive timely alerts for urgent irrigation & leaf diseases</Text>
             </View>
             <Switch
               value={notificationsEnabled}
               onValueChange={setNotificationsEnabled}
-              color="#2E7D32"
+              color={Colors.primary}
             />
           </View>
 
-          <Divider style={{ marginVertical: 14 }} />
+          <Divider style={{ marginVertical: Spacing.md }} />
 
           {/* Activity & Scan History */}
           <Text style={styles.settingItemTitle}>📜 Activity & Disease Scan History</Text>
-          <Text style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+          <Text style={{ fontSize: 12, color: Colors.textSecondary, marginBottom: Spacing.sm }}>
             View your complete chronological log of AI leaf diagnoses, images, and advisory prescriptions.
           </Text>
           <Button
             mode="contained"
             icon="history"
             onPress={() => router.push('/history')}
-            style={{ marginBottom: 14, borderRadius: 10, backgroundColor: '#4527A0' }}
+            style={{ marginBottom: Spacing.md, borderRadius: BorderRadius.md, backgroundColor: '#4527A0' }}
           >
             Open My History Timeline
           </Button>
 
-          <Divider style={{ marginVertical: 14 }} />
+          <Divider style={{ marginVertical: Spacing.md }} />
 
           {/* Real Sample Farms Option */}
           <Text style={styles.settingItemTitle}>🧪 Simulated Farms Explorer</Text>
-          <Text style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+          <Text style={{ fontSize: 12, color: Colors.textSecondary, marginBottom: Spacing.sm }}>
             Explore 12 real crop scenarios with simulated telemetry (Nitrogen deficiency, Drought, Blight risk, Acidic soil, etc.)
           </Text>
           <Button
             mode="contained-tonal"
             icon="compass"
             onPress={() => setSampleModalVisible(true)}
-            style={{ marginBottom: 14, borderRadius: 10 }}
+            style={{ marginBottom: Spacing.md, borderRadius: BorderRadius.md }}
           >
             {activeSampleFarmId ? "Explore Sample Farms (Active: Scenario Selected)" : "Browse 12 Sample Farms"}
           </Button>
 
-          <Divider style={{ marginVertical: 14 }} />
+          <Divider style={{ marginVertical: Spacing.md }} />
 
           {/* App Version & Diagnostics Info */}
           <View style={styles.versionBox}>
             <View style={styles.versionRow}>
               <Text style={styles.versionTitle}>🌱 Krishi Setu Platform</Text>
-              <Chip style={styles.versionChip} textStyle={{ fontSize: 10, color: '#1B5E20' }}>v1.0.0</Chip>
+              <Chip style={styles.versionChip} textStyle={{ fontSize: 10, color: Colors.primaryDark, fontWeight: '700' }}>v1.0.0</Chip>
             </View>
             <Text style={styles.versionDesc}>Precision Advisory & Mandi Linkage (Offline-First Ready)</Text>
             <Text style={styles.versionMeta}>
@@ -505,7 +519,7 @@ export default function ProfileScreen() {
             mode="outlined"
             icon="delete-restore"
             onPress={handleResetData}
-            textColor="#D32F2F"
+            textColor={Colors.status.critical.main}
             style={styles.resetButton}
             contentStyle={styles.buttonContent}
           >
@@ -529,52 +543,49 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F4F6F4',
+    ...CommonStyles.screenContainer,
   },
   content: {
-    padding: 16,
-    paddingBottom: 36,
+    ...CommonStyles.screenContent,
+  },
+  cardContent: {
+    padding: Spacing.md + 2,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F4F6F4',
+    backgroundColor: Colors.background,
   },
   // Centered Hero
   heroCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 16,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#E0E7E0',
+    ...CommonStyles.card,
+    marginBottom: Spacing.lg,
   },
   heroCardContent: {
     alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.xl,
+    paddingHorizontal: Spacing.lg,
   },
   avatarWrapper: {
     position: 'relative',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   avatar: {
-    backgroundColor: '#2E7D32',
-    elevation: 4,
+    backgroundColor: Colors.primary,
+    ...Shadows.floating,
   },
   avatarLabel: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: '#FFFFFF',
   },
   avatarBadge: {
     position: 'absolute',
     bottom: 0,
     right: -2,
-    backgroundColor: '#E8F5E9',
-    borderRadius: 14,
+    backgroundColor: Colors.primaryTint,
+    borderRadius: BorderRadius.lg,
     width: 26,
     height: 26,
     justifyContent: 'center',
@@ -584,71 +595,67 @@ const styles = StyleSheet.create({
   },
   heroName: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    fontWeight: '700',
+    color: Colors.primaryDark,
     textAlign: 'center',
-    marginBottom: 2,
+    marginBottom: Spacing.xxs,
   },
   heroSubtitle: {
     fontSize: 13,
-    color: '#555555',
+    color: Colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   heroBadgesRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   heroChip: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: Colors.primaryTint,
     height: 30,
   },
   heroChipText: {
     fontSize: 11,
-    color: '#1B5E20',
+    color: Colors.primaryDark,
     fontWeight: '600',
   },
 
   // Feedback banners
   successCard: {
-    backgroundColor: '#E8F5E9',
-    borderColor: '#66BB6A',
+    backgroundColor: Colors.status.healthy.bg,
+    borderColor: Colors.status.healthy.border,
     borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 14,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.md,
   },
   errorCard: {
-    backgroundColor: '#FFEBEE',
-    borderColor: '#EF5350',
+    backgroundColor: Colors.status.critical.bg,
+    borderColor: Colors.status.critical.border,
     borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 14,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.md,
   },
   feedbackCardContent: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
   },
   successText: {
-    color: '#1B5E20',
-    fontWeight: 'bold',
+    color: Colors.status.healthy.text,
+    fontWeight: '700',
     fontSize: 13,
   },
   errorText: {
-    color: '#C62828',
-    fontWeight: 'bold',
+    color: Colors.status.critical.text,
+    fontWeight: '700',
     fontSize: 13,
   },
 
   // Section Cards
   sectionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 16,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#E8EFE8',
+    ...CommonStyles.card,
+    marginBottom: Spacing.lg,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -657,113 +664,108 @@ const styles = StyleSheet.create({
   sectionIconBox: {
     width: 38,
     height: 38,
-    borderRadius: 10,
-    backgroundColor: '#E8F5E9',
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.primaryTint,
     justifyContent: 'center',
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: '#1B5E20',
-    lineHeight: 22,
+    ...Typography.sectionHeader,
+    color: Colors.primaryDark,
   },
   sectionSubtitle: {
-    fontSize: 12,
-    color: '#666666',
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
   },
   sectionDivider: {
-    marginVertical: 14,
-    backgroundColor: '#E8EFE8',
+    marginVertical: Spacing.md,
+    backgroundColor: Colors.border,
   },
   subGroupTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 10,
+    ...Typography.subTitle,
+    color: Colors.primary,
+    marginBottom: Spacing.sm + 2,
   },
   input: {
-    marginBottom: 12,
-    backgroundColor: '#FAFAFA',
+    marginBottom: Spacing.md,
+    backgroundColor: Colors.surface,
   },
   twoColumnRow: {
     flexDirection: 'row',
   },
   chipFieldLabel: {
     fontSize: 13,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 6,
-    marginTop: 4,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs + 2,
+    marginTop: Spacing.xs,
   },
   chipSelectorRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 12,
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   selectorChip: {
-    borderRadius: 18,
+    borderRadius: BorderRadius.xxl,
   },
   selectorChipActive: {
-    backgroundColor: '#2E7D32',
-    borderColor: '#2E7D32',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   selectorChipInactive: {
-    backgroundColor: '#F4F7F4',
-    borderColor: '#D0D8D0',
+    backgroundColor: Colors.surfaceSubtle,
+    borderColor: Colors.borderDark,
   },
   selectorChipTextActive: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: '700',
     fontSize: 12,
   },
   selectorChipTextInactive: {
-    color: '#444444',
+    color: Colors.textSecondary,
     fontSize: 12,
   },
   segmentedButtons: {
-    marginBottom: 14,
+    marginBottom: Spacing.md,
   },
   saveButton: {
-    backgroundColor: '#2E7D32',
-    borderRadius: 10,
-    marginTop: 6,
+    marginTop: Spacing.xs,
+    borderRadius: BorderRadius.md,
   },
   buttonContent: {
-    paddingVertical: 6,
+    paddingVertical: Spacing.xs + 2,
   },
 
   // Settings Section
   settingItemTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 8,
+    ...Typography.subTitle,
+    color: Colors.primary,
+    marginBottom: Spacing.sm,
   },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 6,
+    paddingVertical: Spacing.xs + 2,
   },
   switchTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#222222',
+    color: Colors.textPrimary,
   },
   switchSubtitle: {
-    fontSize: 12,
-    color: '#666666',
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
     marginTop: 2,
   },
   versionBox: {
-    backgroundColor: '#F9FAF9',
-    borderRadius: 10,
-    padding: 12,
+    backgroundColor: Colors.surfaceSubtle,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
     borderWidth: 1,
-    borderColor: '#EAEAEA',
-    marginBottom: 14,
+    borderColor: Colors.border,
+    marginBottom: Spacing.md,
   },
   versionRow: {
     flexDirection: 'row',
@@ -772,25 +774,25 @@ const styles = StyleSheet.create({
   },
   versionTitle: {
     fontSize: 13,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    fontWeight: '700',
+    color: Colors.primaryDark,
   },
   versionChip: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: Colors.primaryTint,
     height: 22,
   },
   versionDesc: {
-    fontSize: 12,
-    color: '#555555',
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
     marginTop: 3,
   },
   versionMeta: {
     fontSize: 11,
-    color: '#888888',
-    marginTop: 4,
+    color: Colors.textMuted,
+    marginTop: Spacing.xs,
   },
   resetButton: {
-    borderColor: '#D32F2F',
-    borderRadius: 10,
+    borderColor: Colors.status.critical.main,
+    borderRadius: BorderRadius.md,
   },
 });

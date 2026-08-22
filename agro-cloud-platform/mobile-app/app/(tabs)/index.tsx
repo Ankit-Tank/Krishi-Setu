@@ -21,6 +21,7 @@ import SampleFarmBanner from '../../src/components/SampleFarmBanner';
 import SampleFarmsModal from '../../src/components/SampleFarmsModal';
 import WeatherCard from '../../src/components/WeatherCard';
 import SmartSummaryCard from '../../src/components/SmartSummaryCard';
+import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../../src/theme/theme';
 
 export default function DashboardScreen() {
   const { t } = useTranslation();
@@ -274,42 +275,9 @@ export default function DashboardScreen() {
         </Banner>
       )}
 
-      {/* 2. QUICK ACTIONS: SAMPLE EXPLORER & MY ACTIVITY HISTORY */}
-      <View style={styles.quickActionsRow}>
-        <TouchableOpacity
-          style={[styles.quickActionCard, { backgroundColor: '#E8F5E9', borderColor: '#81C784' }]}
-          onPress={() => setSampleModalVisible(true)}
-          activeOpacity={0.8}
-        >
-          <Text style={{ fontSize: 22 }}>🧪</Text>
-          <View style={{ flex: 1, marginLeft: 8 }}>
-            <Text style={styles.quickActionTitle}>Sample Explorer</Text>
-            <Text style={styles.quickActionDesc}>12 Real Scenarios</Text>
-          </View>
-          <Chip style={{ backgroundColor: '#C8E6C9', height: 22 }} textStyle={{ fontSize: 9, color: '#1B5E20', fontWeight: 'bold' }}>
-            {activeSampleFarm ? "ACTIVE" : "BROWSE"}
-          </Chip>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.quickActionCard, { backgroundColor: '#EDE7F6', borderColor: '#B39DDB' }]}
-          onPress={() => router.push('/history')}
-          activeOpacity={0.8}
-        >
-          <Text style={{ fontSize: 22 }}>📜</Text>
-          <View style={{ flex: 1, marginLeft: 8 }}>
-            <Text style={[styles.quickActionTitle, { color: '#4527A0' }]}>My History</Text>
-            <Text style={[styles.quickActionDesc, { color: '#5E35B1' }]}>Scans & Timeline</Text>
-          </View>
-          <Chip style={{ backgroundColor: '#D1C4E9', height: 22 }} textStyle={{ fontSize: 9, color: '#4527A0', fontWeight: 'bold' }}>
-            VIEW
-          </Chip>
-        </TouchableOpacity>
-      </View>
-
-      {/* 3. FARM HERO / HEADER CARD */}
+      {/* 2. FARM HERO / HEADER CARD */}
       <Card style={[styles.bannerCard, activeSampleFarm ? styles.bannerCardSample : null]}>
-        <Card.Content>
+        <Card.Content style={styles.bannerCardContent}>
           <View style={styles.heroTopRow}>
             <Text style={styles.welcomeText}>
               {activeSampleFarm ? '🧪 EXPLORING SAMPLE PROFILE' : `Welcome, ${identity?.farmer_name || 'Farmer'} 👋`}
@@ -336,8 +304,8 @@ export default function DashboardScreen() {
                   <Button
                     mode="outlined"
                     onPress={() => setMenuVisible(true)}
-                    labelStyle={{ color: '#FFF', fontSize: 13, marginVertical: 2, marginHorizontal: 8 }}
-                    style={{ borderColor: '#FFF', borderRadius: 8 }}
+                    labelStyle={{ color: '#FFF', fontSize: 12, marginVertical: 2, marginHorizontal: 8 }}
+                    style={{ borderColor: 'rgba(255,255,255,0.7)', borderRadius: 8 }}
                     compact
                   >
                     Switch Farm ▾
@@ -356,19 +324,19 @@ export default function DashboardScreen() {
           </View>
 
           <Paragraph style={styles.bannerSubtitle}>
-            📍 Crop: {activeSampleFarm ? activeSampleFarm.crop_type : selectedFarm?.crop_type || 'Wheat'} | Area: {activeSampleFarm ? activeSampleFarm.area_acres : selectedFarm?.area_acres || 10} Acres | Region: {activeSampleFarm ? activeSampleFarm.region : identity?.region || 'Registered Plot'}
+            📍 Crop: {activeSampleFarm ? activeSampleFarm.crop_type : selectedFarm?.crop_type || 'Wheat'} • Area: {activeSampleFarm ? activeSampleFarm.area_acres : selectedFarm?.area_acres || 10} Acres • Region: {activeSampleFarm ? activeSampleFarm.region : identity?.region || 'Registered Plot'}
           </Paragraph>
         </Card.Content>
       </Card>
 
-      {/* 4. AI SMART SUMMARY (DISEASE + SOIL/IRRIGATION + MANDI MATCH) */}
+      {/* 3. AI SMART SUMMARY (HERO FOCAL POINT CARD) */}
       <SmartSummaryCard
         summary={smartSummary}
         loading={summaryLoading || (loading && !smartSummary)}
         onRefresh={handleRefreshSmartSummary}
       />
 
-      {/* 5. REAL LIVE WEATHER & 5-DAY FORECAST (REAL GPS) */}
+      {/* 4. REAL LIVE WEATHER & 5-DAY FORECAST (REAL GPS) */}
       <WeatherCard
         weather={weather}
         loading={weatherLoading || (loading && !weather)}
@@ -377,7 +345,40 @@ export default function DashboardScreen() {
         hasPermission={!locationError}
       />
 
-      {/* 5. SIMULATED FIELD SENSORS (DEMO TELEMETRY) */}
+      {/* 5. QUICK ACTIONS: SAMPLE EXPLORER & MY ACTIVITY HISTORY */}
+      <View style={styles.quickActionsRow}>
+        <TouchableOpacity
+          style={[styles.quickActionCard, { backgroundColor: '#E8F5E9', borderColor: '#A5D6A7' }]}
+          onPress={() => setSampleModalVisible(true)}
+          activeOpacity={0.8}
+        >
+          <Text style={{ fontSize: 20 }}>🧪</Text>
+          <View style={{ flex: 1, marginLeft: 8 }}>
+            <Text style={styles.quickActionTitle}>Sample Explorer</Text>
+            <Text style={styles.quickActionDesc}>12 Real Scenarios</Text>
+          </View>
+          <Chip style={{ backgroundColor: '#C8E6C9', height: 22 }} textStyle={{ fontSize: 9, color: '#1B5E20', fontWeight: 'bold' }}>
+            {activeSampleFarm ? "ACTIVE" : "BROWSE"}
+          </Chip>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.quickActionCard, { backgroundColor: '#EDE7F6', borderColor: '#C5CAE9' }]}
+          onPress={() => router.push('/history')}
+          activeOpacity={0.8}
+        >
+          <Text style={{ fontSize: 20 }}>📜</Text>
+          <View style={{ flex: 1, marginLeft: 8 }}>
+            <Text style={[styles.quickActionTitle, { color: '#4527A0' }]}>My History</Text>
+            <Text style={[styles.quickActionDesc, { color: '#5E35B1' }]}>Scans & Timeline</Text>
+          </View>
+          <Chip style={{ backgroundColor: '#D1C4E9', height: 22 }} textStyle={{ fontSize: 9, color: '#4527A0', fontWeight: 'bold' }}>
+            VIEW
+          </Chip>
+        </TouchableOpacity>
+      </View>
+
+      {/* 6. SIMULATED FIELD SENSORS (DEMO TELEMETRY) */}
       <View style={styles.sectionHeaderRow}>
         <View style={{ flex: 1 }}>
           <Title style={styles.sectionHeader}>🧪 Simulated Field Sensors (Demo)</Title>
@@ -396,7 +397,7 @@ export default function DashboardScreen() {
         <View style={styles.grid}>
           {/* Soil Moisture */}
           <Card style={styles.gridCard}>
-            <Card.Content>
+            <Card.Content style={styles.gridCardContent}>
               <Text style={styles.cardIcon}>💧</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.moisture')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.soil_moisture ?? 26.5}%</Title>
@@ -426,7 +427,7 @@ export default function DashboardScreen() {
 
           {/* Temperature & Humidity */}
           <Card style={styles.gridCard}>
-            <Card.Content>
+            <Card.Content style={styles.gridCardContent}>
               <Text style={styles.cardIcon}>🌡️</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.temperature')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.temperature_c ?? 24.5}°C</Title>
@@ -436,7 +437,7 @@ export default function DashboardScreen() {
 
           {/* Nitrogen (N) */}
           <Card style={styles.gridCard}>
-            <Card.Content>
+            <Card.Content style={styles.gridCardContent}>
               <Text style={styles.cardIcon}>🟢</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.nitrogen')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.nitrogen_ppm ?? 105} ppm</Title>
@@ -451,7 +452,7 @@ export default function DashboardScreen() {
 
           {/* Soil pH */}
           <Card style={styles.gridCard}>
-            <Card.Content>
+            <Card.Content style={styles.gridCardContent}>
               <Text style={styles.cardIcon}>🧪</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.ph')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.soil_ph ?? 6.8}</Title>
@@ -476,13 +477,13 @@ export default function DashboardScreen() {
         </View>
       )}
 
-      {/* 5. ADVISORY NOTIFICATIONS */}
+      {/* 7. ADVISORY NOTIFICATIONS */}
       <Title style={styles.sectionHeader}>
         {activeSampleFarm ? '🔔 Scenario Advisory Alerts' : '🔔 Latest Advisory Alerts'}
       </Title>
       {advisories.slice(0, 3).map((adv) => (
         <Card key={adv.id} style={styles.advisoryCard}>
-          <Card.Content>
+          <Card.Content style={styles.advisoryCardContent}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
               <Text style={{ fontWeight: 'bold', color: adv.type === 'disease' ? '#D32F2F' : '#2E7D32', flex: 1, flexShrink: 1, marginRight: 8 }} numberOfLines={1} ellipsizeMode="tail">
                 {adv.type === 'disease' ? '🔴 Disease Alert' : adv.type === 'irrigation' ? '💧 Irrigation Advisory' : '🟢 NPK Advice'}
@@ -515,7 +516,7 @@ export default function DashboardScreen() {
         </Button>
       )}
 
-      {/* 6. SAMPLE FARMS EXPLORER MODAL */}
+      {/* 8. SAMPLE FARMS EXPLORER MODAL */}
       <SampleFarmsModal
         visible={sampleModalVisible}
         onDismiss={() => setSampleModalVisible(false)}
@@ -531,57 +532,62 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F7F4',
+    backgroundColor: Colors.background,
   },
   content: {
-    padding: 16,
-    paddingBottom: 36,
+    padding: Spacing.screenPadding,
+    paddingBottom: Spacing.xxxl + 8,
   },
   offlineBanner: {
-    backgroundColor: '#FFF3E0',
-    marginBottom: 12,
-    borderRadius: 8,
+    backgroundColor: Colors.status.warning.bg,
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.md,
   },
   bannerText: {
-    color: '#E65100',
-    fontWeight: 'bold',
+    color: Colors.status.warning.text,
+    fontWeight: '700',
   },
   quickActionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 10,
-    marginBottom: 14,
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   quickActionCard: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    elevation: 2,
+    ...Shadows.card,
   },
   quickActionTitle: {
     fontSize: 13,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    fontWeight: '700',
+    color: Colors.primaryDark,
   },
   quickActionDesc: {
     fontSize: 10.5,
-    color: '#388E3C',
+    color: Colors.primary,
     marginTop: 1,
   },
   bannerCard: {
-    backgroundColor: '#2E7D32',
-    marginBottom: 16,
-    borderRadius: 14,
-    elevation: 3,
+    backgroundColor: Colors.primary,
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+    ...Shadows.floating,
+  },
+  bannerCardContent: {
+    padding: Spacing.md,
   },
   bannerCardSample: {
     backgroundColor: '#37474F',
     borderWidth: 1.5,
-    borderColor: '#FFA000',
+    borderColor: Colors.accent,
   },
   heroTopRow: {
     flexDirection: 'row',
@@ -589,7 +595,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   welcomeText: {
-    color: '#E8F5E9',
+    color: Colors.primaryTint,
     fontSize: 13,
   },
   sampleHeroBadge: {
@@ -601,114 +607,118 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexWrap: 'wrap',
-    marginTop: 4,
-    gap: 8,
+    marginTop: Spacing.xs,
+    gap: Spacing.sm,
   },
   farmTitle: {
-    color: '#FFFFFF',
+    color: Colors.textInverse,
     fontSize: 19,
-    fontWeight: 'bold',
+    fontWeight: '700',
     flex: 1,
     flexShrink: 1,
     minWidth: 120,
-    marginRight: 8,
+    marginRight: Spacing.sm,
   },
   bannerSubtitle: {
-    color: '#E8F5E9',
-    marginTop: 6,
+    color: Colors.primaryTint,
+    marginTop: Spacing.xs + 2,
     fontSize: 12,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
-    marginTop: 6,
+    marginBottom: Spacing.sm + 2,
+    marginTop: Spacing.sm,
   },
   sectionHeader: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    ...Typography.sectionHeader,
   },
   sectionSubHeader: {
-    fontSize: 11,
-    color: '#666666',
+    ...Typography.bodySmall,
     marginTop: 1,
   },
   sampleTag: {
-    backgroundColor: '#FFE0B2',
+    backgroundColor: Colors.status.warning.bg,
     height: 24,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginBottom: Spacing.xs + 2,
   },
   gridCard: {
     width: '48%',
-    marginBottom: 14,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    elevation: 2,
+    marginBottom: Spacing.md,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: '#E8EFE8',
+    borderColor: Colors.border,
+    ...Shadows.card,
+  },
+  gridCardContent: {
+    padding: Spacing.md,
   },
   cardIcon: {
     fontSize: 22,
-    marginBottom: 2,
+    marginBottom: Spacing.xxs,
   },
   cardLabel: {
-    fontSize: 12,
-    color: '#666666',
+    ...Typography.bodySmall,
   },
   cardValue: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginVertical: 4,
+    fontWeight: '700',
+    color: Colors.primary,
+    marginVertical: Spacing.xs,
   },
   chipGood: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: Colors.status.healthy.bg,
     alignSelf: 'flex-start',
-    marginTop: 4,
+    marginTop: Spacing.xs,
     height: 24,
   },
   chipWarning: {
-    backgroundColor: '#FFF3E0',
+    backgroundColor: Colors.status.warning.bg,
     alignSelf: 'flex-start',
-    marginTop: 4,
+    marginTop: Spacing.xs,
     height: 24,
   },
   chipCritical: {
-    backgroundColor: '#FFEBEE',
+    backgroundColor: Colors.status.critical.bg,
     alignSelf: 'flex-start',
-    marginTop: 4,
+    marginTop: Spacing.xs,
     height: 24,
   },
   chipWaterlogged: {
-    backgroundColor: '#E1F5FE',
+    backgroundColor: Colors.status.waterlogged.bg,
     alignSelf: 'flex-start',
-    marginTop: 4,
+    marginTop: Spacing.xs,
     height: 24,
   },
   advisoryCard: {
-    marginBottom: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    elevation: 1,
+    marginBottom: Spacing.sm + 2,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: '#E8EFE8',
+    borderColor: Colors.border,
+    ...Shadows.card,
+  },
+  advisoryCardContent: {
+    padding: Spacing.md,
   },
   refreshButton: {
-    backgroundColor: '#2E7D32',
-    marginTop: 12,
-    marginBottom: 24,
-    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.xxl,
+    borderRadius: BorderRadius.md,
   },
   exitSampleBtn: {
-    backgroundColor: '#FF8F00',
-    marginTop: 12,
-    marginBottom: 24,
-    borderRadius: 10,
+    backgroundColor: Colors.accentDark,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.xxl,
+    borderRadius: BorderRadius.md,
   },
 });
+

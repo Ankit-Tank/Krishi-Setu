@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Image } from 'react-native';
+import { StyleSheet, ScrollView, View, Image, TouchableOpacity } from 'react-native';
 import { Card, Text, Title, Paragraph, Button, ActivityIndicator, Divider, Chip } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { AgroApiService, IdentityService, LeafScanResponse } from '../../src/services/api';
 import { NotificationService } from '../../src/services/notifications';
+import { Colors, Spacing, BorderRadius, Typography, Shadows, CommonStyles } from '../../src/theme/theme';
 
 export default function DiseaseScreen() {
   const { t } = useTranslation();
@@ -88,21 +89,166 @@ export default function DiseaseScreen() {
     }
   };
 
-  const getSeverityStyle = (disease: string) => {
+  // Helper 1: Severity and Status styling
+  const getSeverityStyle = (disease: string, confidence: number = 0.9) => {
     const d = (disease || '').toLowerCase();
     if (d.includes('healthy')) {
-      return { color: '#2E7D32', border: '#4CAF50', bg: '#E8F5E9', label: 'HEALTHY', icon: '🟢' };
-    } else if (d.includes('blight') || d.includes('mildew')) {
-      return { color: '#E65100', border: '#FF9800', bg: '#FFF3E0', label: 'MODERATE SEVERITY', icon: '🟡' };
+      return {
+        statusLevel: 'HEALTHY',
+        icon: '🌿',
+        color: Colors.status.healthy.main,
+        border: Colors.status.healthy.border,
+        bg: Colors.status.healthy.bg,
+        badgeText: 'HEALTHY CROP',
+        badgeBg: '#C8E6C9',
+        badgeColor: '#1B5E20',
+        headline: 'Crop Leaf is Healthy & Strong',
+        summary: 'No active disease or pathogen symptoms detected on foliage.',
+      };
+    } else if (
+      d.includes('blight') ||
+      d.includes('mildew') ||
+      d.includes('spot') ||
+      d.includes('scab')
+    ) {
+      return {
+        statusLevel: 'WARNING',
+        icon: '⚠️',
+        color: Colors.status.warning.main,
+        border: Colors.status.warning.border,
+        bg: Colors.status.warning.bg,
+        badgeText: 'MODERATE SEVERITY',
+        badgeBg: '#FFE082',
+        badgeColor: '#E65100',
+        headline: 'Pathogen Symptoms Detected',
+        summary: 'Treatment recommended within 48-72 hours to prevent spread.',
+      };
     } else {
-      return { color: '#C62828', border: '#F44336', bg: '#FFEBEE', label: 'URGENT ATTENTION', icon: '🔴' };
+      return {
+        statusLevel: 'CRITICAL',
+        icon: '🚨',
+        color: Colors.status.critical.main,
+        border: Colors.status.critical.border,
+        bg: Colors.status.critical.bg,
+        badgeText: 'URGENT ATTENTION',
+        badgeBg: '#FFCDD2',
+        badgeColor: '#B71C1C',
+        headline: 'Active Crop Infection Diagnosed',
+        summary: 'Immediate foliar agronomic action required to preserve harvest yield.',
+      };
     }
   };
 
+  // Helper 2: Plain-language explanation of "What is happening?"
+  const getDiseaseExplanation = (disease: string) => {
+    const d = (disease || '').toLowerCase();
+    if (d.includes('healthy')) {
+      return 'Your crop leaf shows intact cellular structure with no fungal lesions or chlorosis. Photosynthesis and nutrient transport are functioning normally.';
+    }
+    if (d.includes('rust')) {
+      return 'Rust fungal pathogen creates powdery yellow-orange spore stripes across leaf blades, reducing sunlight absorption and accelerating moisture loss.';
+    }
+    if (d.includes('blight')) {
+      return 'Blight is an aggressive fungal infection causing water-soaked brown lesions that rapidly destroy photosynthetic leaf area if untreated.';
+    }
+    if (d.includes('mildew')) {
+      return 'Mildew produces a grayish-white powdery fungal layer over the leaf surface, restricting light penetration and stunting plant growth.';
+    }
+    if (d.includes('spot') || d.includes('scab')) {
+      return 'Leaf spot pathogen causes circular necrotic patches with chlorotic halos, weakening foliage tissue and accelerating leaf drop.';
+    }
+    return 'Foliar infection or pathogen stress detected on crop leaf surface. Prompt intervention is necessary to prevent spore migration across the plot.';
+  };
+
+  // Helper 3: Step-by-step breakdown of "What should you do?"
+  const parseActionSteps = (advisoryText: string, disease: string) => {
+    const isHealthy = (disease || '').toLowerCase().includes('healthy');
+    if (isHealthy) {
+      return [
+        {
+          icon: '🌱',
+          title: 'Maintain Current Regimen',
+          text: advisoryText || 'Continue standard irrigation and balanced fertilizer application.',
+        },
+        {
+          icon: '🔬',
+          title: 'Periodic Crop Monitoring',
+          text: 'Scan sample foliage every 7-10 days to identify any emerging pathogen symptoms early.',
+        },
+        {
+          icon: '🧪',
+          title: 'Soil Balance Maintenance',
+          text: 'Keep soil moisture and NPK levels within optimal thresholds to support plant immunity.',
+        },
+      ];
+    }
+
+    // Split sentences from advisory text
+    const sentences = (advisoryText || '')
+      .split(/(?<=[.!?])\s+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    const stepIcons = ['💊', '🌱', '💧', '🛡️', '⏱️'];
+    const stepTitles = [
+      'Immediate Chemical / Foliar Spray',
+      'Nutrient & Fertilizer Regulation',
+      'Canopy & Moisture Control',
+      'Field Hygiene & Isolation',
+      'Post-Treatment Re-Inspection',
+    ];
+
+    if (sentences.length > 0) {
+      const steps = sentences.map((sentence, idx) => ({
+        icon: stepIcons[idx % stepIcons.length],
+        title: stepTitles[idx % stepTitles.length],
+        text: sentence,
+      }));
+
+      // If only one sentence returned, add standard agronomic guidance points
+      if (steps.length === 1) {
+        steps.push({
+          icon: '💧',
+          title: 'Moisture & Canopy Management',
+          text: 'Ensure morning drip irrigation; avoid overhead watering to prevent prolonged leaf wetness.',
+        });
+        steps.push({
+          icon: '⏱️',
+          title: 'Follow-Up Inspection Window',
+          text: 'Re-inspect the affected plot area after 48 to 72 hours to verify pathogen arrest.',
+        });
+      }
+      return steps;
+    }
+
+    return [
+      {
+        icon: '💊',
+        title: 'Immediate Prescribed Action',
+        text: advisoryText || 'Apply recommended foliar treatment as prescribed.',
+      },
+      {
+        icon: '💧',
+        title: 'Irrigation & Canopy Care',
+        text: 'Irrigate in early morning hours to minimize leaf moisture stagnation.',
+      },
+      {
+        icon: '⏱️',
+        title: 'Re-evaluate in 48-72 Hours',
+        text: 'Check treated leaves for recovery and fungal spore containment.',
+      },
+    ];
+  };
+
+  const severity = scanResult
+    ? getSeverityStyle(scanResult.predicted_disease, scanResult.confidence_score)
+    : null;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Top Camera / Picker Card */}
       <Card style={styles.headerCard}>
-        <Card.Content>
+        <Card.Content style={styles.cardContent}>
           <Title style={styles.headerTitle}>🔬 AI Crop Doctor</Title>
           <Paragraph style={styles.headerSub}>
             {t('disease.instruction')}
@@ -113,7 +259,7 @@ export default function DiseaseScreen() {
               mode="contained"
               icon="camera"
               onPress={takePhotoWithCamera}
-              style={[styles.actionBtn, { backgroundColor: '#2E7D32' }]}
+              style={[styles.actionBtn, { backgroundColor: Colors.primary }]}
               loading={analyzing}
             >
               Take Photo
@@ -122,7 +268,8 @@ export default function DiseaseScreen() {
               mode="outlined"
               icon="image"
               onPress={pickImageFromGallery}
-              style={styles.actionBtn}
+              style={[styles.actionBtn, { borderColor: Colors.primary }]}
+              textColor={Colors.primary}
               disabled={analyzing}
             >
               Choose Gallery
@@ -133,8 +280,8 @@ export default function DiseaseScreen() {
             mode="text"
             icon="history"
             onPress={() => router.push('/history')}
-            style={{ marginTop: 8 }}
-            labelStyle={{ fontSize: 12, color: '#2E7D32', fontWeight: 'bold' }}
+            style={{ marginTop: Spacing.sm }}
+            labelStyle={{ fontSize: 12, color: Colors.primary, fontWeight: '700' }}
           >
             📜 View Past Scan & Activity History
           </Button>
@@ -144,7 +291,7 @@ export default function DiseaseScreen() {
       {/* Selected Image Preview */}
       {imageUri && (
         <Card style={styles.imagePreviewCard}>
-          <Card.Content style={{ alignItems: 'center' }}>
+          <Card.Content style={{ alignItems: 'center', padding: Spacing.md }}>
             <Image source={{ uri: imageUri }} style={styles.leafImage} />
           </Card.Content>
         </Card>
@@ -153,49 +300,103 @@ export default function DiseaseScreen() {
       {/* Loading State */}
       {analyzing && (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#2E7D32" />
+          <ActivityIndicator size="large" color={Colors.primary} />
           <Text style={styles.analyzingText}>{t('disease.analyzing')}</Text>
-          <Paragraph style={{ color: '#666', fontSize: 12, marginTop: 4 }}>
+          <Paragraph style={{ color: Colors.textSecondary, fontSize: 12, marginTop: 4 }}>
             Querying Krishi Setu AI Deep Learning Microservice...
           </Paragraph>
         </View>
       )}
 
-      {/* Diagnostic Result */}
-      {scanResult && !analyzing && (
-        <Card style={[styles.resultCard, { borderLeftColor: getSeverityStyle(scanResult.predicted_disease).border }]}>
-          <Card.Content>
-            <View style={styles.resultBadgeRow}>
-              <Title style={[styles.diseaseTitle, { color: getSeverityStyle(scanResult.predicted_disease).color }]}>
-                {getSeverityStyle(scanResult.predicted_disease).icon} {scanResult.predicted_disease}
-              </Title>
-              <Chip style={{ backgroundColor: getSeverityStyle(scanResult.predicted_disease).bg }}>
-                <Text style={{ color: getSeverityStyle(scanResult.predicted_disease).color, fontWeight: 'bold', fontSize: 11 }}>
-                  {getSeverityStyle(scanResult.predicted_disease).label}
+      {/* RESTRUCTURED DIAGNOSTIC RESULT DISPLAY */}
+      {scanResult && !analyzing && severity && (
+        <View style={styles.resultContainer}>
+          {/* 1. TOP STATUS BADGE & SEVERITY HEADER */}
+          <Card style={[styles.statusBannerCard, { borderColor: severity.border, backgroundColor: severity.bg }]}>
+            <Card.Content style={styles.statusBannerContent}>
+              <View style={[styles.statusIconCircle, { backgroundColor: severity.badgeBg }]}>
+                <Text style={styles.largeStatusIcon}>{severity.icon}</Text>
+              </View>
+
+              <View style={styles.statusTextCol}>
+                <View style={styles.statusBadgeRow}>
+                  <Chip
+                    style={[styles.statusChip, { backgroundColor: severity.badgeBg }]}
+                    textStyle={{ color: severity.badgeColor, fontWeight: '700', fontSize: 11 }}
+                  >
+                    {severity.badgeText}
+                  </Chip>
+                </View>
+                <Title style={[styles.statusHeadline, { color: severity.color }]}>
+                  {severity.headline}
+                </Title>
+                <Text style={[styles.statusSummary, { color: severity.badgeColor }]}>
+                  {severity.summary}
                 </Text>
-              </Chip>
-            </View>
+              </View>
+            </Card.Content>
+          </Card>
 
-            <Paragraph style={styles.confidenceText}>
-              Model Confidence: <Text style={{ fontWeight: 'bold' }}>{Math.round(scanResult.confidence_score * 100)}%</Text> | AI Diagnostic Engine
-            </Paragraph>
+          {/* 2. "WHAT IS HAPPENING?" SECTION */}
+          <Card style={styles.sectionCard}>
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.sectionTitleRow}>
+                <Text style={styles.sectionIcon}>🔍</Text>
+                <Title style={styles.sectionTitle}>What is happening?</Title>
+              </View>
 
-            <Divider style={{ marginVertical: 12 }} />
+              <View style={styles.diseaseHighlightBox}>
+                <Text style={styles.diseaseLabel}>DIAGNOSED CONDITION</Text>
+                <Title style={[styles.diseaseNameTitle, { color: severity.color }]}>
+                  {scanResult.predicted_disease}
+                </Title>
+                <Text style={styles.explanationText}>
+                  {getDiseaseExplanation(scanResult.predicted_disease)}
+                </Text>
+              </View>
+            </Card.Content>
+          </Card>
 
-            <Title style={styles.subTitle}>💡 Recommended Agronomic Action:</Title>
-            <Paragraph style={styles.cureText}>{scanResult.advisory_text}</Paragraph>
+          {/* 3. "WHAT SHOULD YOU DO?" STEP-BY-STEP SECTION */}
+          <Card style={styles.sectionCard}>
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.sectionTitleRow}>
+                <Text style={styles.sectionIcon}>🛠️</Text>
+                <Title style={styles.sectionTitle}>What should you do?</Title>
+              </View>
+              <Text style={styles.sectionSubtitle}>
+                Follow these recommended agronomic steps to resolve the issue:
+              </Text>
 
-            <Divider style={{ marginVertical: 12 }} />
+              {parseActionSteps(scanResult.advisory_text, scanResult.predicted_disease).map((step, idx) => (
+                <View key={idx} style={styles.stepCard}>
+                  <View style={styles.stepNumberBadge}>
+                    <Text style={styles.stepNumberText}>{idx + 1}</Text>
+                  </View>
 
-            <Title style={styles.subTitle}>🛡️ Organic & Preventive Control:</Title>
-            <Paragraph style={styles.bulletItem}>
-              • Maintain balanced soil NPK ratio; avoid excessive nitrogen top-dressing.
-            </Paragraph>
-            <Paragraph style={styles.bulletItem}>
-              • Ensure morning drip irrigation to prevent moisture stagnation on leaf canopy.
-            </Paragraph>
-          </Card.Content>
-        </Card>
+                  <View style={styles.stepContentCol}>
+                    <View style={styles.stepHeaderRow}>
+                      <Text style={styles.stepIconEmoji}>{step.icon}</Text>
+                      <Text style={styles.stepTitleText}>{step.title}</Text>
+                    </View>
+                    <Text style={styles.stepBodyText}>{step.text}</Text>
+                  </View>
+                </View>
+              ))}
+            </Card.Content>
+          </Card>
+
+          {/* 4. SUBTLE MODEL CONFIDENCE FOOTER */}
+          <View style={styles.subtleFooterBox}>
+            <Text style={styles.confidenceLabel}>
+              🤖 AI Diagnostic Model Confidence:{' '}
+              <Text style={styles.confidenceValue}>
+                {Math.round(scanResult.confidence_score * 100)}%
+              </Text>
+              {' '}• Krishi Setu Deep Learning Engine
+            </Text>
+          </View>
+        </View>
       )}
     </ScrollView>
   );
@@ -203,102 +404,229 @@ export default function DiseaseScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F4F7F4',
+    ...CommonStyles.screenContainer,
   },
   content: {
-    padding: 16,
+    ...CommonStyles.screenContent,
+  },
+  cardContent: {
+    padding: Spacing.md + 2,
   },
   headerCard: {
-    backgroundColor: '#FFFFFF',
-    marginBottom: 16,
-    borderRadius: 12,
-    elevation: 2,
+    ...CommonStyles.card,
+    marginBottom: Spacing.lg,
   },
   headerTitle: {
-    color: '#1B5E20',
-    fontSize: 20,
-    fontWeight: 'bold',
+    ...Typography.screenTitle,
+    color: Colors.primaryDark,
   },
   headerSub: {
-    color: '#555555',
-    marginVertical: 8,
+    ...Typography.body,
+    color: Colors.textSecondary,
+    marginVertical: Spacing.sm,
   },
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 12,
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
   },
   actionBtn: {
     flex: 1,
     minWidth: 130,
-    borderRadius: 8,
+    borderRadius: BorderRadius.md,
   },
   imagePreviewCard: {
-    marginBottom: 16,
-    borderRadius: 12,
+    ...CommonStyles.card,
+    marginBottom: Spacing.lg,
     overflow: 'hidden',
   },
   leafImage: {
     width: '100%',
     height: 200,
-    borderRadius: 8,
+    borderRadius: BorderRadius.md,
   },
   loaderContainer: {
     alignItems: 'center',
-    marginVertical: 24,
+    marginVertical: Spacing.xxl,
   },
   analyzingText: {
-    marginTop: 10,
-    color: '#2E7D32',
-    fontWeight: 'bold',
+    marginTop: Spacing.sm + 2,
+    color: Colors.primary,
+    fontWeight: '700',
     fontSize: 16,
   },
-  resultCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    elevation: 3,
-    borderLeftWidth: 6,
+  resultContainer: {
+    marginBottom: Spacing.xxl,
   },
-  resultBadgeRow: {
+
+  // 1. Status Banner
+  statusBannerCard: {
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1.5,
+    marginBottom: Spacing.md,
+    ...Shadows.card,
+  },
+  statusBannerContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 6,
+    padding: Spacing.md + 2,
+    gap: Spacing.md,
   },
-  diseaseTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  statusIconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)',
+  },
+  largeStatusIcon: {
+    fontSize: 28,
+  },
+  statusTextCol: {
     flex: 1,
-    flexShrink: 1,
-    marginRight: 8,
   },
-  confidenceText: {
-    fontSize: 13,
-    color: '#666666',
-    marginTop: 4,
+  statusBadgeRow: {
+    flexDirection: 'row',
+    marginBottom: Spacing.xxs,
   },
-  subTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#1B5E20',
-    marginTop: 6,
+  statusChip: {
+    height: 24,
   },
-  bulletItem: {
-    fontSize: 13,
-    color: '#333333',
-    marginVertical: 2,
+  statusHeadline: {
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 22,
+    marginTop: Spacing.xxs,
   },
-  cureText: {
-    fontSize: 14,
-    color: '#1B5E20',
-    marginVertical: 4,
-    backgroundColor: '#E8F5E9',
-    padding: 10,
-    borderRadius: 8,
+  statusSummary: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 2,
+    lineHeight: 16,
+  },
+
+  // 2 & 3. Section Cards
+  sectionCard: {
+    ...CommonStyles.card,
+    marginBottom: Spacing.md,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  sectionIcon: {
+    fontSize: 18,
+    marginRight: Spacing.xs + 2,
+  },
+  sectionTitle: {
+    ...Typography.sectionHeader,
+    color: Colors.primaryDark,
+  },
+  sectionSubtitle: {
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
+  },
+
+  // Disease Highlight Box
+  diseaseHighlightBox: {
+    backgroundColor: Colors.surfaceSubtle,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  diseaseLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    letterSpacing: 0.8,
+    marginBottom: Spacing.xxs,
+  },
+  diseaseNameTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: Spacing.xs,
+  },
+  explanationText: {
+    ...Typography.body,
+    color: Colors.textPrimary,
     lineHeight: 20,
+  },
+
+  // Step Cards
+  stepCard: {
+    flexDirection: 'row',
+    backgroundColor: Colors.surfaceSubtle,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginBottom: Spacing.sm + 2,
+    alignItems: 'flex-start',
+    gap: Spacing.sm + 2,
+  },
+  stepNumberBadge: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  stepNumberText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  stepContentCol: {
+    flex: 1,
+  },
+  stepHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.xxs,
+  },
+  stepIconEmoji: {
+    fontSize: 14,
+  },
+  stepTitleText: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: Colors.primaryDark,
+  },
+  stepBodyText: {
+    ...Typography.body,
+    color: Colors.textPrimary,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+
+  // 4. Subtle Footer
+  subtleFooterBox: {
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.surfaceSubtle,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginTop: Spacing.xs,
+  },
+  confidenceLabel: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
+  confidenceValue: {
+    fontWeight: '700',
+    color: Colors.primaryDark,
   },
 });

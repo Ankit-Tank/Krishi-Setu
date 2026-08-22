@@ -6,6 +6,7 @@ import { AgroApiService, IdentityService, FarmerIdentity, RuleBasedAdvisoryRespo
 import { SampleFarm } from '../../src/data/sampleFarms';
 import { SampleFarmState } from '../../src/services/sampleFarmState';
 import SampleFarmBanner from '../../src/components/SampleFarmBanner';
+import { Colors, Spacing, BorderRadius, Typography, Shadows, CommonStyles } from '../../src/theme/theme';
 
 export default function AdvisoryScreen() {
   const { t } = useTranslation();
@@ -83,13 +84,37 @@ export default function AdvisoryScreen() {
   const getAdvisoryBadge = (type: string) => {
     switch (type.toLowerCase()) {
       case 'disease':
-        return { label: 'DISEASE ALERT', bg: '#FFEBEE', text: '#C62828', icon: '🔴' };
+        return {
+          label: 'DISEASE ALERT',
+          bg: Colors.status.critical.bg,
+          text: Colors.status.critical.text,
+          border: Colors.status.critical.border,
+          icon: '🔴',
+        };
       case 'irrigation':
-        return { label: 'IRRIGATION NEEDED', bg: '#E3F2FD', text: '#1565C0', icon: '💧' };
+        return {
+          label: 'IRRIGATION NEEDED',
+          bg: Colors.status.info.bg,
+          text: Colors.status.info.text,
+          border: Colors.status.info.border,
+          icon: '💧',
+        };
       case 'npk':
-        return { label: 'NPK NUTRIENT', bg: '#E8F5E9', text: '#2E7D32', icon: '🧪' };
+        return {
+          label: 'NPK NUTRIENT',
+          bg: Colors.status.healthy.bg,
+          text: Colors.status.healthy.text,
+          border: Colors.status.healthy.border,
+          icon: '🧪',
+        };
       default:
-        return { label: 'GENERAL ADVISORY', bg: '#FFF3E0', text: '#E65100', icon: '📢' };
+        return {
+          label: 'GENERAL ADVISORY',
+          bg: Colors.status.warning.bg,
+          text: Colors.status.warning.text,
+          border: Colors.status.warning.border,
+          icon: '📢',
+        };
     }
   };
 
@@ -105,7 +130,7 @@ export default function AdvisoryScreen() {
 
       {/* 2. OVERVIEW AI ADVISORY CARD */}
       <Card style={[styles.headerCard, activeSampleFarm ? styles.headerCardSample : null]}>
-        <Card.Content>
+        <Card.Content style={styles.cardContent}>
           <View style={styles.headerTitleRow}>
             <Title style={styles.headerTitle}>
               {activeSampleFarm ? '🧪 Simulated Agronomic Prescription' : '🌱 Precision Agronomic Prescription'}
@@ -127,27 +152,27 @@ export default function AdvisoryScreen() {
           </Paragraph>
 
           {loading ? (
-            <ActivityIndicator style={{ marginVertical: 16 }} color="#2E7D32" />
+            <ActivityIndicator style={{ marginVertical: Spacing.lg }} color={Colors.primary} />
           ) : (
-            <View style={{ marginTop: 8 }}>
+            <View style={{ marginTop: Spacing.sm }}>
               {/* Irrigation Advice */}
-              <View style={styles.adviceBox}>
-                <Text style={styles.adviceBoxTitle}>💧 Irrigation Prescription:</Text>
-                <Text style={styles.adviceBoxText}>{advisoryData?.irrigation_advice}</Text>
+              <View style={styles.adviceBoxIrrigation}>
+                <Text style={styles.adviceBoxIrrigationTitle}>💧 Irrigation Prescription:</Text>
+                <Text style={styles.adviceBoxIrrigationText}>{advisoryData?.irrigation_advice}</Text>
               </View>
 
               {/* NPK Advice */}
-              <View style={[styles.adviceBox, { backgroundColor: '#E8F5E9', marginTop: 10 }]}>
-                <Text style={[styles.adviceBoxTitle, { color: '#1B5E20' }]}>🧪 NPK Nutrient Prescription:</Text>
-                <Text style={[styles.adviceBoxText, { color: '#2E7D32' }]}>{advisoryData?.npk_advice}</Text>
+              <View style={styles.adviceBoxNpk}>
+                <Text style={styles.adviceBoxNpkTitle}>🧪 NPK Nutrient Prescription:</Text>
+                <Text style={styles.adviceBoxNpkText}>{advisoryData?.npk_advice}</Text>
               </View>
 
               {/* Action Items for Sample Farms */}
               {activeSampleFarm?.advisory.action_items && (
-                <View style={[styles.adviceBox, { backgroundColor: '#F3E5F5', marginTop: 10 }]}>
-                  <Text style={[styles.adviceBoxTitle, { color: '#6A1B9A' }]}>📋 Recommended Action Checklist:</Text>
+                <View style={styles.adviceBoxChecklist}>
+                  <Text style={styles.adviceBoxChecklistTitle}>📋 Recommended Action Checklist:</Text>
                   {activeSampleFarm.advisory.action_items.map((item, idx) => (
-                    <Text key={idx} style={{ color: '#4A148C', fontSize: 12, marginTop: 3 }}>
+                    <Text key={idx} style={styles.checklistItem}>
                       • {item}
                     </Text>
                   ))}
@@ -167,17 +192,17 @@ export default function AdvisoryScreen() {
         const badge = getAdvisoryBadge(rec.type);
         return (
           <Card key={rec.id} style={[styles.recordCard, rec.is_read && { opacity: 0.75 }]}>
-            <Card.Content>
+            <Card.Content style={styles.cardContent}>
               <View style={styles.cardHeaderRow}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 16, marginRight: 6 }}>{badge.icon}</Text>
-                  <Text style={{ fontWeight: 'bold', color: badge.text }}>{badge.label}</Text>
+                  <Text style={{ fontSize: 16, marginRight: Spacing.xs + 2 }}>{badge.icon}</Text>
+                  <Text style={{ fontWeight: '700', color: badge.text }}>{badge.label}</Text>
                 </View>
 
                 {rec.is_read ? (
                   <Chip icon="check-all" style={styles.readChip} textStyle={{ fontSize: 10 }}>Read</Chip>
                 ) : (
-                  <Chip style={{ backgroundColor: '#FFEBEE' }} textStyle={{ fontSize: 10 }}>UNREAD</Chip>
+                  <Chip style={{ backgroundColor: Colors.status.critical.bg }} textStyle={{ fontSize: 10, color: Colors.status.critical.text, fontWeight: '700' }}>UNREAD</Chip>
                 )}
               </View>
 
@@ -192,7 +217,7 @@ export default function AdvisoryScreen() {
                     mode="text"
                     compact
                     onPress={() => handleMarkAsRead(rec.id)}
-                    labelStyle={{ color: '#2E7D32', fontSize: 12 }}
+                    labelStyle={{ color: Colors.primary, fontSize: 12, fontWeight: '700' }}
                   >
                     Mark as Read ✓
                   </Button>
@@ -208,23 +233,20 @@ export default function AdvisoryScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F4F7F4',
+    ...CommonStyles.screenContainer,
   },
   content: {
-    padding: 16,
-    paddingBottom: 36,
+    ...CommonStyles.screenContent,
+  },
+  cardContent: {
+    padding: Spacing.md + 2,
   },
   headerCard: {
-    backgroundColor: '#FFFFFF',
-    marginBottom: 16,
-    borderRadius: 14,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#E8EFE8',
+    ...CommonStyles.card,
+    marginBottom: Spacing.lg,
   },
   headerCardSample: {
-    borderColor: '#FFA000',
+    borderColor: Colors.accent,
     borderWidth: 1.5,
   },
   headerTitleRow: {
@@ -232,12 +254,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: Spacing.xs + 2,
   },
   headerTitle: {
-    color: '#1B5E20',
-    fontSize: 18,
-    fontWeight: 'bold',
+    ...Typography.sectionHeader,
+    color: Colors.primaryDark,
     flex: 1,
     minWidth: 140,
   },
@@ -246,64 +267,100 @@ const styles = StyleSheet.create({
     height: 22,
   },
   subText: {
-    color: '#666666',
-    fontSize: 12,
-    marginBottom: 8,
-    marginTop: 2,
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.xxs,
   },
   sectionHeader: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: '#1B5E20',
-    marginBottom: 12,
+    ...Typography.sectionHeader,
+    color: Colors.primaryDark,
+    marginBottom: Spacing.md,
+    marginTop: Spacing.xs,
   },
-  adviceBox: {
-    backgroundColor: '#FFF3E0',
-    padding: 12,
-    borderRadius: 10,
+  adviceBoxIrrigation: {
+    backgroundColor: Colors.status.info.bg,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.status.info.border,
+    marginBottom: Spacing.sm + 2,
   },
-  adviceBoxTitle: {
-    fontWeight: 'bold',
-    color: '#E65100',
-    marginBottom: 4,
+  adviceBoxIrrigationTitle: {
+    fontWeight: '700',
+    color: Colors.status.info.text,
+    marginBottom: Spacing.xs,
     fontSize: 13,
   },
-  adviceBoxText: {
-    color: '#D84315',
+  adviceBoxIrrigationText: {
+    color: Colors.status.info.text,
     fontSize: 13,
     lineHeight: 18,
   },
-  recordCard: {
-    backgroundColor: '#FFFFFF',
-    marginBottom: 12,
-    borderRadius: 12,
-    elevation: 2,
+  adviceBoxNpk: {
+    backgroundColor: Colors.status.healthy.bg,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: '#E8EFE8',
+    borderColor: Colors.status.healthy.border,
+    marginBottom: Spacing.sm + 2,
+  },
+  adviceBoxNpkTitle: {
+    fontWeight: '700',
+    color: Colors.status.healthy.text,
+    marginBottom: Spacing.xs,
+    fontSize: 13,
+  },
+  adviceBoxNpkText: {
+    color: Colors.status.healthy.text,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  adviceBoxChecklist: {
+    backgroundColor: '#F3E5F5',
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: '#CE93D8',
+    marginBottom: Spacing.sm,
+  },
+  adviceBoxChecklistTitle: {
+    fontWeight: '700',
+    color: '#6A1B9A',
+    marginBottom: Spacing.xs,
+    fontSize: 13,
+  },
+  checklistItem: {
+    color: '#4A148C',
+    fontSize: 12,
+    marginTop: 3,
+  },
+  recordCard: {
+    ...CommonStyles.card,
+    marginBottom: Spacing.md,
   },
   cardHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: Spacing.xs + 2,
   },
   readChip: {
     backgroundColor: '#F5F5F5',
   },
   recordMessage: {
-    fontSize: 13.5,
-    color: '#333333',
+    ...Typography.body,
     lineHeight: 19,
-    marginVertical: 4,
+    marginVertical: Spacing.xs,
   },
   cardFooterRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   dateText: {
-    fontSize: 11,
-    color: '#888888',
+    ...Typography.caption,
+    color: Colors.textMuted,
   },
 });

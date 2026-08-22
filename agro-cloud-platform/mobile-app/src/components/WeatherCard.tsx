@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Card, Text, Title, Paragraph, Chip, Button, ActivityIndicator } from 'react-native-paper';
 import { WeatherForecastResponse, ForecastDay } from '../services/api';
+import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../theme/theme';
 
 interface WeatherCardProps {
   weather: WeatherForecastResponse | null;
@@ -269,18 +270,18 @@ export default function WeatherCard({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 16,
-    elevation: 3,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.xl,
+    marginBottom: Spacing.md,
+    ...Shadows.card,
     borderWidth: 1,
     borderColor: '#BBDEFB',
     overflow: 'hidden',
   },
   cardHeader: {
     backgroundColor: '#E3F2FD',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Text, Title, Paragraph, Chip, Button, ActivityIndicator } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { SmartSummaryResponse } from '../services/api';
+import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../theme/theme';
 
 interface SmartSummaryCardProps {
   summary: SmartSummaryResponse | null;
@@ -209,50 +210,50 @@ export default function SmartSummaryCard({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#0F381E',
-    borderRadius: 16,
-    marginBottom: 16,
-    elevation: 4,
+    backgroundColor: Colors.primaryDark,
+    borderRadius: BorderRadius.xl,
+    marginBottom: Spacing.md,
+    ...Shadows.floating,
     borderWidth: 1.5,
-    borderColor: '#43A047',
+    borderColor: Colors.primaryLight,
     overflow: 'hidden',
   },
   cardContainerUrgent: {
     backgroundColor: '#1B2E1C',
-    borderColor: '#FFA000',
+    borderColor: Colors.accent,
   },
   cardContent: {
-    padding: 14,
+    padding: Spacing.md,
   },
   loadingContainer: {
-    padding: 20,
+    padding: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   loadingText: {
-    marginTop: 8,
+    marginTop: Spacing.xs,
     fontSize: 12,
-    color: '#A5D6A7',
+    color: Colors.primaryTint,
     textAlign: 'center',
   },
   topHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: Spacing.sm,
   },
   badgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.xs,
   },
   sparkleIcon: {
     fontSize: 15,
   },
   badgeTitle: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#A5D6A7',
+    fontWeight: '800',
+    color: Colors.primaryTint,
     letterSpacing: 0.8,
   },
   livePulse: {
@@ -264,39 +265,39 @@ const styles = StyleSheet.create({
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.xs + 2,
   },
   urgencyChip: {
     height: 22,
   },
   urgencyChipHigh: {
-    backgroundColor: '#E65100',
+    backgroundColor: Colors.status.critical.main,
   },
   urgencyChipNormal: {
-    backgroundColor: '#2E7D32',
+    backgroundColor: Colors.primary,
   },
   refreshBtn: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   refreshEmoji: {
-    fontSize: 11,
+    fontSize: 12,
   },
   recommendationBox: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.sm + 4,
     borderWidth: 1,
     borderColor: 'rgba(165, 214, 167, 0.25)',
-    marginBottom: 12,
+    marginBottom: Spacing.sm + 2,
   },
   headlineText: {
     fontSize: 13,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#FFF9C4',
     marginBottom: 4,
   },
@@ -309,13 +310,13 @@ const styles = StyleSheet.create({
   pillarsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 6,
-    marginBottom: 12,
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm + 2,
   },
   pillarItem: {
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm,
     paddingVertical: 6,
     paddingHorizontal: 6,
     borderWidth: 1,
@@ -339,12 +340,12 @@ const styles = StyleSheet.create({
   },
   pillarLabel: {
     fontSize: 10,
-    color: '#C8E6C9',
+    color: Colors.primaryTint,
     fontWeight: '600',
   },
   pillarValue: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   pillarValueWarning: {
     color: '#FFCC80',
@@ -354,16 +355,16 @@ const styles = StyleSheet.create({
   },
   pillarValueMarket: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#FFE082',
   },
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 6,
+    gap: Spacing.xs,
   },
   actionBtn: {
     flex: 1,
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm,
   },
 });

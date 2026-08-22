@@ -175,18 +175,19 @@ class WeatherService:
                 return_exceptions=True
             )
 
-        if isinstance(current_resp, Exception) or current_resp.status_code != 200:
+        if isinstance(current_resp, Exception) or current_resp.status_code != 200 or isinstance(forecast_resp, Exception) or forecast_resp.status_code != 200:
             error_detail = (
                 str(current_resp) if isinstance(current_resp, Exception)
-                else f"OpenWeatherMap current weather failed with status {current_resp.status_code}"
+                else f"OpenWeatherMap API response error (status: {getattr(current_resp, 'status_code', None)}/{getattr(forecast_resp, 'status_code', None)})"
             )
-            raise RuntimeError(error_detail)
-
-        if isinstance(forecast_resp, Exception) or forecast_resp.status_code != 200:
-            error_detail = (
-                str(forecast_resp) if isinstance(forecast_resp, Exception)
-                else f"OpenWeatherMap forecast failed with status {forecast_resp.status_code}"
-            )
+            print(f"[Weather Warning] Live API failed: {error_detail}. Checking for fallback cache.")
+            
+            # If we have any existing cached entry for this farm/coords, return it gracefully
+            if cache_key in _WEATHER_CACHE:
+                cached_data: WeatherForecastResponse = _WEATHER_CACHE[cache_key]["data"]
+                print(f"[Weather Cache] Returning stale cache for {cache_key} as resilient fallback.")
+                return cached_data
+            
             raise RuntimeError(error_detail)
 
         curr_data = current_resp.json()

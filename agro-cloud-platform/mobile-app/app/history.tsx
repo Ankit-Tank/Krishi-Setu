@@ -23,6 +23,7 @@ import {
   API_BASE_URL,
   formatFriendlyErrorMessage,
 } from '../src/services/api';
+import { Colors, Spacing, BorderRadius, Typography, Shadows, CommonStyles } from '../src/theme/theme';
 
 export default function HistoryScreen() {
   const router = useRouter();
@@ -79,13 +80,13 @@ export default function HistoryScreen() {
   const getAdvisoryBadge = (type?: string) => {
     switch ((type || '').toLowerCase()) {
       case 'disease':
-        return { label: 'DISEASE ALERT', bg: '#FFEBEE', text: '#C62828', icon: '🔴' };
+        return { label: 'DISEASE ALERT', bg: Colors.status.critical.bg, text: Colors.status.critical.text, icon: '🔴' };
       case 'irrigation':
-        return { label: 'IRRIGATION PRESCRIPTION', bg: '#E3F2FD', text: '#1565C0', icon: '💧' };
+        return { label: 'IRRIGATION PRESCRIPTION', bg: Colors.status.info.bg, text: Colors.status.info.text, icon: '💧' };
       case 'npk':
-        return { label: 'NPK ADVISORY', bg: '#E8F5E9', text: '#2E7D32', icon: '🧪' };
+        return { label: 'NPK ADVISORY', bg: Colors.status.healthy.bg, text: Colors.status.healthy.text, icon: '🧪' };
       default:
-        return { label: 'AGRONOMIC ADVISORY', bg: '#FFF3E0', text: '#E65100', icon: '📢' };
+        return { label: 'AGRONOMIC ADVISORY', bg: Colors.status.warning.bg, text: Colors.status.warning.text, icon: '📢' };
     }
   };
 
@@ -236,90 +237,125 @@ export default function HistoryScreen() {
           </Card>
         )}
 
-        {/* Timeline Items (Newest First) */}
-        {!loading &&
-          filteredTimeline.map((item, index) => {
-            const isLeafScan = item.item_type === 'leaf_scan';
-            const badge = getAdvisoryBadge(item.advisory_type);
+        {/* Vertical Timeline Items (Newest First) */}
+        {!loading && (
+          <View style={styles.timelineContainer}>
+            {filteredTimeline.map((item, index) => {
+              const isLeafScan = item.item_type === 'leaf_scan';
+              const badge = getAdvisoryBadge(item.advisory_type);
 
-            return (
-              <Card key={item.id || index} style={styles.timelineCard}>
-                <Card.Content>
-                  {/* Top Meta Header */}
-                  <View style={styles.itemHeaderRow}>
-                    <View style={styles.badgeGroup}>
-                      {isLeafScan ? (
-                        <Chip
-                          icon="microscope"
-                          style={styles.leafScanChip}
-                          textStyle={styles.leafScanChipText}
-                        >
-                          LEAF SCAN DIAGNOSIS
-                        </Chip>
-                      ) : (
-                        <Chip
-                          style={[styles.advisoryTypeChip, { backgroundColor: badge.bg }]}
-                          textStyle={{ color: badge.text, fontSize: 10, fontWeight: 'bold' }}
-                        >
-                          {badge.label}
-                        </Chip>
-                      )}
+              let nodeIcon = isLeafScan ? '🔬' : badge.icon;
+              let nodeBg = isLeafScan ? Colors.primaryTint : badge.bg;
+              let nodeBorder = isLeafScan ? Colors.primary : badge.text;
 
-                      <Chip style={styles.farmPill} textStyle={{ fontSize: 10, color: '#555' }}>
+              if (isLeafScan && item.predicted_disease) {
+                if (item.predicted_disease.toLowerCase().includes('healthy')) {
+                  nodeIcon = '🌿';
+                  nodeBg = Colors.status.healthy.bg;
+                  nodeBorder = Colors.status.healthy.main;
+                } else {
+                  nodeIcon = '🔬';
+                  nodeBg = Colors.status.critical.bg;
+                  nodeBorder = Colors.status.critical.main;
+                }
+              }
+
+              const isFirst = index === 0;
+              const isLast = index === filteredTimeline.length - 1;
+
+              return (
+                <View key={item.id || index} style={styles.timelineRow}>
+                  {/* Left Column: Connected Vertical Spine & Node */}
+                  <View style={styles.spineColumn}>
+                    <View style={[styles.spineLineTop, isFirst && styles.spineLineHidden]} />
+                    <View style={[styles.timelineNodeCircle, { backgroundColor: nodeBg, borderColor: nodeBorder }]}>
+                      <Text style={styles.timelineNodeIcon}>{nodeIcon}</Text>
+                    </View>
+                    <View style={[styles.spineLineBottom, isLast && styles.spineLineHidden]} />
+                  </View>
+
+                  {/* Right Column: Date Pill & Content Card */}
+                  <View style={styles.timelineContentColumn}>
+                    {/* Timestamp & Farm Meta Header */}
+                    <View style={styles.timelineItemMeta}>
+                      <Text style={styles.timelineTimestampText}>🕒 {formatTimestamp(item.timestamp)}</Text>
+                      <Chip style={styles.farmPill} textStyle={styles.farmPillText}>
                         🌾 {item.farm_name} ({item.crop_type})
                       </Chip>
                     </View>
 
-                    <Text style={styles.timeText}>🕒 {formatTimestamp(item.timestamp)}</Text>
-                  </View>
-
-                  <Divider style={{ marginVertical: 10 }} />
-
-                  {/* Leaf Scan Body */}
-                  {isLeafScan ? (
-                    <View style={styles.leafScanBody}>
-                      {item.image_url ? (
-                        <Image
-                          source={{ uri: getImageUri(item.image_url)! }}
-                          style={styles.thumbnail}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <View style={styles.thumbnailPlaceholder}>
-                          <Text style={{ fontSize: 24 }}>🍃</Text>
+                    {/* Entry Content Card */}
+                    <Card style={[styles.timelineCard, { borderLeftColor: nodeBorder }]}>
+                      <Card.Content style={styles.timelineCardContent}>
+                        {/* Type Badge Row */}
+                        <View style={styles.itemBadgeRow}>
+                          {isLeafScan ? (
+                            <Chip
+                              icon="microscope"
+                              style={styles.leafScanChip}
+                              textStyle={styles.leafScanChipText}
+                            >
+                              LEAF SCAN DIAGNOSIS
+                            </Chip>
+                          ) : (
+                            <Chip
+                              style={[styles.advisoryTypeChip, { backgroundColor: badge.bg }]}
+                              textStyle={{ color: badge.text, fontSize: 10, fontWeight: '700' }}
+                            >
+                              {badge.label}
+                            </Chip>
+                          )}
                         </View>
-                      )}
 
-                      <View style={{ flex: 1, marginLeft: 12 }}>
-                        <Title style={styles.diseaseName}>
-                          {item.predicted_disease || item.title}
-                        </Title>
+                        {/* Leaf Scan Body */}
+                        {isLeafScan ? (
+                          <View style={styles.leafScanBody}>
+                            {item.image_url ? (
+                              <Image
+                                source={{ uri: getImageUri(item.image_url)! }}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              />
+                            ) : (
+                              <View style={styles.thumbnailPlaceholder}>
+                                <Text style={{ fontSize: 24 }}>🍃</Text>
+                              </View>
+                            )}
 
-                        {item.confidence_score !== undefined && (
-                          <Chip
-                            style={styles.confidenceChip}
-                            textStyle={{ fontSize: 10, color: '#1B5E20', fontWeight: 'bold' }}
-                          >
-                            Confidence: {Math.round(item.confidence_score * 100)}%
-                          </Chip>
+                            <View style={{ flex: 1, marginLeft: Spacing.sm + 2 }}>
+                              <Title style={styles.diseaseName}>
+                                {item.predicted_disease || item.title}
+                              </Title>
+
+                              {item.confidence_score !== undefined && (
+                                <Chip
+                                  style={styles.confidenceChip}
+                                  textStyle={{ fontSize: 10, color: Colors.primaryDark, fontWeight: '700' }}
+                                >
+                                  Confidence: {Math.round(item.confidence_score * 100)}%
+                                </Chip>
+                              )}
+
+                              <Text style={styles.advisoryMessage}>
+                                💡 {item.advisory_text || item.message}
+                              </Text>
+                            </View>
+                          </View>
+                        ) : (
+                          /* Advisory Record Body */
+                          <View style={styles.advisoryBody}>
+                            <Title style={styles.advisoryTitle}>{item.title}</Title>
+                            <Paragraph style={styles.advisoryContent}>{item.message}</Paragraph>
+                          </View>
                         )}
-
-                        <Text style={styles.advisoryMessage}>
-                          {item.advisory_text || item.message}
-                        </Text>
-                      </View>
-                    </View>
-                  ) : (
-                    /* Advisory Record Body */
-                    <View style={styles.advisoryBody}>
-                      <Title style={styles.advisoryTitle}>{item.title}</Title>
-                      <Paragraph style={styles.advisoryContent}>{item.message}</Paragraph>
-                    </View>
-                  )}
-                </Card.Content>
-              </Card>
-            );
-          })}
+                      </Card.Content>
+                    </Card>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -327,196 +363,240 @@ export default function HistoryScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F4F6F4',
+    ...CommonStyles.screenContainer,
   },
   header: {
-    backgroundColor: '#2B3A67', // Monsoon Indigo header
+    backgroundColor: Colors.primaryDark,
     elevation: 4,
   },
   headerTitle: {
-    color: '#F7F1E8',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '700',
     fontSize: 17,
   },
   headerSubtitle: {
-    color: '#E8A63A',
+    color: Colors.accent,
     fontSize: 11,
   },
   scrollContainer: {
     flex: 1,
   },
-  content: {
-    padding: 16,
-    paddingBottom: 40,
-  },
   offlineBanner: {
-    backgroundColor: '#FFF3E0',
-    marginBottom: 12,
-    borderRadius: 10,
+    backgroundColor: Colors.status.warning.bg,
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.status.warning.border,
   },
   bannerText: {
-    color: '#E65100',
-    fontWeight: 'bold',
+    color: Colors.status.warning.text,
+    fontWeight: '700',
   },
   errorCard: {
-    backgroundColor: '#FFEBEE',
-    borderColor: '#EF5350',
+    backgroundColor: Colors.status.critical.bg,
+    borderColor: Colors.status.critical.border,
     borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 12,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.md,
   },
   errorText: {
-    color: '#C62828',
+    color: Colors.status.critical.text,
     fontSize: 12.5,
-    fontWeight: 'bold',
+    fontWeight: '700',
+  },
+  content: {
+    ...CommonStyles.screenContent,
   },
   statsCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    marginBottom: 14,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#E2E8E2',
+    ...CommonStyles.card,
+    marginBottom: Spacing.lg,
+  },
+  statsCardContent: {
+    padding: Spacing.md + 2,
   },
   statsTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    ...Typography.sectionHeader,
+    color: Colors.primaryDark,
   },
   statsSubtitle: {
-    fontSize: 12,
-    color: '#666666',
-    marginBottom: 12,
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
+    marginTop: 2,
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: Spacing.sm,
   },
   statPill: {
     flex: 1,
-    backgroundColor: '#F1F8E9',
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    borderRadius: 10,
+    backgroundColor: Colors.surfaceSubtle,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xs + 2,
+    borderRadius: BorderRadius.md,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   statNumber: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    fontWeight: '700',
+    color: Colors.primaryDark,
   },
   statLabel: {
-    fontSize: 11,
-    color: '#555555',
+    ...Typography.caption,
+    color: Colors.textSecondary,
     marginTop: 2,
   },
   filterRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 14,
+    gap: Spacing.xs + 2,
+    marginBottom: Spacing.md,
   },
   filterChip: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#D0D8D0',
+    backgroundColor: Colors.surface,
+    borderColor: Colors.borderDark,
     borderWidth: 1,
     height: 32,
   },
   filterChipActive: {
-    backgroundColor: '#2E7D32',
-    borderColor: '#2E7D32',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   filterChipText: {
     fontSize: 11.5,
-    color: '#444444',
+    color: Colors.textSecondary,
   },
   filterChipTextActive: {
     fontSize: 11.5,
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   loadingBox: {
-    paddingVertical: 36,
+    paddingVertical: Spacing.xxxl,
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 10,
-    color: '#2E7D32',
-    fontWeight: 'bold',
+    marginTop: Spacing.sm + 2,
+    color: Colors.primary,
+    fontWeight: '700',
     fontSize: 13,
   },
   emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    paddingVertical: 20,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    ...CommonStyles.card,
+    paddingVertical: Spacing.xl,
   },
   emptyContent: {
     alignItems: 'center',
     textAlign: 'center',
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1B5E20',
-    marginBottom: 6,
+    ...Typography.screenTitle,
+    color: Colors.primaryDark,
+    marginBottom: Spacing.xs + 2,
   },
   emptyDesc: {
-    fontSize: 13,
-    color: '#666666',
+    ...Typography.body,
+    color: Colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 18,
-    marginBottom: 16,
-    paddingHorizontal: 12,
+    marginBottom: Spacing.lg,
+    paddingHorizontal: Spacing.md,
   },
   actionBtn: {
-    backgroundColor: '#2E7D32',
-    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.md,
   },
-  timelineCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    marginBottom: 12,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#E8EFE8',
+
+  // Connected Vertical Timeline Styles
+  timelineContainer: {
+    paddingVertical: Spacing.xs,
   },
-  itemHeaderRow: {
+  timelineRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginBottom: Spacing.md,
+  },
+  spineColumn: {
+    width: 38,
+    alignItems: 'center',
+    marginRight: Spacing.sm,
+  },
+  spineLineTop: {
+    width: 2,
+    flex: 0.12,
+    backgroundColor: Colors.borderDark,
+  },
+  spineLineBottom: {
+    width: 2,
+    flex: 1,
+    backgroundColor: Colors.borderDark,
+  },
+  spineLineHidden: {
+    opacity: 0,
+  },
+  timelineNodeCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    ...Shadows.subtle,
+    zIndex: 2,
+  },
+  timelineNodeIcon: {
+    fontSize: 16,
+  },
+  timelineContentColumn: {
+    flex: 1,
+  },
+  timelineItemMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 6,
+    marginBottom: Spacing.xs,
+    paddingHorizontal: Spacing.xxs,
   },
-  badgeGroup: {
+  timelineTimestampText: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+  },
+  farmPill: {
+    backgroundColor: Colors.surfaceSubtle,
+    height: 22,
+  },
+  farmPillText: {
+    fontSize: 9.5,
+    color: Colors.textSecondary,
+    fontWeight: '600',
+  },
+  timelineCard: {
+    ...CommonStyles.card,
+    borderLeftWidth: 4,
+  },
+  timelineCardContent: {
+    padding: Spacing.md,
+  },
+  itemBadgeRow: {
     flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 6,
+    marginBottom: Spacing.sm,
   },
   leafScanChip: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: Colors.primaryTint,
     height: 24,
   },
   leafScanChipText: {
-    color: '#1B5E20',
+    color: Colors.primaryDark,
     fontSize: 9.5,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   advisoryTypeChip: {
     height: 24,
-  },
-  farmPill: {
-    backgroundColor: '#F5F5F5',
-    height: 24,
-  },
-  timeText: {
-    fontSize: 11,
-    color: '#888888',
   },
   leafScanBody: {
     flexDirection: 'row',
@@ -525,47 +605,46 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: 72,
     height: 72,
-    borderRadius: 10,
-    backgroundColor: '#F0F0F0',
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.surfaceSubtle,
   },
   thumbnailPlaceholder: {
     width: 72,
     height: 72,
-    borderRadius: 10,
-    backgroundColor: '#E8F5E9',
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.primaryTint,
     justifyContent: 'center',
     alignItems: 'center',
   },
   diseaseName: {
     fontSize: 15,
-    fontWeight: 'bold',
-    color: '#C62828',
+    fontWeight: '700',
+    color: Colors.status.critical.main,
     lineHeight: 20,
   },
   confidenceChip: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: Colors.primaryTint,
     alignSelf: 'flex-start',
-    marginTop: 4,
-    marginBottom: 6,
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.xs + 2,
     height: 22,
   },
   advisoryMessage: {
-    fontSize: 12.5,
-    color: '#333333',
+    ...Typography.bodySmall,
+    color: Colors.textPrimary,
     lineHeight: 17,
   },
   advisoryBody: {
-    marginTop: 2,
+    marginTop: Spacing.xxs,
   },
   advisoryTitle: {
     fontSize: 15,
-    fontWeight: 'bold',
-    color: '#1B5E20',
-    marginBottom: 4,
+    fontWeight: '700',
+    color: Colors.primaryDark,
+    marginBottom: Spacing.xs,
   },
   advisoryContent: {
-    fontSize: 13,
-    color: '#333333',
+    ...Typography.body,
     lineHeight: 18,
   },
 });
