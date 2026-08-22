@@ -106,10 +106,10 @@ export default function LoginScreen() {
           {step === 'phone' ? (
             <View style={styles.formGroup}>
               <Text variant="titleMedium" style={styles.formTitle}>
-                📱 Farmer Phone Login
+                📱 {t('login.phoneTitle')}
               </Text>
               <TextInput
-                label="Mobile Number (10 digits)"
+                label={t('login.mobileNumber')}
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
@@ -124,19 +124,19 @@ export default function LoginScreen() {
                 style={styles.button}
                 contentStyle={styles.buttonContent}
               >
-                Send OTP
+                {t('login.sendOtp')}
               </Button>
             </View>
           ) : (
             <View style={styles.formGroup}>
               <Text variant="titleMedium" style={styles.formTitle}>
-                🔑 Enter 4-Digit Verification Code
+                🔑 {t('login.enterOtpTitle')}
               </Text>
               <Text variant="bodySmall" style={styles.otpHint}>
-                Code sent to +91 {phone}. (Use any code e.g. 1234)
+                {t('login.otpHint', { phone })}
               </Text>
               <TextInput
-                label="OTP Code"
+                label={t('login.otpCode')}
                 value={otp}
                 onChangeText={setOtp}
                 keyboardType="number-pad"
@@ -150,14 +150,14 @@ export default function LoginScreen() {
                 style={styles.button}
                 contentStyle={styles.buttonContent}
               >
-                Verify & Enter Dashboard
+                {t('login.verifyBtn')}
               </Button>
               <Button
                 mode="text"
                 onPress={() => setStep('phone')}
                 style={styles.backButton}
               >
-                Change Phone Number
+                {t('login.changePhone')}
               </Button>
             </View>
           )}

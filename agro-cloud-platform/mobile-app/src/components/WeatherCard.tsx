@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Card, Text, Title, Paragraph, Chip, Button, ActivityIndicator } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { WeatherForecastResponse, ForecastDay } from '../services/api';
 import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../theme/theme';
 
@@ -38,18 +39,18 @@ function formatDateShort(dateStr: string): string {
   return dateStr;
 }
 
-function formatForecastDayName(name: string): string {
+function formatForecastDayName(name: string, t: any): string {
   if (!name) return '';
   const lower = name.trim().toLowerCase();
-  if (lower === 'today') return 'Today';
-  if (lower === 'tomorrow') return 'Tomorrow';
-  if (lower.startsWith('mon')) return 'Mon';
-  if (lower.startsWith('tue')) return 'Tue';
-  if (lower.startsWith('wed')) return 'Wed';
-  if (lower.startsWith('thu')) return 'Thu';
-  if (lower.startsWith('fri')) return 'Fri';
-  if (lower.startsWith('sat')) return 'Sat';
-  if (lower.startsWith('sun')) return 'Sun';
+  if (lower === 'today') return t('weather.today');
+  if (lower === 'tomorrow') return t('weather.tomorrow');
+  if (lower.startsWith('mon')) return t('weather.mon');
+  if (lower.startsWith('tue')) return t('weather.tue');
+  if (lower.startsWith('wed')) return t('weather.wed');
+  if (lower.startsWith('thu')) return t('weather.thu');
+  if (lower.startsWith('fri')) return t('weather.fri');
+  if (lower.startsWith('sat')) return t('weather.sat');
+  if (lower.startsWith('sun')) return t('weather.sun');
   return name.length > 5 ? name.slice(0, 3) : name;
 }
 
@@ -60,13 +61,15 @@ export default function WeatherCard({
   locationError,
   hasPermission = true,
 }: WeatherCardProps) {
+  const { t } = useTranslation();
+
   // If loading and no cached weather yet
   if (loading && !weather) {
     return (
       <Card style={styles.cardContainer}>
         <Card.Content style={styles.loadingContainer}>
           <ActivityIndicator size="small" color="#1E88E5" />
-          <Text style={styles.loadingText}>Fetching live weather for your farm GPS coordinates...</Text>
+          <Text style={styles.loadingText}>{t('weather.fetching')}</Text>
         </Card.Content>
       </Card>
     );
@@ -80,14 +83,13 @@ export default function WeatherCard({
           <View style={styles.placeholderHeader}>
             <View style={styles.placeholderBadgeRow}>
               <View style={styles.gpsPlaceholderBadge}>
-                <Text style={styles.gpsPlaceholderBadgeText}>LIVE WEATHER</Text>
+                <Text style={styles.gpsPlaceholderBadgeText}>{t('weather.liveWeather')}</Text>
               </View>
             </View>
             <Text style={styles.placeholderIcon}>🌦️</Text>
-            <Title style={styles.placeholderTitle}>Enable Live GPS Weather</Title>
+            <Title style={styles.placeholderTitle}>{t('weather.enableGps')}</Title>
             <Paragraph style={styles.placeholderDesc}>
-              {locationError ||
-                'Allow Krishi Setu to access your device GPS to fetch real-time temperature, rainfall likelihood, and 5-day crop weather guidance.'}
+              {locationError || t('weather.enableGpsDesc')}
             </Paragraph>
             <Button
               mode="contained"
@@ -98,7 +100,7 @@ export default function WeatherCard({
               style={styles.enableLocationBtn}
               buttonColor="#1976D2"
             >
-              Detect My GPS Location
+              {t('weather.detectLocation')}
             </Button>
           </View>
         </Card.Content>
@@ -111,20 +113,20 @@ export default function WeatherCard({
   // Guidance card color styling
   let guidanceStyle = styles.guidanceFavorable;
   let guidanceIcon = '🌱';
-  let guidanceTitle = 'Agronomic Weather Advisory';
+  let guidanceTitle = t('weather.advisoryTitle');
 
   if (guidance_type === 'rain_alert') {
     guidanceStyle = styles.guidanceRain;
     guidanceIcon = '🌧️';
-    guidanceTitle = 'Precipitation Alert';
+    guidanceTitle = t('weather.rainAlert');
   } else if (guidance_type === 'dry_spell') {
     guidanceStyle = styles.guidanceDry;
     guidanceIcon = '☀️';
-    guidanceTitle = 'Dry Spell / Heat Advisory';
+    guidanceTitle = t('weather.drySpell');
   } else if (guidance_type === 'wind_alert') {
     guidanceStyle = styles.guidanceWind;
     guidanceIcon = '💨';
-    guidanceTitle = 'High Wind Warning';
+    guidanceTitle = t('weather.windAlert');
   }
 
   return (
@@ -134,8 +136,8 @@ export default function WeatherCard({
         <View style={styles.headerLeft}>
           <View style={styles.badgeRow}>
             <View style={styles.livePulseDot} />
-            <Text style={styles.liveBadgeText}>LIVE WEATHER</Text>
-            <Text style={styles.liveSourceText}>(Real GPS)</Text>
+            <Text style={styles.liveBadgeText}>{t('weather.liveWeather')}</Text>
+            <Text style={styles.liveSourceText}>{t('weather.realGps')}</Text>
           </View>
           <Text style={styles.locationText} numberOfLines={2}>
             📍 {weather.city_name || 'Farm Location'}
@@ -167,8 +169,11 @@ export default function WeatherCard({
             <Text style={styles.currentTemp}>{Math.round(current.temp)}°C</Text>
             <Text style={styles.weatherDescription}>{current.weather_description}</Text>
             <Text style={styles.feelsLikeText}>
-              Feels like {Math.round(current.feels_like)}°C • High {Math.round(current.temp_max)}° / Low{' '}
-              {Math.round(current.temp_min)}°
+              {t('weather.feelsLike', {
+                feels: Math.round(current.feels_like),
+                high: Math.round(current.temp_max),
+                low: Math.round(current.temp_min),
+              })}
             </Text>
           </View>
 
@@ -192,7 +197,7 @@ export default function WeatherCard({
           <View style={styles.metricItem}>
             <Text style={styles.metricEmoji}>💧</Text>
             <Text style={styles.metricVal}>{current.humidity}%</Text>
-            <Text style={styles.metricLabel}>Humidity</Text>
+            <Text style={styles.metricLabel}>{t('weather.humidity')}</Text>
           </View>
 
           <View style={styles.metricDivider} />
@@ -202,7 +207,7 @@ export default function WeatherCard({
             <Text style={styles.metricVal}>
               {current.rain_1h_mm > 0 ? `${current.rain_1h_mm} mm` : '0 mm'}
             </Text>
-            <Text style={styles.metricLabel}>Rain (1h)</Text>
+            <Text style={styles.metricLabel}>{t('weather.rain1h')}</Text>
           </View>
 
           <View style={styles.metricDivider} />
@@ -210,7 +215,7 @@ export default function WeatherCard({
           <View style={styles.metricItem}>
             <Text style={styles.metricEmoji}>💨</Text>
             <Text style={styles.metricVal}>{Math.round(current.wind_speed * 3.6)} km/h</Text>
-            <Text style={styles.metricLabel}>Wind</Text>
+            <Text style={styles.metricLabel}>{t('weather.wind')}</Text>
           </View>
 
           <View style={styles.metricDivider} />
@@ -218,7 +223,7 @@ export default function WeatherCard({
           <View style={styles.metricItem}>
             <Text style={styles.metricEmoji}>☁️</Text>
             <Text style={styles.metricVal}>{current.clouds_pct}%</Text>
-            <Text style={styles.metricLabel}>Cloud Cover</Text>
+            <Text style={styles.metricLabel}>{t('weather.cloudCover')}</Text>
           </View>
         </View>
 
@@ -232,7 +237,7 @@ export default function WeatherCard({
         </View>
 
         {/* 5-Day Forecast Strip */}
-        <Text style={styles.forecastHeader}>📅 5-Day Weather Forecast</Text>
+        <Text style={styles.forecastHeader}>{t('weather.forecast5Day')}</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -245,7 +250,7 @@ export default function WeatherCard({
                 key={day.date}
                 style={[styles.forecastDayCard, isRainDay ? styles.forecastDayCardRain : null]}
               >
-                <Text style={styles.forecastDayName} numberOfLines={1}>{formatForecastDayName(day.day_name)}</Text>
+                <Text style={styles.forecastDayName} numberOfLines={1}>{formatForecastDayName(day.day_name, t)}</Text>
                 <Text style={styles.forecastDateText} numberOfLines={1}>{formatDateShort(day.date)}</Text>
 
                 {day.icon ? (

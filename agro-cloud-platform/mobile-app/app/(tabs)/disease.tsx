@@ -99,11 +99,11 @@ export default function DiseaseScreen() {
         color: Colors.status.healthy.main,
         border: Colors.status.healthy.border,
         bg: Colors.status.healthy.bg,
-        badgeText: 'HEALTHY CROP',
+        badgeText: t('disease.healthyBadge'),
         badgeBg: '#C8E6C9',
         badgeColor: '#1B5E20',
-        headline: 'Crop Leaf is Healthy & Strong',
-        summary: 'No active disease or pathogen symptoms detected on foliage.',
+        headline: t('disease.healthyHeadline'),
+        summary: t('disease.healthySummary'),
       };
     } else if (
       d.includes('blight') ||
@@ -117,11 +117,11 @@ export default function DiseaseScreen() {
         color: Colors.status.warning.main,
         border: Colors.status.warning.border,
         bg: Colors.status.warning.bg,
-        badgeText: 'MODERATE SEVERITY',
+        badgeText: t('disease.moderateBadge'),
         badgeBg: '#FFE082',
         badgeColor: '#E65100',
-        headline: 'Pathogen Symptoms Detected',
-        summary: 'Treatment recommended within 48-72 hours to prevent spread.',
+        headline: t('disease.moderateHeadline'),
+        summary: t('disease.moderateSummary'),
       };
     } else {
       return {
@@ -130,11 +130,11 @@ export default function DiseaseScreen() {
         color: Colors.status.critical.main,
         border: Colors.status.critical.border,
         bg: Colors.status.critical.bg,
-        badgeText: 'URGENT ATTENTION',
+        badgeText: t('disease.highRiskBadge'),
         badgeBg: '#FFCDD2',
         badgeColor: '#B71C1C',
-        headline: 'Active Crop Infection Diagnosed',
-        summary: 'Immediate foliar agronomic action required to preserve harvest yield.',
+        headline: t('disease.highRiskHeadline'),
+        summary: t('disease.highRiskSummary'),
       };
     }
   };
@@ -249,7 +249,7 @@ export default function DiseaseScreen() {
       {/* Top Camera / Picker Card */}
       <Card style={styles.headerCard}>
         <Card.Content style={styles.cardContent}>
-          <Title style={styles.headerTitle}>🔬 AI Crop Doctor</Title>
+          <Title style={styles.headerTitle}>🔬 {t('disease.title')}</Title>
           <Paragraph style={styles.headerSub}>
             {t('disease.instruction')}
           </Paragraph>
@@ -262,7 +262,7 @@ export default function DiseaseScreen() {
               style={[styles.actionBtn, { backgroundColor: Colors.primary }]}
               loading={analyzing}
             >
-              Take Photo
+              {t('disease.takePhoto')}
             </Button>
             <Button
               mode="outlined"
@@ -272,7 +272,7 @@ export default function DiseaseScreen() {
               textColor={Colors.primary}
               disabled={analyzing}
             >
-              Choose Gallery
+              {t('disease.chooseGallery')}
             </Button>
           </View>
 
@@ -283,7 +283,7 @@ export default function DiseaseScreen() {
             style={{ marginTop: Spacing.sm }}
             labelStyle={{ fontSize: 12, color: Colors.primary, fontWeight: '700' }}
           >
-            📜 View Past Scan & Activity History
+            {t('disease.viewHistory')}
           </Button>
         </Card.Content>
       </Card>
@@ -303,7 +303,7 @@ export default function DiseaseScreen() {
           <ActivityIndicator size="large" color={Colors.primary} />
           <Text style={styles.analyzingText}>{t('disease.analyzing')}</Text>
           <Paragraph style={{ color: Colors.textSecondary, fontSize: 12, marginTop: 4 }}>
-            Querying Krishi Setu AI Deep Learning Microservice...
+            {t('disease.queryingMicroservice')}
           </Paragraph>
         </View>
       )}
@@ -341,11 +341,11 @@ export default function DiseaseScreen() {
             <Card.Content style={styles.cardContent}>
               <View style={styles.sectionTitleRow}>
                 <Text style={styles.sectionIcon}>🔍</Text>
-                <Title style={styles.sectionTitle}>What is happening?</Title>
+                <Title style={styles.sectionTitle}>{t('disease.whatIsHappening')}</Title>
               </View>
 
               <View style={styles.diseaseHighlightBox}>
-                <Text style={styles.diseaseLabel}>DIAGNOSED CONDITION</Text>
+                <Text style={styles.diseaseLabel}>{t('disease.diagnosedCondition')}</Text>
                 <Title style={[styles.diseaseNameTitle, { color: severity.color }]}>
                   {scanResult.predicted_disease}
                 </Title>
@@ -361,10 +361,10 @@ export default function DiseaseScreen() {
             <Card.Content style={styles.cardContent}>
               <View style={styles.sectionTitleRow}>
                 <Text style={styles.sectionIcon}>🛠️</Text>
-                <Title style={styles.sectionTitle}>What should you do?</Title>
+                <Title style={styles.sectionTitle}>{t('disease.whatShouldYouDo')}</Title>
               </View>
               <Text style={styles.sectionSubtitle}>
-                Follow these recommended agronomic steps to resolve the issue:
+                {t('disease.followSteps')}
               </Text>
 
               {parseActionSteps(scanResult.advisory_text, scanResult.predicted_disease).map((step, idx) => (
@@ -388,11 +388,9 @@ export default function DiseaseScreen() {
           {/* 4. SUBTLE MODEL CONFIDENCE FOOTER */}
           <View style={styles.subtleFooterBox}>
             <Text style={styles.confidenceLabel}>
-              🤖 AI Diagnostic Model Confidence:{' '}
-              <Text style={styles.confidenceValue}>
-                {Math.round(scanResult.confidence_score * 100)}%
-              </Text>
-              {' '}• Krishi Setu Deep Learning Engine
+              {t('disease.modelConfidence', {
+                score: Math.round(scanResult.confidence_score * 100),
+              })}
             </Text>
           </View>
         </View>

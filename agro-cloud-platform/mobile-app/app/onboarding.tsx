@@ -243,6 +243,13 @@ export default function OnboardingScreen() {
 
   const progressFraction = currentStep / 4;
 
+  const stepTitles = [
+    t('onboarding.step1Header'),
+    t('onboarding.step2Header'),
+    t('onboarding.step3Header'),
+    t('onboarding.step4Header'),
+  ];
+
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Card style={styles.card}>
@@ -257,7 +264,7 @@ export default function OnboardingScreen() {
               />
               <View style={styles.headerTitles}>
                 <Text style={styles.title}>🌱 Krishi Setu</Text>
-                <Text style={styles.subtitle}>Farmer Onboarding Wizard</Text>
+                <Text style={styles.subtitle}>{t('onboarding.farmerWizard')}</Text>
               </View>
             </View>
 
@@ -265,7 +272,7 @@ export default function OnboardingScreen() {
             <View style={styles.progressContainer}>
               <View style={styles.stepInfoRow}>
                 <Text style={styles.stepIndicatorText}>
-                  {STEP_ICONS[currentStep - 1]} Step {currentStep} of 4: {STEP_TITLES[currentStep - 1]}
+                  {STEP_ICONS[currentStep - 1]} {t('onboarding.stepProgress', { current: currentStep, total: 4, title: stepTitles[currentStep - 1] })}
                 </Text>
                 <Text style={styles.stepPercentText}>{Math.round(progressFraction * 100)}%</Text>
               </View>
@@ -320,7 +327,7 @@ export default function OnboardingScreen() {
               <Card.Content style={styles.errorCardContent}>
                 <View style={styles.errorHeaderRow}>
                   <Text style={styles.errorIcon}>⚠️</Text>
-                  <Text style={styles.errorTitle}>Please Check Details</Text>
+                  <Text style={styles.errorTitle}>{t('onboarding.checkDetails')}</Text>
                 </View>
                 <Text style={styles.errorDescription}>{errorMsg}</Text>
               </Card.Content>
@@ -330,13 +337,13 @@ export default function OnboardingScreen() {
           {/* STEP 1: PERSONAL INFO */}
           {currentStep === 1 && (
             <View style={styles.stepBody}>
-              <Text style={styles.stepHeading}>👨‍🌾 Step 1: Farmer Personal Information</Text>
+              <Text style={styles.stepHeading}>👨‍🌾 {t('onboarding.step1Title')}</Text>
               <Text style={styles.stepInstruction}>
-                Enter your name, mobile number, and local village to customize your agronomic alerts.
+                {t('onboarding.step1Instruction')}
               </Text>
 
               <TextInput
-                label="Full Name *"
+                label={t('onboarding.fullName')}
                 placeholder="e.g. Ramesh Patel / Gurpreet Singh"
                 value={farmerName}
                 onChangeText={setFarmerName}
@@ -348,7 +355,7 @@ export default function OnboardingScreen() {
               />
 
               <TextInput
-                label="Mobile Phone Number *"
+                label={t('onboarding.phone')}
                 placeholder="10-digit mobile number"
                 value={phone}
                 onChangeText={setPhone}
@@ -366,8 +373,8 @@ export default function OnboardingScreen() {
                 <View style={{ flex: 1 }}>
                   <Text style={styles.gpsStatusText}>
                     {locating
-                      ? '📡 Locating device GPS...'
-                      : locationStatus || '📍 Auto-detects your farm location'}
+                      ? t('onboarding.locatingGps')
+                      : locationStatus || t('onboarding.autoDetectGps')}
                   </Text>
                 </View>
                 <Button
@@ -380,12 +387,12 @@ export default function OnboardingScreen() {
                   textColor={Colors.primary}
                   labelStyle={{ fontSize: 12, fontWeight: '700' }}
                 >
-                  Detect GPS
+                  {t('onboarding.detectGpsBtn')}
                 </Button>
               </View>
 
               <TextInput
-                label="Village / Tehsil / Region Name *"
+                label={t('onboarding.region')}
                 placeholder="e.g. Ludhiana, Punjab / Khanna, Fatehgarh"
                 value={region}
                 onChangeText={setRegion}
@@ -401,13 +408,13 @@ export default function OnboardingScreen() {
           {/* STEP 2: FARM INFO */}
           {currentStep === 2 && (
             <View style={styles.stepBody}>
-              <Text style={styles.stepHeading}>🌾 Step 2: Farm Plot Details</Text>
+              <Text style={styles.stepHeading}>🌾 {t('onboarding.step2Title')}</Text>
               <Text style={styles.stepInstruction}>
-                Provide your plot name, area, and primary crop to calibrate precision advisory models.
+                {t('onboarding.step2Instruction')}
               </Text>
 
               <TextInput
-                label="Farm / Plot Name *"
+                label={t('onboarding.farmName')}
                 placeholder="e.g. Khanna Wheat Plot A / North Canal Field"
                 value={farmName}
                 onChangeText={setFarmName}
@@ -419,7 +426,7 @@ export default function OnboardingScreen() {
               />
 
               <TextInput
-                label="Plot Area in Acres *"
+                label={t('onboarding.area')}
                 placeholder="e.g. 5.0"
                 value={areaAcres}
                 onChangeText={setAreaAcres}
@@ -431,7 +438,7 @@ export default function OnboardingScreen() {
                 left={<TextInput.Icon icon="ruler-square" />}
               />
 
-              <Text style={styles.fieldLabel}>Select Primary Crop *</Text>
+              <Text style={styles.fieldLabel}>{t('onboarding.selectPrimaryCrop')}</Text>
               <View style={styles.chipRow}>
                 {COMMON_CROPS.map((crop) => {
                   const isSelected = cropType === crop;
@@ -460,13 +467,13 @@ export default function OnboardingScreen() {
           {/* STEP 3: FARMING DETAILS */}
           {currentStep === 3 && (
             <View style={styles.stepBody}>
-              <Text style={styles.stepHeading}>🚜 Step 3: Farming Practices & Experience</Text>
+              <Text style={styles.stepHeading}>🚜 {t('onboarding.step3Title')}</Text>
               <Text style={styles.stepInstruction}>
-                Configure your irrigation source and season preference for accurate soil prescriptions.
+                {t('onboarding.step3Instruction')}
               </Text>
 
               <TextInput
-                label="Farming Experience (in Years) *"
+                label={t('onboarding.expYears')}
                 placeholder="e.g. 5 or 12"
                 value={experienceYears}
                 onChangeText={setExperienceYears}
@@ -478,7 +485,7 @@ export default function OnboardingScreen() {
                 left={<TextInput.Icon icon="clock-outline" />}
               />
 
-              <Text style={styles.fieldLabel}>Irrigation Source *</Text>
+              <Text style={styles.fieldLabel}>{t('onboarding.irrigationSource')}</Text>
               <View style={styles.chipRow}>
                 {IRRIGATION_SOURCES.map((source) => {
                   const isSelected = irrigationSource === source.value;
@@ -502,7 +509,7 @@ export default function OnboardingScreen() {
                 })}
               </View>
 
-              <Text style={styles.fieldLabel}>Crop Season Preference *</Text>
+              <Text style={styles.fieldLabel}>{t('onboarding.preferredSeason')}</Text>
               <View style={styles.chipRow}>
                 {SEASONS.map((season) => {
                   const isSelected = preferredSeason === season.value;
@@ -531,29 +538,29 @@ export default function OnboardingScreen() {
           {/* STEP 4: REVIEW & CONFIRM */}
           {currentStep === 4 && (
             <View style={styles.stepBody}>
-              <Text style={styles.stepHeading}>✅ Step 4: Review Your Information</Text>
+              <Text style={styles.stepHeading}>✅ {t('onboarding.step4Title')}</Text>
               <Text style={styles.stepInstruction}>
-                Please confirm your details below. You can go back to any step to make corrections.
+                {t('onboarding.step4Instruction')}
               </Text>
 
               {/* Review Card 1: Farmer Identity */}
               <View style={styles.reviewSection}>
                 <View style={styles.reviewSectionHeader}>
-                  <Text style={styles.reviewSectionTitle}>👨‍🌾 Farmer Identity</Text>
+                  <Text style={styles.reviewSectionTitle}>👨‍🌾 {t('onboarding.reviewFarmerId')}</Text>
                   <TouchableOpacity onPress={() => setCurrentStep(1)}>
-                    <Text style={styles.editLink}>Edit</Text>
+                    <Text style={styles.editLink}>{t('onboarding.edit')}</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Full Name:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.fullName')}:</Text>
                   <Text style={styles.reviewValue}>{farmerName || '—'}</Text>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Mobile Phone:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.phone')}:</Text>
                   <Text style={styles.reviewValue}>+91 {phone || '—'}</Text>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Region / Village:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.region')}:</Text>
                   <Text style={styles.reviewValue}>{region || '—'}</Text>
                 </View>
               </View>
@@ -561,21 +568,21 @@ export default function OnboardingScreen() {
               {/* Review Card 2: Farm Plot */}
               <View style={styles.reviewSection}>
                 <View style={styles.reviewSectionHeader}>
-                  <Text style={styles.reviewSectionTitle}>🌾 Farm Plot Setup</Text>
+                  <Text style={styles.reviewSectionTitle}>🌾 {t('onboarding.reviewFarmPlot')}</Text>
                   <TouchableOpacity onPress={() => setCurrentStep(2)}>
-                    <Text style={styles.editLink}>Edit</Text>
+                    <Text style={styles.editLink}>{t('onboarding.edit')}</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Plot Name:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.farmName')}:</Text>
                   <Text style={styles.reviewValue}>{farmName || '—'}</Text>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Primary Crop:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.selectPrimaryCrop')}:</Text>
                   <Text style={styles.reviewValue}>{cropType}</Text>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Plot Area:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.area')}:</Text>
                   <Text style={styles.reviewValue}>{areaAcres} Acres</Text>
                 </View>
               </View>
@@ -583,21 +590,21 @@ export default function OnboardingScreen() {
               {/* Review Card 3: Practices */}
               <View style={styles.reviewSection}>
                 <View style={styles.reviewSectionHeader}>
-                  <Text style={styles.reviewSectionTitle}>🚜 Practices & Experience</Text>
+                  <Text style={styles.reviewSectionTitle}>🚜 {t('onboarding.reviewPractices')}</Text>
                   <TouchableOpacity onPress={() => setCurrentStep(3)}>
-                    <Text style={styles.editLink}>Edit</Text>
+                    <Text style={styles.editLink}>{t('onboarding.edit')}</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Irrigation Source:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.irrigationSource')}:</Text>
                   <Text style={styles.reviewValue}>{irrigationSource.toUpperCase()}</Text>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Experience:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.expYears')}:</Text>
                   <Text style={styles.reviewValue}>{experienceYears} Years</Text>
                 </View>
                 <View style={styles.reviewRow}>
-                  <Text style={styles.reviewLabel}>Crop Season:</Text>
+                  <Text style={styles.reviewLabel}>{t('onboarding.preferredSeason')}:</Text>
                   <Text style={styles.reviewValue}>{preferredSeason.toUpperCase()}</Text>
                 </View>
               </View>
@@ -605,7 +612,7 @@ export default function OnboardingScreen() {
               {/* GPS Confirmation Notice */}
               <View style={styles.gpsSummaryBox}>
                 <Text style={styles.gpsSummaryText}>
-                  📍 Location: {latitude && longitude ? `${latitude.toFixed(4)}°N, ${longitude.toFixed(4)}°E` : 'Auto-detected region default coordinates'}
+                  📍 {t('onboarding.locationCoordinates')}: {latitude && longitude ? `${latitude.toFixed(4)}°N, ${longitude.toFixed(4)}°E` : t('onboarding.autoDetectedGpsSummary')}
                 </Text>
               </View>
             </View>
@@ -624,7 +631,7 @@ export default function OnboardingScreen() {
                 style={styles.backBtn}
                 textColor={Colors.textPrimary}
               >
-                Back
+                {t('common.back')}
               </Button>
             ) : (
               <View style={{ flex: 1 }} />
@@ -639,7 +646,7 @@ export default function OnboardingScreen() {
                 style={styles.nextBtn}
                 buttonColor={Colors.primary}
               >
-                Next
+                {t('common.next')}
               </Button>
             ) : (
               <Button
@@ -651,7 +658,7 @@ export default function OnboardingScreen() {
                 style={styles.confirmBtn}
                 buttonColor={Colors.primary}
               >
-                Confirm & Start
+                {t('onboarding.confirmStartBtn')}
               </Button>
             )}
           </View>

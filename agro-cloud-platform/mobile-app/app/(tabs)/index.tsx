@@ -269,9 +269,9 @@ export default function DashboardScreen() {
           visible={true}
           icon="wifi-off"
           style={styles.offlineBanner}
-          actions={[{ label: 'Retry Sync', onPress: loadDashboardData }]}
+          actions={[{ label: t('common.retrySync'), onPress: loadDashboardData }]}
         >
-          <Text style={styles.bannerText}>⚡ Offline Mode — Showing last synced data</Text>
+          <Text style={styles.bannerText}>{t('dashboard.offlineNotice')}</Text>
         </Banner>
       )}
 
@@ -280,11 +280,13 @@ export default function DashboardScreen() {
         <Card.Content style={styles.bannerCardContent}>
           <View style={styles.heroTopRow}>
             <Text style={styles.welcomeText}>
-              {activeSampleFarm ? '🧪 EXPLORING SAMPLE PROFILE' : `Welcome, ${identity?.farmer_name || 'Farmer'} 👋`}
+              {activeSampleFarm
+                ? t('dashboard.exploringSample')
+                : t('dashboard.welcomeFarmer', { name: identity?.farmer_name || t('dashboard.welcome') })}
             </Text>
             {activeSampleFarm && (
               <View style={styles.sampleHeroBadge}>
-                <Text style={styles.sampleHeroBadgeText}>SIMULATED DATA</Text>
+                <Text style={styles.sampleHeroBadgeText}>{t('dashboard.simulatedData')}</Text>
               </View>
             )}
           </View>
@@ -308,7 +310,7 @@ export default function DashboardScreen() {
                     style={{ borderColor: 'rgba(255,255,255,0.7)', borderRadius: 8 }}
                     compact
                   >
-                    Switch Farm ▾
+                    {t('dashboard.switchFarm')}
                   </Button>
                 }
               >
@@ -324,7 +326,11 @@ export default function DashboardScreen() {
           </View>
 
           <Paragraph style={styles.bannerSubtitle}>
-            📍 Crop: {activeSampleFarm ? activeSampleFarm.crop_type : selectedFarm?.crop_type || 'Wheat'} • Area: {activeSampleFarm ? activeSampleFarm.area_acres : selectedFarm?.area_acres || 10} Acres • Region: {activeSampleFarm ? activeSampleFarm.region : identity?.region || 'Registered Plot'}
+            {t('dashboard.farmSummary', {
+              crop: activeSampleFarm ? activeSampleFarm.crop_type : selectedFarm?.crop_type || 'Wheat',
+              area: activeSampleFarm ? activeSampleFarm.area_acres : selectedFarm?.area_acres || 10,
+              region: activeSampleFarm ? activeSampleFarm.region : identity?.region || 'Registered Plot',
+            })}
           </Paragraph>
         </Card.Content>
       </Card>
@@ -356,12 +362,12 @@ export default function DashboardScreen() {
             <Text style={{ fontSize: 22 }}>🧪</Text>
             <View style={[styles.quickActionBadge, { backgroundColor: '#C8E6C9' }]}>
               <Text style={[styles.quickActionBadgeText, { color: '#1B5E20' }]}>
-                {activeSampleFarm ? "ACTIVE" : "BROWSE"}
+                {activeSampleFarm ? t('common.active') : t('common.browse')}
               </Text>
             </View>
           </View>
-          <Text style={styles.quickActionTitle} numberOfLines={1}>Sample Explorer</Text>
-          <Text style={styles.quickActionDesc} numberOfLines={1}>12 Real Scenarios</Text>
+          <Text style={styles.quickActionTitle} numberOfLines={1}>{t('dashboard.sampleExplorer')}</Text>
+          <Text style={styles.quickActionDesc} numberOfLines={1}>{t('dashboard.realScenarios')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -373,24 +379,24 @@ export default function DashboardScreen() {
             <Text style={{ fontSize: 22 }}>📜</Text>
             <View style={[styles.quickActionBadge, { backgroundColor: '#D1C4E9' }]}>
               <Text style={[styles.quickActionBadgeText, { color: '#4527A0' }]}>
-                VIEW
+                {t('common.view')}
               </Text>
             </View>
           </View>
-          <Text style={[styles.quickActionTitle, { color: '#4527A0' }]} numberOfLines={1}>My History</Text>
-          <Text style={[styles.quickActionDesc, { color: '#5E35B1' }]} numberOfLines={1}>Scans & Timeline</Text>
+          <Text style={[styles.quickActionTitle, { color: '#4527A0' }]} numberOfLines={1}>{t('dashboard.myHistory')}</Text>
+          <Text style={[styles.quickActionDesc, { color: '#5E35B1' }]} numberOfLines={1}>{t('dashboard.scansTimeline')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* 6. SIMULATED FIELD SENSORS (DEMO TELEMETRY) */}
       <View style={styles.sectionHeaderRow}>
         <View style={{ flex: 1 }}>
-          <Title style={styles.sectionHeader}>🧪 Simulated Field Sensors (Demo)</Title>
-          <Text style={styles.sectionSubHeader}>Hardware IoT node telemetry stream</Text>
+          <Title style={styles.sectionHeader}>{t('dashboard.simulatedSensors')}</Title>
+          <Text style={styles.sectionSubHeader}>{t('dashboard.telemetryStream')}</Text>
         </View>
         {activeSampleFarm && (
           <View style={styles.sampleTag}>
-            <Text style={styles.sampleTagText}>Sample Preset</Text>
+            <Text style={styles.sampleTagText}>{t('dashboard.samplePreset')}</Text>
           </View>
         )}
       </View>
@@ -430,12 +436,12 @@ export default function DashboardScreen() {
                   ]}
                 >
                   {(telemetry?.soil_moisture ?? 26.5) < 20
-                    ? '⚠️ Severe Drought'
+                    ? t('dashboard.severeDrought')
                     : (telemetry?.soil_moisture ?? 26.5) < 30
-                    ? '💧 Irrigate Soon'
+                    ? t('dashboard.irrigateSoon')
                     : (telemetry?.soil_moisture ?? 26.5) > 50
-                    ? '🌊 Waterlogged'
-                    : '✅ Optimal'}
+                    ? t('dashboard.waterlogged')
+                    : t('dashboard.optimal')}
                 </Text>
               </View>
             </Card.Content>
@@ -447,7 +453,7 @@ export default function DashboardScreen() {
               <Text style={styles.cardIcon}>🌡️</Text>
               <Paragraph style={styles.cardLabel}>{t('dashboard.temperature')}</Paragraph>
               <Title style={styles.cardValue}>{telemetry?.temperature_c ?? 24.5}°C</Title>
-              <Paragraph style={{ fontSize: 11, color: '#666' }}>Hum: {telemetry?.humidity_pct ?? 62}%</Paragraph>
+              <Paragraph style={{ fontSize: 11, color: '#666' }}>{t('dashboard.humidity')}: {telemetry?.humidity_pct ?? 62}%</Paragraph>
             </Card.Content>
           </Card>
 
@@ -469,7 +475,7 @@ export default function DashboardScreen() {
                     (telemetry?.nitrogen_ppm ?? 105) < 60 ? styles.pillTextCritical : styles.pillTextGood,
                   ]}
                 >
-                  {(telemetry?.nitrogen_ppm ?? 105) < 60 ? '⚠️ Deficient' : '🌿 Active NPK'}
+                  {(telemetry?.nitrogen_ppm ?? 105) < 60 ? t('dashboard.deficient') : t('dashboard.activeNpk')}
                 </Text>
               </View>
             </Card.Content>
@@ -502,10 +508,10 @@ export default function DashboardScreen() {
                   ]}
                 >
                   {(telemetry?.soil_ph ?? 6.8) < 6.0
-                    ? '⚠️ Acidic'
+                    ? t('dashboard.acidic')
                     : (telemetry?.soil_ph ?? 6.8) > 8.0
-                    ? '⚠️ Alkaline'
-                    : '🧪 Balanced'}
+                    ? t('dashboard.alkaline')
+                    : t('dashboard.balanced')}
                 </Text>
               </View>
             </Card.Content>
@@ -515,16 +521,16 @@ export default function DashboardScreen() {
 
       {/* 7. ADVISORY NOTIFICATIONS */}
       <Title style={styles.sectionHeader}>
-        {activeSampleFarm ? '🔔 Scenario Advisory Alerts' : '🔔 Latest Advisory Alerts'}
+        {activeSampleFarm ? t('dashboard.scenarioAlerts') : t('dashboard.latestAlerts')}
       </Title>
       {advisories.slice(0, 3).map((adv) => (
         <Card key={adv.id} style={styles.advisoryCard}>
           <Card.Content style={styles.advisoryCardContent}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
               <Text style={{ fontWeight: 'bold', color: adv.type === 'disease' ? '#D32F2F' : '#2E7D32', flex: 1, flexShrink: 1, marginRight: 8 }} numberOfLines={2}>
-                {adv.type === 'disease' ? '🔴 Disease Alert' : adv.type === 'irrigation' ? '💧 Irrigation Advisory' : '🟢 NPK Advice'}
+                {adv.type === 'disease' ? t('dashboard.diseaseAlert') : adv.type === 'irrigation' ? t('dashboard.irrigationAlert') : t('dashboard.npkAdvice')}
               </Text>
-              {!adv.is_read && <Chip style={{ backgroundColor: '#FFEBEE' }} textStyle={{ fontSize: 10 }}>NEW</Chip>}
+              {!adv.is_read && <Chip style={{ backgroundColor: '#FFEBEE' }} textStyle={{ fontSize: 10 }}>{t('common.new')}</Chip>}
             </View>
             <Paragraph style={{ marginTop: 6, color: '#333', fontSize: 13, lineHeight: 18 }}>{adv.message}</Paragraph>
           </Card.Content>
@@ -539,7 +545,7 @@ export default function DashboardScreen() {
           icon="arrow-left-circle"
           style={styles.exitSampleBtn}
         >
-          Exit Sample Mode & Return to My Real Farm
+          {t('dashboard.exitSampleBtn')}
         </Button>
       ) : (
         <Button
@@ -548,7 +554,7 @@ export default function DashboardScreen() {
           icon="refresh"
           style={styles.refreshButton}
         >
-          Refresh Field Telemetry
+          {t('dashboard.refreshTelemetry')}
         </Button>
       )}
 

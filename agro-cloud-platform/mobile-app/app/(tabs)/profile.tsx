@@ -212,7 +212,7 @@ export default function ProfileScreen() {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.primary} />
         <Text style={{ marginTop: Spacing.md, color: Colors.primary, fontWeight: '700' }}>
-          Loading profile...
+          {t('profile.loading')}
         </Text>
       </View>
     );
@@ -235,7 +235,7 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          <Title style={styles.heroName}>{identity?.farmer_name || farmerName || 'Registered Farmer'}</Title>
+          <Title style={styles.heroName}>{identity?.farmer_name || farmerName || t('profile.registeredFarmer')}</Title>
           <Text style={styles.heroSubtitle}>
             📱 +91 {identity?.phone || phone || 'N/A'} • 📍 {identity?.region || region || 'India'}
           </Text>
@@ -258,7 +258,7 @@ export default function ProfileScreen() {
       {saveSuccess && (
         <Card style={styles.successCard}>
           <Card.Content style={styles.feedbackCardContent}>
-            <Text style={styles.successText}>✅ Profile and farm details updated successfully!</Text>
+            <Text style={styles.successText}>{t('profile.updateSuccess')}</Text>
           </Card.Content>
         </Card>
       )}
@@ -279,18 +279,18 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 18 }}>👨‍🌾</Text>
             </View>
             <View style={{ flex: 1, marginLeft: Spacing.sm + 2 }}>
-              <Title style={styles.sectionTitle}>Farmer & Farm Information</Title>
-              <Text style={styles.sectionSubtitle}>Edit your personal identity and agricultural plot configuration</Text>
+              <Title style={styles.sectionTitle}>{t('profile.farmerFarmInfo')}</Title>
+              <Text style={styles.sectionSubtitle}>{t('profile.farmerFarmSub')}</Text>
             </View>
           </View>
 
           <Divider style={styles.sectionDivider} />
 
           {/* Sub-Group: Farmer Identity */}
-          <Text style={styles.subGroupTitle}>Farmer Personal Details</Text>
+          <Text style={styles.subGroupTitle}>{t('profile.personalDetails')}</Text>
 
           <TextInput
-            label="Full Name *"
+            label={t('onboarding.fullName')}
             value={farmerName}
             onChangeText={setFarmerName}
             mode="outlined"
@@ -301,7 +301,7 @@ export default function ProfileScreen() {
           />
 
           <TextInput
-            label="Mobile Phone (10 digits) *"
+            label={t('onboarding.phone')}
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
@@ -315,7 +315,7 @@ export default function ProfileScreen() {
 
           <View style={styles.twoColumnRow}>
             <TextInput
-              label="Region / Village *"
+              label={t('onboarding.region')}
               value={region}
               onChangeText={setRegion}
               mode="outlined"
@@ -325,7 +325,7 @@ export default function ProfileScreen() {
               left={<TextInput.Icon icon="map-marker" />}
             />
             <TextInput
-              label="Exp. (Years) *"
+              label={t('profile.expYears')}
               value={experienceYears}
               onChangeText={setExperienceYears}
               keyboardType="number-pad"
@@ -339,10 +339,10 @@ export default function ProfileScreen() {
           </View>
 
           {/* Sub-Group: Farm Plot Details */}
-          <Text style={[styles.subGroupTitle, { marginTop: Spacing.md }]}>Farm Plot Details</Text>
+          <Text style={[styles.subGroupTitle, { marginTop: Spacing.md }]}>{t('profile.farmDetails')}</Text>
 
           <TextInput
-            label="Farm / Plot Name *"
+            label={t('onboarding.farmName')}
             value={farmName}
             onChangeText={setFarmName}
             mode="outlined"
@@ -352,7 +352,7 @@ export default function ProfileScreen() {
             left={<TextInput.Icon icon="home-variant" />}
           />
 
-          <Text style={styles.chipFieldLabel}>Primary Crop Type *</Text>
+          <Text style={styles.chipFieldLabel}>{t('onboarding.selectPrimaryCrop')}</Text>
           <View style={styles.chipSelectorRow}>
             {COMMON_CROPS.map((crop) => {
               const isSelected = cropType.toLowerCase() === crop.toLowerCase();
@@ -372,7 +372,7 @@ export default function ProfileScreen() {
           </View>
 
           <TextInput
-            label="Plot Area in Acres *"
+            label={t('onboarding.area')}
             value={areaAcres}
             onChangeText={setAreaAcres}
             keyboardType="decimal-pad"
@@ -383,7 +383,7 @@ export default function ProfileScreen() {
             left={<TextInput.Icon icon="ruler-square" />}
           />
 
-          <Text style={styles.chipFieldLabel}>Irrigation Source *</Text>
+          <Text style={styles.chipFieldLabel}>{t('onboarding.irrigationSource')}</Text>
           <View style={styles.chipSelectorRow}>
             {IRRIGATION_OPTIONS.map((item) => {
               const isSelected = irrigationSource.toLowerCase() === item.value.toLowerCase();
@@ -402,7 +402,7 @@ export default function ProfileScreen() {
             })}
           </View>
 
-          <Text style={styles.chipFieldLabel}>Crop Season Preference *</Text>
+          <Text style={styles.chipFieldLabel}>{t('onboarding.preferredSeason')}</Text>
           <SegmentedButtons
             value={preferredSeason}
             onValueChange={setPreferredSeason}
@@ -421,7 +421,7 @@ export default function ProfileScreen() {
             buttonColor={Colors.primary}
             contentStyle={styles.buttonContent}
           >
-            Save Profile Changes
+            {t('profile.saveChanges')}
           </Button>
         </Card.Content>
       </Card>
@@ -434,15 +434,15 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 18 }}>⚙️</Text>
             </View>
             <View style={{ flex: 1, marginLeft: Spacing.sm + 2 }}>
-              <Title style={styles.sectionTitle}>App Settings</Title>
-              <Text style={styles.sectionSubtitle}>Language, notifications & sample farms simulation</Text>
+              <Title style={styles.sectionTitle}>{t('profile.appSettings')}</Title>
+              <Text style={styles.sectionSubtitle}>{t('profile.appSettingsSub')}</Text>
             </View>
           </View>
 
           <Divider style={styles.sectionDivider} />
 
           {/* Language Selector */}
-          <Text style={styles.settingItemTitle}>🌐 Preferred Language / भाषा चुनें</Text>
+          <Text style={styles.settingItemTitle}>{t('profile.preferredLanguage')}</Text>
           <View style={styles.languageGrid}>
             {[
               { value: 'en', label: 'English', native: 'English' },
@@ -495,8 +495,8 @@ export default function ProfileScreen() {
           {/* Notification Preferences */}
           <View style={styles.switchRow}>
             <View style={{ flex: 1, paddingRight: Spacing.sm + 2 }}>
-              <Text style={styles.switchTitle}>🔔 Advisory & Disease Alerts</Text>
-              <Text style={styles.switchSubtitle}>Receive timely alerts for urgent irrigation & leaf diseases</Text>
+              <Text style={styles.switchTitle}>{t('profile.advisoryAlerts')}</Text>
+              <Text style={styles.switchSubtitle}>{t('profile.advisoryAlertsSub')}</Text>
             </View>
             <Switch
               value={notificationsEnabled}
@@ -508,9 +508,9 @@ export default function ProfileScreen() {
           <Divider style={{ marginVertical: Spacing.md }} />
 
           {/* Activity & Scan History */}
-          <Text style={styles.settingItemTitle}>📜 Activity & Disease Scan History</Text>
+          <Text style={styles.settingItemTitle}>{t('profile.activityHistory')}</Text>
           <Text style={{ fontSize: 12, color: Colors.textSecondary, marginBottom: Spacing.sm }}>
-            View your complete chronological log of AI leaf diagnoses, images, and advisory prescriptions.
+            {t('profile.activityHistoryDesc')}
           </Text>
           <Button
             mode="contained"
@@ -518,15 +518,15 @@ export default function ProfileScreen() {
             onPress={() => router.push('/history')}
             style={{ marginBottom: Spacing.md, borderRadius: BorderRadius.md, backgroundColor: '#4527A0' }}
           >
-            Open My History Timeline
+            {t('profile.openHistoryBtn')}
           </Button>
 
           <Divider style={{ marginVertical: Spacing.md }} />
 
           {/* Real Sample Farms Option */}
-          <Text style={styles.settingItemTitle}>🧪 Simulated Farms Explorer</Text>
+          <Text style={styles.settingItemTitle}>{t('profile.simulatedExplorer')}</Text>
           <Text style={{ fontSize: 12, color: Colors.textSecondary, marginBottom: Spacing.sm }}>
-            Explore 12 real crop scenarios with simulated telemetry (Nitrogen deficiency, Drought, Blight risk, Acidic soil, etc.)
+            {t('profile.simulatedExplorerDesc')}
           </Text>
           <Button
             mode="contained-tonal"
@@ -534,7 +534,7 @@ export default function ProfileScreen() {
             onPress={() => setSampleModalVisible(true)}
             style={{ marginBottom: Spacing.md, borderRadius: BorderRadius.md }}
           >
-            {activeSampleFarmId ? "Simulated Farm Active • Switch Scenario" : "Browse 12 Sample Farms"}
+            {activeSampleFarmId ? t('profile.simulatedActiveBtn') : t('profile.browseSamplesBtn')}
           </Button>
 
           <Divider style={{ marginVertical: Spacing.md }} />
@@ -547,9 +547,12 @@ export default function ProfileScreen() {
                 <Text style={styles.versionPillText}>v1.0.0</Text>
               </View>
             </View>
-            <Text style={styles.versionDesc}>Precision Advisory & Mandi Linkage (Offline-First Ready)</Text>
+            <Text style={styles.versionDesc}>{t('profile.platformTagline')}</Text>
             <Text style={styles.versionMeta}>
-              Farmer #{identity?.farmer_id || 1} • Farm Plot #{identity?.farm_id || 1} • Local Cache Active
+              {t('profile.platformMeta', {
+                farmerId: identity?.farmer_id || 1,
+                farmId: identity?.farm_id || 1,
+              })}
             </Text>
           </View>
 
@@ -562,7 +565,7 @@ export default function ProfileScreen() {
             style={styles.resetButton}
             contentStyle={styles.buttonContent}
           >
-            Reset My Data / Re-run Onboarding
+            {t('profile.resetDataBtn')}
           </Button>
         </Card.Content>
       </Card>

@@ -122,7 +122,7 @@ export default function MandiScreen() {
         <Card style={styles.forecastCard}>
           <Card.Content style={styles.cardContent}>
             <View style={styles.headerRow}>
-              <Title style={styles.forecastTitle}>📈 14-Day AI Price Forecast</Title>
+              <Title style={styles.forecastTitle}>{t('mandi.priceForecastTitle')}</Title>
               <View style={styles.prophetPill}>
                 <Text style={styles.prophetPillText}>Prophet AI</Text>
               </View>
@@ -133,17 +133,17 @@ export default function MandiScreen() {
 
             <View style={styles.forecastBoxRow}>
               <View style={styles.forecastBox}>
-                <Text style={styles.boxLabel}>Current Price</Text>
+                <Text style={styles.boxLabel}>{t('mandi.currentPrice')}</Text>
                 <Title style={styles.boxValue}>INR {forecast.current_price.toFixed(0)}</Title>
               </View>
               <View style={[styles.forecastBox, { backgroundColor: Colors.primaryTint }]}>
-                <Text style={styles.boxLabel}>Projected Peak</Text>
+                <Text style={styles.boxLabel}>{t('mandi.projectedPeak')}</Text>
                 <Title style={[styles.boxValue, { color: Colors.primary }]}>INR {forecast.projected_max_price.toFixed(0)}</Title>
               </View>
             </View>
 
             <View style={styles.recommendationBox}>
-              <Text style={styles.recommendationLabel}>💡 Optimal Selling Recommendation:</Text>
+              <Text style={styles.recommendationLabel}>{t('mandi.optimalSellingRec')}</Text>
               <Text style={styles.recommendationText}>
                 {forecast.best_time_to_sell_recommendation}
               </Text>
@@ -152,7 +152,7 @@ export default function MandiScreen() {
             {/* 7-Day Visual Price Trajectory Chart */}
             <View style={styles.chartContainer}>
               <Text style={styles.chartTitle}>
-                📊 7-Day Price Trajectory (₹ / Quintal)
+                {t('mandi.priceTrajectoryTitle')}
               </Text>
               <View style={styles.barChartRow}>
                 {(() => {
@@ -190,7 +190,7 @@ export default function MandiScreen() {
       )}
 
       {/* Mandi Spot Rates List */}
-      <Title style={styles.sectionHeader}>🏛️ Spot Mandi Price Feed</Title>
+      <Title style={styles.sectionHeader}>{t('mandi.spotPriceFeed')}</Title>
       {loading ? (
         <ActivityIndicator style={{ marginVertical: Spacing.lg }} size="large" color={Colors.primary} />
       ) : (
@@ -214,13 +214,13 @@ export default function MandiScreen() {
       {/* Trade Listing Form */}
       <Card style={styles.formCard}>
         <Card.Content style={styles.cardContent}>
-          <Title style={styles.formHeader}>🌾 List Harvest for Sale</Title>
+          <Title style={styles.formHeader}>{t('mandi.listHarvestTitle')}</Title>
           <Paragraph style={styles.formSub}>
-            Post your harvested crop quantity to connect directly with verified buyers and Mandis.
+            {t('mandi.listHarvestDesc')}
           </Paragraph>
 
           <TextInput
-            label="Crop Type"
+            label={t('mandi.cropType')}
             value={cropType}
             onChangeText={setCropType}
             mode="outlined"
@@ -229,7 +229,7 @@ export default function MandiScreen() {
             style={styles.input}
           />
           <TextInput
-            label="Harvest Quantity (Quintals)"
+            label={t('mandi.harvestQuantity')}
             value={quantity}
             onChangeText={setQuantity}
             keyboardType="numeric"
@@ -247,7 +247,7 @@ export default function MandiScreen() {
             buttonColor={Colors.primary}
             loading={listingSubmitting}
           >
-            Create Listing & Find Buyers
+            {t('mandi.createListingBtn')}
           </Button>
         </Card.Content>
       </Card>
@@ -257,28 +257,33 @@ export default function MandiScreen() {
         <Card style={styles.confirmedCard}>
           <Card.Content style={styles.cardContent}>
             <Title style={{ color: Colors.primaryDark, fontSize: 18, fontWeight: '700' }}>
-              🎉 Trade Confirmed!
+              {t('mandi.tradeConfirmed')}
             </Title>
             <Paragraph style={{ color: Colors.primary, fontWeight: '700', marginVertical: Spacing.xs }}>
-              Matched Buyer: {confirmedTrade.selected_buyer_name} ({confirmedTrade.mandi_name})
+              {t('mandi.matchedBuyer', {
+                buyer: confirmedTrade.selected_buyer_name,
+                mandi: confirmedTrade.mandi_name,
+              })}
             </Paragraph>
             <Paragraph style={{ ...Typography.body, color: Colors.textPrimary }}>
-              Final Price: <Text style={{ fontWeight: '700', color: Colors.primaryDark }}>INR {confirmedTrade.offered_price.toFixed(2)}/quintal</Text>
+              {t('mandi.finalPrice', {
+                price: `INR ${confirmedTrade.offered_price.toFixed(2)}/quintal`,
+              })}
             </Paragraph>
 
             <Divider style={{ marginVertical: Spacing.md }} />
 
             <Title style={{ ...Typography.subTitle, color: Colors.primaryDark }}>
-              🚚 Automated Logistics Channel:
+              {t('mandi.automatedLogistics')}
             </Title>
             <Paragraph style={styles.logisticsPoint}>
-              • <Text style={{ fontWeight: '700' }}>Pickup Date:</Text> {confirmedTrade.logistics.pickup_date}
+              • <Text style={{ fontWeight: '700' }}>{t('mandi.pickupDate')}</Text> {confirmedTrade.logistics.pickup_date}
             </Paragraph>
             <Paragraph style={styles.logisticsPoint}>
-              • <Text style={{ fontWeight: '700' }}>Transporter:</Text> {confirmedTrade.logistics.transporter_name}
+              • <Text style={{ fontWeight: '700' }}>{t('mandi.transporter')}</Text> {confirmedTrade.logistics.transporter_name}
             </Paragraph>
             <Paragraph style={styles.logisticsPoint}>
-              • <Text style={{ fontWeight: '700' }}>Estimated Transit:</Text> {confirmedTrade.logistics.estimated_transit_hours} Hours
+              • <Text style={{ fontWeight: '700' }}>{t('mandi.estimatedTransit')}</Text> {confirmedTrade.logistics.estimated_transit_hours} {t('mandi.hours')}
             </Paragraph>
           </Card.Content>
         </Card>
@@ -287,7 +292,7 @@ export default function MandiScreen() {
       {/* Matched Buyers Results */}
       {buyerMatches.length > 0 && !confirmedTrade && (
         <View style={{ marginTop: Spacing.md }}>
-          <Title style={styles.sectionHeader}>🤝 Top 3 AI Ranked Buyer Matches</Title>
+          <Title style={styles.sectionHeader}>{t('mandi.topBuyerMatches')}</Title>
           {buyerMatches.map((match, index) => {
             const isTopMatch = index === 0;
             return (
@@ -300,7 +305,7 @@ export default function MandiScreen() {
               >
                 {isTopMatch && (
                   <View style={styles.topMatchBanner}>
-                    <Text style={styles.topMatchBannerText}>⭐ TOP RECOMMENDED MATCH (RANK #1)</Text>
+                    <Text style={styles.topMatchBannerText}>{t('mandi.topMatchBanner')}</Text>
                   </View>
                 )}
 
@@ -315,12 +320,12 @@ export default function MandiScreen() {
                     <View style={{ flexDirection: 'row', gap: Spacing.xs }}>
                       {isTopMatch && (
                         <View style={styles.bestMatchChip}>
-                          <Text style={styles.bestMatchChipText}>BEST MATCH</Text>
+                          <Text style={styles.bestMatchChipText}>{t('mandi.bestMatch')}</Text>
                         </View>
                       )}
                       <View style={styles.scorePill}>
                         <Text style={styles.scorePillText}>
-                          Score: {(match.score || 95).toFixed(1)}
+                          {t('mandi.score', { score: (match.score || 95).toFixed(1) })}
                         </Text>
                       </View>
                     </View>
@@ -330,7 +335,7 @@ export default function MandiScreen() {
 
                   {/* Labeled Row 1: Offered Price */}
                   <View style={styles.labeledDetailRow}>
-                    <Text style={styles.detailRowLabel}>💰 Offered Price:</Text>
+                    <Text style={styles.detailRowLabel}>{t('mandi.offeredPrice')}</Text>
                     <Text style={isTopMatch ? styles.topOfferedPriceText : styles.offeredPriceText}>
                       INR {match.offered_price.toFixed(2)} / Quintal
                     </Text>
@@ -338,7 +343,7 @@ export default function MandiScreen() {
 
                   {/* Labeled Row 2: Distance & APMC Mandi */}
                   <View style={styles.labeledDetailRow}>
-                    <Text style={styles.detailRowLabel}>📍 Distance & Mandi:</Text>
+                    <Text style={styles.detailRowLabel}>{t('mandi.distanceMandi')}</Text>
                     <Text style={styles.detailRowValue}>
                       {match.distance_km} km away • {match.mandi_name}
                     </Text>
@@ -347,14 +352,14 @@ export default function MandiScreen() {
                   {/* Labeled Row 3: Why This Match Reasoning */}
                   {match.explanation && (
                     <View style={styles.explanationBox}>
-                      <Text style={styles.explanationTitle}>💡 Why this match:</Text>
+                      <Text style={styles.explanationTitle}>{t('mandi.whyThisMatch')}</Text>
                       <Text style={styles.explanationText}>{match.explanation}</Text>
                     </View>
                   )}
 
                   {/* Labeled Row 4: Logistics Channel */}
                   <View style={styles.logisticsRow}>
-                    <Text style={styles.logisticsLabel}>🚚 Logistics Channel:</Text>
+                    <Text style={styles.logisticsLabel}>{t('mandi.logisticsChannel')}</Text>
                     <Text style={styles.logisticsValue}>{match.logistics_note}</Text>
                   </View>
 
@@ -364,10 +369,12 @@ export default function MandiScreen() {
                     icon="check-circle"
                     onPress={() => handleAcceptBuyer(match.id)}
                     loading={acceptingId === match.id}
-                    buttonColor={Colors.primary}
+                    disabled={acceptingId !== null}
                     style={isTopMatch ? styles.topAcceptBtn : styles.acceptBtn}
+                    buttonColor={isTopMatch ? Colors.primary : Colors.primaryLight}
+                    labelStyle={{ fontSize: 13, fontWeight: '700', color: isTopMatch ? '#FFFFFF' : Colors.primaryDark }}
                   >
-                    Accept This Buyer
+                    {t('mandi.acceptBuyerBtn')}
                   </Button>
                 </Card.Content>
               </Card>

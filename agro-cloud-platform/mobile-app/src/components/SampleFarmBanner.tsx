@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, Text, Button, Chip } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { SampleFarm } from '../data/sampleFarms';
 
 interface SampleFarmBannerProps {
@@ -9,6 +10,8 @@ interface SampleFarmBannerProps {
 }
 
 export default function SampleFarmBanner({ sampleFarm, onExitSampleMode }: SampleFarmBannerProps) {
+  const { t } = useTranslation();
+
   if (!sampleFarm) return null;
 
   return (
@@ -17,7 +20,7 @@ export default function SampleFarmBanner({ sampleFarm, onExitSampleMode }: Sampl
         <View style={styles.topRow}>
           <View style={styles.badgeRow}>
             <View style={styles.sampleBadge}>
-              <Text style={styles.sampleBadgeText}>🧪 SAMPLE DATA</Text>
+              <Text style={styles.sampleBadgeText}>{t('sampleFarm.sampleData')}</Text>
             </View>
             <View
               style={[
@@ -51,12 +54,15 @@ export default function SampleFarmBanner({ sampleFarm, onExitSampleMode }: Sampl
             style={styles.exitButton}
             labelStyle={{ fontSize: 11, fontWeight: 'bold', color: '#1B5E20' }}
           >
-            My Real Farm
+            {t('sampleFarm.myRealFarm')}
           </Button>
         </View>
 
         <Text style={styles.noticeText}>
-          ⚠️ <Text style={{ fontWeight: 'bold' }}>Simulated Scenario:</Text> Showing {sampleFarm.name} ({sampleFarm.crop_type}). This is not a real sensor reading from your plot.
+          {t('sampleFarm.scenarioNotice', {
+            name: sampleFarm.name,
+            crop: sampleFarm.crop_type,
+          })}
         </Text>
       </Card.Content>
     </Card>

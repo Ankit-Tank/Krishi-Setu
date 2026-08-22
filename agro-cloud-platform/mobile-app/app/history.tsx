@@ -80,13 +80,13 @@ export default function HistoryScreen() {
   const getAdvisoryBadge = (type?: string) => {
     switch ((type || '').toLowerCase()) {
       case 'disease':
-        return { label: 'DISEASE ALERT', bg: Colors.status.critical.bg, text: Colors.status.critical.text, icon: '🔴' };
+        return { label: t('advisory.diseaseWarning'), bg: Colors.status.critical.bg, text: Colors.status.critical.text, icon: '🔴' };
       case 'irrigation':
-        return { label: 'IRRIGATION PRESCRIPTION', bg: Colors.status.info.bg, text: Colors.status.info.text, icon: '💧' };
+        return { label: t('advisory.irrigationAdvice'), bg: Colors.status.info.bg, text: Colors.status.info.text, icon: '💧' };
       case 'npk':
-        return { label: 'NPK ADVISORY', bg: Colors.status.healthy.bg, text: Colors.status.healthy.text, icon: '🧪' };
+        return { label: t('advisory.npkPlan'), bg: Colors.status.healthy.bg, text: Colors.status.healthy.text, icon: '🧪' };
       default:
-        return { label: 'AGRONOMIC ADVISORY', bg: Colors.status.warning.bg, text: Colors.status.warning.text, icon: '📢' };
+        return { label: t('advisory.generalAgronomy'), bg: Colors.status.warning.bg, text: Colors.status.warning.text, icon: '📢' };
     }
   };
 
@@ -115,8 +115,8 @@ export default function HistoryScreen() {
       <Appbar.Header style={styles.header}>
         <Appbar.BackAction color="#F7F1E8" onPress={() => router.back()} />
         <Appbar.Content
-          title="📜 My Farm History"
-          subtitle={identity ? `${identity.farmer_name} • ${identity.farm_name}` : 'Past Scans & Advisories'}
+          title={t('history.headerTitle')}
+          subtitle={identity ? `${identity.farmer_name} • ${identity.farm_name}` : t('history.headerSubtitle')}
           titleStyle={styles.headerTitle}
           subtitleStyle={styles.headerSubtitle}
         />
@@ -134,9 +134,9 @@ export default function HistoryScreen() {
             visible={true}
             icon="wifi-off"
             style={styles.offlineBanner}
-            actions={[{ label: 'Retry', onPress: loadHistory }]}
+            actions={[{ label: t('common.retry'), onPress: loadHistory }]}
           >
-            <Text style={styles.bannerText}>⚡ Offline Mode — Showing cached history</Text>
+            <Text style={styles.bannerText}>{t('history.offlineBanner')}</Text>
           </Banner>
         )}
 
@@ -152,29 +152,29 @@ export default function HistoryScreen() {
         {/* Hero Stats Card */}
         <Card style={styles.statsCard}>
           <Card.Content>
-            <Title style={styles.statsTitle}>Activity Timeline Overview</Title>
+            <Title style={styles.statsTitle}>{t('history.statsOverview')}</Title>
             <Text style={styles.statsSubtitle}>
-              Chronological log of all AI disease diagnoses & precision prescriptions
+              {t('history.statsSubtitle')}
             </Text>
 
             <View style={styles.statsRow}>
               <View style={styles.statPill}>
                 <Text style={styles.statNumber}>{historyData?.total_items ?? timeline.length}</Text>
-                <Text style={styles.statLabel}>Total Events</Text>
+                <Text style={styles.statLabel}>{t('history.totalEvents')}</Text>
               </View>
 
               <View style={[styles.statPill, { backgroundColor: '#E8F5E9' }]}>
                 <Text style={[styles.statNumber, { color: '#2E7D32' }]}>
                   {historyData?.leaf_scans_count ?? timeline.filter(t => t.item_type === 'leaf_scan').length}
                 </Text>
-                <Text style={styles.statLabel}>🌿 Leaf Scans</Text>
+                <Text style={styles.statLabel}>{t('history.leafScans')}</Text>
               </View>
 
               <View style={[styles.statPill, { backgroundColor: '#FFF3E0' }]}>
                 <Text style={[styles.statNumber, { color: '#E65100' }]}>
                   {historyData?.advisories_count ?? timeline.filter(t => t.item_type === 'advisory').length}
                 </Text>
-                <Text style={styles.statLabel}>📢 Advisories</Text>
+                <Text style={styles.statLabel}>{t('history.advisories')}</Text>
               </View>
             </View>
           </Card.Content>
@@ -188,7 +188,7 @@ export default function HistoryScreen() {
             style={[styles.filterChip, filterType === 'all' && styles.filterChipActive]}
             textStyle={filterType === 'all' ? styles.filterChipTextActive : styles.filterChipText}
           >
-            All Events ({timeline.length})
+            {t('history.allFilter', { count: timeline.length })}
           </Chip>
           <Chip
             selected={filterType === 'leaf_scan'}
@@ -196,7 +196,7 @@ export default function HistoryScreen() {
             style={[styles.filterChip, filterType === 'leaf_scan' && styles.filterChipActive]}
             textStyle={filterType === 'leaf_scan' ? styles.filterChipTextActive : styles.filterChipText}
           >
-            🌿 Leaf Scans ({historyData?.leaf_scans_count ?? timeline.filter(t => t.item_type === 'leaf_scan').length})
+            {t('history.leafScansFilter', { count: historyData?.leaf_scans_count ?? timeline.filter(t => t.item_type === 'leaf_scan').length })}
           </Chip>
           <Chip
             selected={filterType === 'advisory'}
@@ -204,7 +204,7 @@ export default function HistoryScreen() {
             style={[styles.filterChip, filterType === 'advisory' && styles.filterChipActive]}
             textStyle={filterType === 'advisory' ? styles.filterChipTextActive : styles.filterChipText}
           >
-            📢 Advisories ({historyData?.advisories_count ?? timeline.filter(t => t.item_type === 'advisory').length})
+            {t('history.advisoriesFilter', { count: historyData?.advisories_count ?? timeline.filter(t => t.item_type === 'advisory').length })}
           </Chip>
         </View>
 
@@ -212,7 +212,7 @@ export default function HistoryScreen() {
         {loading && (
           <View style={styles.loadingBox}>
             <ActivityIndicator size="large" color="#2E7D32" />
-            <Text style={styles.loadingText}>Fetching your activity history...</Text>
+            <Text style={styles.loadingText}>{t('history.loading')}</Text>
           </View>
         )}
 
@@ -221,9 +221,9 @@ export default function HistoryScreen() {
           <Card style={styles.emptyCard}>
             <Card.Content style={styles.emptyContent}>
               <Text style={{ fontSize: 44, marginBottom: 8 }}>🌱</Text>
-              <Title style={styles.emptyTitle}>No History Records Yet</Title>
+              <Title style={styles.emptyTitle}>{t('history.emptyTitle')}</Title>
               <Paragraph style={styles.emptyDesc}>
-                Whenever you diagnose a crop leaf in Crop Doctor or receive automated soil telemetry advisories, they will be logged here in chronological order.
+                {t('history.emptyDesc')}
               </Paragraph>
               <Button
                 mode="contained"
@@ -231,7 +231,7 @@ export default function HistoryScreen() {
                 onPress={() => router.push('/(tabs)/disease')}
                 style={styles.actionBtn}
               >
-                Scan a Crop Leaf Now
+                {t('history.scanLeafNowBtn')}
               </Button>
             </Card.Content>
           </Card>
@@ -293,7 +293,7 @@ export default function HistoryScreen() {
                         <View style={styles.itemBadgeRow}>
                           {isLeafScan ? (
                             <View style={styles.leafScanChip}>
-                              <Text style={styles.leafScanChipText}>🔬 LEAF SCAN DIAGNOSIS</Text>
+                              <Text style={styles.leafScanChipText}>{t('history.leafScanBadge')}</Text>
                             </View>
                           ) : (
                             <View style={[styles.advisoryTypeChip, { backgroundColor: badge.bg }]}>
@@ -329,7 +329,7 @@ export default function HistoryScreen() {
                                   style={styles.confidenceChip}
                                   textStyle={{ fontSize: 10, color: Colors.primaryDark, fontWeight: '700' }}
                                 >
-                                  Confidence: {Math.round(item.confidence_score * 100)}%
+                                  {t('history.confidenceScore', { score: Math.round(item.confidence_score * 100) })}
                                 </Chip>
                               )}
 

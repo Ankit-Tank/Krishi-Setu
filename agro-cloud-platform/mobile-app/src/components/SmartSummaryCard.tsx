@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card, Text, Title, Paragraph, Chip, Button, ActivityIndicator } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { SmartSummaryResponse } from '../services/api';
 import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../theme/theme';
 
@@ -17,13 +18,14 @@ export default function SmartSummaryCard({
   onRefresh,
 }: SmartSummaryCardProps) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   if (loading && !summary) {
     return (
       <Card style={styles.cardContainer}>
         <Card.Content style={styles.loadingContainer}>
           <ActivityIndicator size="small" color="#A5D6A7" />
-          <Text style={styles.loadingText}>Generating AI Smart Summary from disease, soil & mandi data...</Text>
+          <Text style={styles.loadingText}>{t('smartSummary.generating')}</Text>
         </Card.Content>
       </Card>
     );
@@ -40,7 +42,7 @@ export default function SmartSummaryCard({
         <View style={styles.topHeaderRow}>
           <View style={styles.badgeRow}>
             <Text style={styles.sparkleIcon}>🧠</Text>
-            <Text style={styles.badgeTitle}>AI SMART SUMMARY</Text>
+            <Text style={styles.badgeTitle}>{t('smartSummary.title')}</Text>
             <View style={styles.livePulse} />
           </View>
 
@@ -57,7 +59,7 @@ export default function SmartSummaryCard({
                   { color: isUrgent ? '#FFD54F' : '#E8F5E9' },
                 ]}
               >
-                {isUrgent ? 'ACTION REQUIRED' : 'ON TRACK'}
+                {isUrgent ? t('smartSummary.actionRequired') : t('smartSummary.onTrack')}
               </Text>
             </View>
 
@@ -97,7 +99,7 @@ export default function SmartSummaryCard({
           >
             <View style={styles.pillarIconRow}>
               <Text style={styles.pillarIcon}>🍃</Text>
-              <Text style={styles.pillarLabel}>Disease</Text>
+              <Text style={styles.pillarLabel}>{t('smartSummary.disease')}</Text>
             </View>
             <Text
               style={[
@@ -109,10 +111,10 @@ export default function SmartSummaryCard({
               numberOfLines={2}
             >
               {summary.disease.status === 'DISEASED'
-                ? (summary.disease.predicted_disease || 'Infected')
+                ? (summary.disease.predicted_disease || t('smartSummary.infected'))
                 : summary.disease.status === 'HEALTHY'
-                ? 'Healthy Foliage'
-                : 'No Scan Yet'}
+                ? t('smartSummary.healthyFoliage')
+                : t('smartSummary.noScanYet')}
             </Text>
           </TouchableOpacity>
 
@@ -129,7 +131,7 @@ export default function SmartSummaryCard({
           >
             <View style={styles.pillarIconRow}>
               <Text style={styles.pillarIcon}>💧</Text>
-              <Text style={styles.pillarLabel}>Irrigation</Text>
+              <Text style={styles.pillarLabel}>{t('smartSummary.irrigation')}</Text>
             </View>
             <Text
               style={[
@@ -141,10 +143,10 @@ export default function SmartSummaryCard({
               numberOfLines={2}
             >
               {summary.soil_irrigation.moisture_status === 'LOW'
-                ? `Low (${summary.soil_irrigation.moisture_pct ?? 24}%)`
+                ? `${t('smartSummary.low')} (${summary.soil_irrigation.moisture_pct ?? 24}%)`
                 : summary.soil_irrigation.moisture_status === 'HIGH'
-                ? 'High (Pause)'
-                : `Optimal (${summary.soil_irrigation.moisture_pct ?? 30}%)`}
+                ? t('smartSummary.highPause')
+                : `${t('smartSummary.optimal')} (${summary.soil_irrigation.moisture_pct ?? 30}%)`}
             </Text>
           </TouchableOpacity>
 
@@ -156,7 +158,7 @@ export default function SmartSummaryCard({
           >
             <View style={styles.pillarIconRow}>
               <Text style={styles.pillarIcon}>🏛️</Text>
-              <Text style={styles.pillarLabel}>Best Mandi</Text>
+              <Text style={styles.pillarLabel}>{t('smartSummary.bestMandi')}</Text>
             </View>
             <Text style={styles.pillarValueMarket} numberOfLines={2}>
               ₹{Math.round(summary.market.best_price_per_quintal)}/q • {summary.market.distance_km}km
@@ -176,7 +178,7 @@ export default function SmartSummaryCard({
             compact
             labelStyle={{ fontSize: 11, marginVertical: 3 }}
           >
-            Scan Leaf
+            {t('smartSummary.scanLeaf')}
           </Button>
 
           <Button
@@ -189,7 +191,7 @@ export default function SmartSummaryCard({
             compact
             labelStyle={{ fontSize: 11, marginVertical: 3 }}
           >
-            Soil Plan
+            {t('smartSummary.soilPlan')}
           </Button>
 
           <Button
@@ -202,7 +204,7 @@ export default function SmartSummaryCard({
             compact
             labelStyle={{ fontSize: 11, marginVertical: 3 }}
           >
-            Mandi Deals
+            {t('smartSummary.mandiDeals')}
           </Button>
         </View>
       </Card.Content>

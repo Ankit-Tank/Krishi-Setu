@@ -10,6 +10,7 @@ import {
   IconButton,
   Divider,
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { SAMPLE_FARMS, SampleFarm } from '../data/sampleFarms';
 import { FarmerIdentity } from '../services/api';
 
@@ -30,6 +31,7 @@ export default function SampleFarmsModal({
   activeSampleFarmId,
   realIdentity,
 }: SampleFarmsModalProps) {
+  const { t } = useTranslation();
   const [filterCrop, setFilterCrop] = useState<string>('all');
 
   const filteredFarms = filterCrop === 'all'
@@ -51,10 +53,10 @@ export default function SampleFarmsModal({
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={{ fontSize: 20, marginRight: 6 }}>🧪</Text>
-              <Title style={styles.headerTitle}>Real Sample Farms Explorer</Title>
+              <Title style={styles.headerTitle}>{t('sampleModal.title')}</Title>
             </View>
             <Text style={styles.headerSubtitle}>
-              Explore 12 simulated farm profiles with varied crops & soil conditions
+              {t('profile.simulatedExplorerDesc')}
             </Text>
           </View>
           <IconButton icon="close" size={24} onPress={onDismiss} />
@@ -75,11 +77,11 @@ export default function SampleFarmsModal({
                 <View style={{ flex: 1 }}>
                   <View style={styles.badgeRow}>
                     <View style={styles.realBadge}>
-                      <Text style={styles.realBadgeText}>MY REAL ONBOARDED FARM</Text>
+                      <Text style={styles.realBadgeText}>{t('sampleModal.myRealFarmBadge')}</Text>
                     </View>
                     {!activeSampleFarmId && (
                       <View style={styles.activeChip}>
-                        <Text style={styles.activeChipText}>ACTIVE VIEW</Text>
+                        <Text style={styles.activeChipText}>{t('sampleModal.activeView')}</Text>
                       </View>
                     )}
                   </View>
@@ -103,11 +105,11 @@ export default function SampleFarmsModal({
                   style={styles.returnButton}
                   labelStyle={{ fontWeight: 'bold' }}
                 >
-                  Switch Back to My Real Farm
+                  {t('sampleModal.switchBack')}
                 </Button>
               ) : (
                 <Text style={styles.currentlyViewingText}>
-                  ✅ Currently viewing your live personal farm data & IoT readings
+                  {t('sampleModal.currentlyViewingReal')}
                 </Text>
               )}
             </Card.Content>
@@ -115,10 +117,10 @@ export default function SampleFarmsModal({
 
           {/* Section Divider & Crop Filters */}
           <View style={styles.sectionHeaderRow}>
-            <Title style={styles.sectionTitle}>Built-in Sample Scenarios (12 Profiles)</Title>
+            <Title style={styles.sectionTitle}>{t('sampleModal.scenariosTitle')}</Title>
           </View>
           <Text style={styles.sectionDesc}>
-            Select any profile below to preview how Krishi Setu detects deficiencies and issues precision agronomic prescriptions:
+            {t('sampleModal.scenariosDesc')}
           </Text>
 
           {/* Filter Chips */}
@@ -129,7 +131,7 @@ export default function SampleFarmsModal({
               style={[styles.filterChip, filterCrop === 'all' && styles.filterChipActive]}
               textStyle={filterCrop === 'all' ? styles.filterChipTextActive : styles.filterChipText}
             >
-              All Crops (12)
+              {t('sampleModal.allCrops', { count: 12 })}
             </Chip>
             {uniqueCrops.map(crop => (
               <Chip
@@ -204,21 +206,21 @@ export default function SampleFarmsModal({
                   {/* Telemetry preview mini-badges */}
                   <View style={styles.telemetryPreviewRow}>
                     <View style={styles.metricPill}>
-                      <Text style={styles.metricLabel}>Moisture</Text>
+                      <Text style={styles.metricLabel}>{t('dashboard.moisture')}</Text>
                       <Text style={styles.metricVal}>{farm.telemetry.soil_moisture}%</Text>
                     </View>
                     <View style={styles.metricPill}>
-                      <Text style={styles.metricLabel}>Temp</Text>
+                      <Text style={styles.metricLabel}>{t('dashboard.temperature')}</Text>
                       <Text style={styles.metricVal}>{farm.telemetry.temperature_c}°C</Text>
                     </View>
                     <View style={styles.metricPill}>
-                      <Text style={styles.metricLabel}>N-P-K (ppm)</Text>
+                      <Text style={styles.metricLabel}>{t('sampleModal.npkPpm')}</Text>
                       <Text style={styles.metricVal}>
                         {farm.telemetry.nitrogen_ppm}-{farm.telemetry.phosphorus_ppm}-{farm.telemetry.potassium_ppm}
                       </Text>
                     </View>
                     <View style={styles.metricPill}>
-                      <Text style={styles.metricLabel}>pH</Text>
+                      <Text style={styles.metricLabel}>{t('dashboard.ph')}</Text>
                       <Text style={styles.metricVal}>{farm.telemetry.soil_ph}</Text>
                     </View>
                   </View>
@@ -236,7 +238,7 @@ export default function SampleFarmsModal({
                     style={[styles.exploreBtn, isSelected ? styles.exploreBtnActive : null]}
                     labelStyle={{ fontSize: 13, fontWeight: 'bold' }}
                   >
-                    {isSelected ? "Currently Exploring This Farm ✓" : "Explore Full Dashboard & Advisory"}
+                    {isSelected ? t('sampleModal.currentlyExploring') : t('sampleModal.exploreFarm')}
                   </Button>
                 </Card.Content>
               </Card>
