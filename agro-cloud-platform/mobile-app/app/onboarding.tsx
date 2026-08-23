@@ -629,6 +629,7 @@ export default function OnboardingScreen() {
                 onPress={handleBack}
                 disabled={loading}
                 style={styles.backBtn}
+                labelStyle={styles.navBtnLabel}
                 textColor={Colors.textPrimary}
               >
                 {t('common.back')}
@@ -644,6 +645,7 @@ export default function OnboardingScreen() {
                 contentStyle={{ flexDirection: 'row-reverse' }}
                 onPress={handleNext}
                 style={styles.nextBtn}
+                labelStyle={styles.navBtnLabel}
                 buttonColor={Colors.primary}
               >
                 {t('common.next')}
@@ -656,6 +658,7 @@ export default function OnboardingScreen() {
                 loading={loading}
                 disabled={loading}
                 style={styles.confirmBtn}
+                labelStyle={styles.confirmBtnLabel}
                 buttonColor={Colors.primary}
               >
                 {t('onboarding.confirmStartBtn')}
@@ -933,7 +936,16 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   confirmBtn: {
-    flex: 1.3,
+    flex: 1.8,
     borderRadius: BorderRadius.md,
+  },
+  confirmBtnLabel: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    paddingHorizontal: 2,
+  },
+  navBtnLabel: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
