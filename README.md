@@ -1,244 +1,614 @@
 <div align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:C1502E,100:2B3A67&height=220&section=header&text=Krishi%20Setu&fontSize=72&fontColor=F7F1E8&fontAlignY=38&animation=fadeIn&desc=Cloud-Native%20Agri-Advisory%20%26%20Market%20Linkage%20Ecosystem&descAlignY=58&descSize=19&descColor=F7F1E8" width="100%" alt="Krishi Setu banner"/>
+
+<a href="https://github.com/Ankit-Tank/Krishi-Setu">
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=240&section=header&text=KRISHI%20SETU&fontSize=72&fontColor=ffffff&fontAlignY=38&desc=From%20field%20signals%20to%20smarter%20farm%20decisions&descAlignY=61&descSize=19&descColor=ffffff&animation=fadeIn" alt="Krishi Setu — smart agriculture platform banner" width="100%" />
+</a>
+
+<img src="https://raw.githubusercontent.com/Ankit-Tank/Krishi-Setu/main/agro-cloud-platform/mobile-app/assets/krishisetu-logo.png" alt="Krishi Setu logo" width="110" />
+
+### 🌾 A farmer’s field should not have to guess.
+
+**Krishi Setu** is a cloud-native agriculture platform connecting field data, crop health, weather, AI-assisted diagnosis, agronomic guidance, market intelligence, and buyer matching in one workflow.
+
 <br/>
-[![Typing SVG](https://readme-typing-svg.demolab.com/?font=Georgia&weight=600&size=22&pause=1200&color=C1502E&center=true&vCenter=true&width=720&lines=Diagnose+crop+disease+from+a+photo+in+under+2+seconds;Forecast+mandi+prices+for+the+next+14+days;Match+farmers+to+the+best+buyer+and+the+best+mandi;Built+for+Smart+India+Hackathon+2026)](https://git.io/typing-svg)
- 
+
+![Stars](https://img.shields.io/github/stars/Ankit-Tank/Krishi-Setu?style=for-the-badge&logo=github)
+![Forks](https://img.shields.io/github/forks/Ankit-Tank/Krishi-Setu?style=for-the-badge&logo=github)
+![Issues](https://img.shields.io/github/issues/Ankit-Tank/Krishi-Setu?style=for-the-badge&logo=github)
+![License](https://img.shields.io/github/license/Ankit-Tank/Krishi-Setu?style=for-the-badge)
+
 <br/>
-<img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
-<img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/>
-<img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Native"/>
-<img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"/>
-<br/>
-<img src="https://img.shields.io/badge/Status-Hackathon%20Build-E8A63A?style=for-the-badge" alt="Status"/>
-<img src="https://img.shields.io/badge/SIH-2026-C1502E?style=for-the-badge" alt="SIH 2026"/>
-<img src="https://img.shields.io/badge/License-MIT-2B3A67?style=for-the-badge" alt="License"/>
+
+![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-AI%20%26%20Backend-3776AB?style=flat-square&logo=python&logoColor=white)
+![React Native](https://img.shields.io/badge/React%20Native-Mobile-61DAFB?style=flat-square&logo=react&logoColor=111111)
+![Expo](https://img.shields.io/badge/Expo-App-000020?style=flat-square&logo=expo&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Data-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?style=flat-square&logo=docker&logoColor=white)
+
 <br/><br/>
- 
-<a href="#-the-problem"><img src="https://img.shields.io/badge/-The%20Problem-2E2A26?style=flat-square" /></a>
-<a href="#-features"><img src="https://img.shields.io/badge/-Features-2E2A26?style=flat-square" /></a>
-<a href="#-architecture"><img src="https://img.shields.io/badge/-Architecture-2E2A26?style=flat-square" /></a>
-<a href="#-tech-stack"><img src="https://img.shields.io/badge/-Tech%20Stack-2E2A26?style=flat-square" /></a>
-<a href="#-quick-start"><img src="https://img.shields.io/badge/-Quick%20Start-2E2A26?style=flat-square" /></a>
-<a href="#-project-structure"><img src="https://img.shields.io/badge/-Structure-2E2A26?style=flat-square" /></a>
-<a href="#-testing"><img src="https://img.shields.io/badge/-Testing-2E2A26?style=flat-square" /></a>
-<a href="#-roadmap"><img src="https://img.shields.io/badge/-Roadmap-2E2A26?style=flat-square" /></a>
- 
+
+> **Field → Intelligence → Advice → Market → Action**
+
+<a href="#-why-krishi-setu">Why</a> · <a href="#-what-it-does">Capabilities</a> · <a href="#-how-it-works">How it works</a> · <a href="#-architecture">Architecture</a> · <a href="#-quick-start">Run it</a> · <a href="#-api-surface">API</a>
+
 </div>
-<br/>
-<a name="-the-problem"></a>
-## 🌾 The Problem
- 
-> A farmer in a small village photographs a diseased leaf with no one to ask. Weeks later, the same farmer sells a healthy harvest at a crashed price — because nobody told them the next village's mandi was paying 20% more.
- 
-Smallholder farmers live between two broken worlds:
- 
-| | |
+
+---
+
+## 🌱 Why Krishi Setu?
+
+Agricultural decisions are connected, but the information needed to make them is often fragmented.
+
+| Signal | Decision |
 |---|---|
-| 🩺 **Field-level blindness** | Pest and disease outbreaks go undiagnosed until it's too late. Soil health decisions are guesswork. |
-| 📉 **Post-harvest distress selling** | No visibility into regional mandi prices means farmers sell wherever's closest — rarely wherever's best. |
- 
-**Krishi Setu** exists to close that gap — one AI-powered platform, from the leaf to the ledger.
- 
-<br/>
-<a name="-features"></a>
-## ✨ Features
- 
-<table>
-<tr>
-<td width="33%" valign="top">
-### 🔬 AI Disease Diagnosis
-Photograph a leaf, get a diagnosis and treatment advisory in under 2 seconds — powered by a fine-tuned CNN served as an independent microservice.
- 
-</td>
-<td width="33%" valign="top">
-### 🌱 Soil & Irrigation Advisory
-Submit soil telemetry (N-P-K, pH, moisture) and receive a health score with deficiency-specific, actionable recommendations.
- 
-</td>
-<td width="33%" valign="top">
-### 📈 14-Day Price Forecasting
-Time-series forecasting over historical mandi data projects prices two weeks out — with confidence intervals, not false precision.
- 
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top">
-### 🤝 Smart Buyer Matching
-Ranks nearby mandis and buyers by predicted price and distance, turning a forecast into a concrete "sell here, sell now" recommendation.
- 
-</td>
-<td width="33%" valign="top">
-### 🚚 Logistics Provisioning
-Connects a farmer's harvest schedule directly to transport and trade listings — closing the loop from diagnosis to doorstep.
- 
-</td>
-<td width="33%" valign="top">
-### 🌐 Offline-First Multilingual App
-A React Native experience that caches locally and syncs when connectivity returns — built for rural networks, not boardroom Wi-Fi.
- 
-</td>
-</tr>
-</table>
-<br/>
-<a name="-architecture"></a>
-## 🏗️ Architecture
- 
-The AI engine runs as its **own independently deployable microservice** — separate from the core backend — so diagnosis, forecasting, and advisory models can scale independently of farmer traffic and profile data.
- 
+| 🌿 Crop symptoms | What is affecting the plant? |
+| 🧪 Soil + telemetry | Does it need water or nutrients? |
+| 🌦️ Weather | What is likely to change next? |
+| 📈 Market movement | When and where should the crop be sold? |
+| 🤝 Buyer demand | Who should actually buy it? |
+| 🚚 Logistics | How does the confirmed trade move? |
+
+**Krishi Setu connects these signals into one decision-support loop.**
+
+---
+
+## ✨ What It Does
+
+| Capability | What happens |
+|---|---|
+| 🔬 **Disease scanning** | Leaf image → AI inference → disease, confidence, action, persisted scan |
+| 🧪 **Soil & irrigation** | N/P/K, pH, moisture, temperature and humidity → crop-aware advisory |
+| 🌦️ **Live weather** | Farm coordinates → live conditions + 5-day forecast → farm guidance |
+| 📈 **Yield + price** | Crop lifecycle + telemetry → harvest window/yield; historical mandi prices → 14-day forecast |
+| 🤝 **Buyer matching** | Harvest listing → buyer/mandi candidates → ranked matches with reasons |
+| 🚚 **Trade logistics** | Selected buyer → listing marked matched → logistics record provisioned |
+| 🧠 **Smart summary** | Latest farm signals → one decision-oriented summary |
+| 📱 **Mobile app** | Expo / React Native client with onboarding, auth, tabs, history, location, notifications, caching and i18n |
+
+---
+
+## 🔄 How It Works
+
 ```mermaid
-flowchart TD
-    A["📱 Mobile App — React Native / Expo"] -->|REST| B["🧠 Backend API — FastAPI :8000"]
-    B -->|REST| C["🤖 AI Microservice — FastAPI :8500"]
-    C --> D["Disease CNN"]
-    C --> E["Soil Model"]
-    C --> F["Price Forecaster"]
-    B --> G[("🗄️ PostgreSQL")]
-    B --> H["📦 Seed Data — telemetry, mandi prices, trade listings"]
- 
-    style A fill:#2B3A67,color:#fff,stroke:none
-    style B fill:#C1502E,color:#fff,stroke:none
-    style C fill:#C1502E,color:#fff,stroke:none
-    style D fill:#E8A63A,color:#2E2A26,stroke:none
-    style E fill:#E8A63A,color:#2E2A26,stroke:none
-    style F fill:#E8A63A,color:#2E2A26,stroke:none
-    style G fill:#2B3A67,color:#fff,stroke:none
-    style H fill:#F7F1E8,color:#2E2A26,stroke:#2E2A26
+flowchart LR
+    F["👨‍🌾 Farmer"] --> APP["📱 React Native + Expo"]
+    APP --> API["⚡ FastAPI Backend"]
+    API --> DB[("🗄️ SQLAlchemy<br/>PostgreSQL / SQLite")]
+    API --> AI["🧠 AI / ML Engine"]
+    API --> WX["🌦️ Weather Service"]
+
+    AI --> D["🔬 Disease"]
+    AI --> S["🧪 Soil + Irrigation"]
+    AI --> Y["🌾 Yield"]
+    AI --> P["📈 Price"]
+
+    API --> M["🤝 Buyer + Mandi Matching"]
+    M --> L["🚚 Logistics"]
+
+    DB --> SS["🧠 Smart Summary"]
+    API --> SS
 ```
- 
-<br/>
-<a name="-tech-stack"></a>
+
+GitHub supports Mermaid diagrams directly in Markdown, keeping architecture diagrams editable and version-controlled rather than embedding static screenshots.
+
+---
+
+## 🧭 The Decision Loop
+
+```text
+        ┌─────────────────────┐
+        │      FARM STATE     │
+        │ crop · soil ·       │
+        │ weather · history   │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │     INTELLIGENCE    │
+        │ disease · advisory  │
+        │ yield · market      │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │   RECOMMENDATION    │
+        │ what · when · where │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │       ACTION        │
+        │ trade · confirm ·   │
+        │ logistics           │
+        └─────────────────────┘
+```
+
+This is the project’s central idea:
+
+> **Turn farm signals into an actionable next step.**
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+flowchart TB
+    subgraph CLIENT["📱 CLIENT"]
+        RN["React Native / Expo"]
+        I18N["i18next"]
+        CACHE["AsyncStorage"]
+        LOC["Expo Location"]
+        NOTIFY["Expo Notifications"]
+    end
+
+    subgraph CORE["⚡ CORE PLATFORM"]
+        FAST["FastAPI"]
+        ROUTERS["Farmers · Farms · Telemetry<br/>Leaf Scan · Advisory · Market · Weather"]
+        SERVICES["Agronomic Advisor<br/>Buyer Matcher<br/>Weather Service<br/>Smart Summary"]
+        ORM["SQLAlchemy ORM"]
+    end
+
+    subgraph INTEL["🧠 AI ENGINE"]
+        DF["Disease Detector"]
+        AGRI["Agri Advisor"]
+        FORE["Yield & Market Forecaster"]
+    end
+
+    subgraph DATA["🗄️ DATA"]
+        PG[("PostgreSQL")]
+        SQLITE[("SQLite")]
+        SEED["Seed / Mock Data"]
+    end
+
+    RN --> FAST
+    FAST --> ROUTERS
+    ROUTERS --> SERVICES
+    SERVICES --> ORM
+
+    ORM --> PG
+    ORM --> SQLITE
+
+    FAST --> DF
+    FAST --> AGRI
+    FAST --> FORE
+
+    SEED --> ORM
+
+    RN --> CACHE
+    RN --> I18N
+    RN --> LOC
+    RN --> NOTIFY
+```
+
+The monorepo separates the farmer-facing app, core API, AI service, data layer, documentation, and seed/demo data.
+
+---
+
+## 🔬 Disease Diagnosis Pipeline
+
+```mermaid
+sequenceDiagram
+    participant U as Farmer App
+    participant B as Backend
+    participant A as AI Engine
+    participant H as Hugging Face
+
+    U->>B: Upload leaf image
+    B->>A: POST /predict/disease
+    A->>H: Primary model inference
+    H-->>A: Prediction
+    A-->>B: Disease + confidence + action
+    B->>B: Save LeafScan
+    B->>B: Save AdvisoryRecord
+    B-->>U: Diagnosis result
+```
+
+The repository includes local disease-model assets and fallback inference paths, making the diagnosis service more resilient when an external inference dependency is unavailable.
+
+---
+
+## 🌾 Yield + Market Intelligence
+
+### Yield
+
+The current lifecycle model covers:
+
+**Wheat · Rice/Paddy · Cotton · Soybean · Maize**
+
+It derives:
+
+- projected harvest start/end
+- current growth stage
+- estimated yield per acre
+- reasoning based on crop lifecycle and available telemetry summary
+
+### Market price
+
+```text
+Historical mandi prices
+        │
+        ▼
+   14-day forecast
+        │
+        ▼
+Projected peak price
+        │
+        ▼
+Best selling window
+```
+
+The implementation attempts **Prophet** forecasting and falls back to local trend/seasonality logic if that path fails.
+
+> Forecast output in this prototype should be treated as a software estimate, not a guaranteed market prediction.
+
+---
+
+## 🤝 Harvest → Buyer → Logistics
+
+```mermaid
+flowchart LR
+    A["Create trade listing"] --> B["Generate buyer candidates"]
+    B --> C["Rank by price + distance + urgency"]
+    C --> D["Return top matches + reasoning"]
+    D --> E["Farmer confirms buyer"]
+    E --> F["Listing becomes matched"]
+    F --> G["Provision logistics record"]
+```
+
+The matching flow considers:
+
+**offered price + distance + demand urgency**
+
+The confirmation endpoint then provisions logistics information including pickup date, transporter, and estimated transit duration.
+
+---
+
+## 🌦️ Weather
+
+```mermaid
+flowchart LR
+    F["Saved farm coordinates"] --> API["GET /weather/{farm_id}"]
+    API --> W["WeatherService"]
+    W --> O["OpenWeatherMap"]
+    O --> X["Live conditions + 5-day forecast"]
+    X --> A["Farm-oriented guidance"]
+```
+
+The weather router supports both farm-based weather lookup and direct latitude/longitude queries.
+
+---
+
 ## 🛠️ Tech Stack
- 
-<div align="center">
+
 | Layer | Technology |
 |---|---|
-| **Mobile App** | ![React Native](https://img.shields.io/badge/-React%20Native-61DAFB?style=flat-square&logo=react&logoColor=black) ![Expo](https://img.shields.io/badge/-Expo-000020?style=flat-square&logo=expo&logoColor=white) |
-| **Backend API** | ![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) ![SQLAlchemy](https://img.shields.io/badge/-SQLAlchemy-D71F00?style=flat-square) |
-| **AI Microservice** | ![PyTorch](https://img.shields.io/badge/-PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white) ![ONNX](https://img.shields.io/badge/-ONNX-005CED?style=flat-square) ![scikit--learn](https://img.shields.io/badge/-scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white) ![Prophet](https://img.shields.io/badge/-Prophet-3366CC?style=flat-square) |
-| **Database** | ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white) |
-| **Infra** | ![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![Docker Compose](https://img.shields.io/badge/-Docker%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white) |
- 
-</div>
-<br/>
-<a name="-project-structure"></a>
-## 📂 Project Structure
- 
+| Mobile | React Native, Expo, Expo Router |
+| Language | TypeScript |
+| Backend | Python, FastAPI, Uvicorn |
+| ORM | SQLAlchemy |
+| Database | PostgreSQL / SQLite |
+| HTTP | httpx |
+| AI / ML | PyTorch, TorchVision, Transformers, scikit-learn, Prophet |
+| Vision | Pillow, NumPy, TFLite / LiteRT support |
+| Weather | OpenWeatherMap |
+| Localization | i18next / react-i18next |
+| Device APIs | Expo Location, Image Picker, Notifications |
+| Local storage | AsyncStorage |
+| Infrastructure | Docker + Docker Compose |
+
+---
+
+## 🧩 Project Map
+
+```text
+Krishi-Setu/
+├── README.md
+├── SETUP.md
+├── docker-compose.yml
+├── agro_cloud.db
+└── agro-cloud-platform/
+    ├── backend/
+    │   ├── app/
+    │   │   ├── api/
+    │   │   ├── core/
+    │   │   ├── db/
+    │   │   ├── models/
+    │   │   ├── schemas/
+    │   │   └── services/
+    │   ├── seed.py
+    │   ├── requirements.txt
+    │   └── test_*.py
+    │
+    ├── ai-engine/
+    │   ├── app/
+    │   │   ├── core/
+    │   │   ├── schemas/
+    │   │   └── services/
+    │   ├── models/
+    │   ├── download_model.py
+    │   ├── requirements.txt
+    │   └── test_*.py
+    │
+    ├── mobile-app/
+    │   ├── app/
+    │   ├── assets/
+    │   ├── src/
+    │   └── package.json
+    │
+    ├── docs/
+    │   ├── architecture.md
+    │   ├── DEMO_SCRIPT.md
+    │   ├── FEATURES_CHECKLIST.md
+    │   └── pitch_notes.md
+    │
+    ├── seed-data/
+    │   ├── leaf_diseases_mock.json
+    │   ├── mandi_prices_mock.json
+    │   └── telemetry_mock.json
+    │
+    ├── start_backend.bat
+    └── start_ai_engine.bat
 ```
-agro-cloud-platform/
-├── backend/              → FastAPI core API · auth · database · orchestration
-├── ai-engine/             → Independent AI microservice (disease, soil, forecast models)
-├── mobile-app/           → React Native (Expo) farmer-facing app
-├── docs/                   → Architecture notes, diagrams, pitch material
-├── seed-data/              → Mock telemetry, mandi prices, sample listings
-└── docker-compose.yml      → One-command full-stack launch
-```
- 
-<br/>
-<a name="-quick-start"></a>
+
+---
+
 ## 🚀 Quick Start
- 
-### Prerequisites
- 
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white)
-![Git](https://img.shields.io/badge/Git-latest-F05032?style=flat-square&logo=git&logoColor=white)
- 
-<br/>
-<details>
-<summary><b>🐳 Option 1 — Docker Compose (single command, recommended)</b></summary>
-<br/>
+
+### 1. Clone
+
 ```bash
+git clone https://github.com/Ankit-Tank/Krishi-Setu.git
+cd Krishi-Setu
+```
+
+### 2. Start the runnable Docker stack
+
+The working Compose project is inside `agro-cloud-platform/`:
+
+```bash
+cd agro-cloud-platform
 docker-compose up --build
 ```
- 
-| Service | URL |
+
+Services:
+
+| Service | Address |
 |---|---|
-| Backend API docs | `http://localhost:8000/docs` |
-| AI Microservice docs | `http://localhost:8500/docs` |
+| Backend Swagger | `http://localhost:8000/docs` |
+| Backend health | `http://localhost:8000/health` |
+| AI Engine Swagger | `http://localhost:8500/docs` |
+| AI Engine health | `http://localhost:8500/health` |
 | PostgreSQL | `localhost:5432` |
- 
-</details>
+
+> **Why `cd agro-cloud-platform`?** The nested Compose file resolves `./backend` and `./ai-engine` correctly. The repository-root Compose file currently does not match the monorepo layout.
+
+### 3. Manual launch
+
 <details>
-<summary><b>⚡ Option 2 — Manual local launch (3 terminals, ~5 minutes)</b></summary>
-<br/>
-**Terminal 1 — AI & ML Engine (port 8500)**
+<summary><b>🧠 AI Engine</b></summary>
+
 ```bash
 cd agro-cloud-platform/ai-engine
-python -m venv .venv && .venv\Scripts\Activate.ps1   # Windows
-# source .venv/bin/activate                            # macOS/Linux
+
+python -m venv .venv
+
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+
+# macOS / Linux
+# source .venv/bin/activate
+
 pip install -r requirements.txt
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8500
 ```
-Verify → `http://localhost:8500/health`
- 
-**Terminal 2 — Backend API + Database Seed (port 8000)**
+
+</details>
+
+<details>
+<summary><b>⚡ Backend</b></summary>
+
 ```bash
 cd agro-cloud-platform/backend
-python -m venv .venv && .venv\Scripts\Activate.ps1
+
+python -m venv .venv
+
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+
+# macOS / Linux
+# source .venv/bin/activate
+
 pip install -r requirements.txt
-python seed.py          # seeds telemetry, mandi prices, trade listings
+python seed.py
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-Verify → `http://localhost:8000/docs`
- 
-**Terminal 3 — Mobile App (Expo Web preview, port 8082)**
+
+</details>
+
+<details>
+<summary><b>📱 Mobile app</b></summary>
+
 ```bash
 cd agro-cloud-platform/mobile-app
+
 npm install
-npx expo export --platform web
-python -m http.server 8082 --directory dist
+npx expo start
 ```
-Open → `http://localhost:8082`
- 
+
+Useful commands:
+
+```bash
+npm run android
+npm run ios
+npm run web
+```
+
 </details>
-<br/>
-<a name="-testing"></a>
-## 🧪 Testing
- 
-End-to-end integration tests verify the full pipeline — telemetry ingestion → AI diagnosis → yield forecasting → price forecasting → buyer matching → logistics provisioning:
- 
+
+For the repository-maintained execution flow, see [`SETUP.md`](SETUP.md).
+
+---
+
+## 🔐 Environment
+
+The backend and AI engine both contain `.env.example` files for configuration.
+
+Create local environment files from those examples and keep real secrets out of source control.
+
+### Backend
+
 ```bash
 cd agro-cloud-platform/backend
+
+# Windows
+copy .env.example .env
+
+# macOS / Linux
+cp .env.example .env
+```
+
+### AI Engine
+
+```bash
+cd agro-cloud-platform/ai-engine
+
+# Windows
+copy .env.example .env
+
+# macOS / Linux
+cp .env.example .env
+```
+
+---
+
+## 🧪 Testing
+
+The backend contains feature and integration-level tests.
+
+A practical smoke-test sequence is:
+
+```bash
+cd agro-cloud-platform/backend
+
 python test_e2e_integration.py
 python test_farm_to_market_flow.py
+python test_leaf_scan_e2e.py
+python test_onboarding_wizard_e2e.py
 ```
- 
-Both should exit with status `0` and print full JSON responses.
- 
-<br/>
-<a name="-roadmap"></a>
+
+Additional backend tests cover dashboard integrity, weather behavior, caching, smart summaries, and other feature flows. The AI engine also contains disease/model inference tests.
+
+---
+
+## 🔌 API Surface
+
+### Backend
+
+| Route family | Purpose |
+|---|---|
+| `/farmers` | Farmer operations |
+| `/farms` | Farm operations |
+| `/telemetry` | Current + historical telemetry |
+| `/leaf-scan` | Image upload + diagnosis persistence |
+| `/advisory` | Agronomic advisory + smart summary |
+| `/market` | Prices, listings, matching, forecasts, trade confirmation |
+| `/weather` | Live weather + forecast |
+| `/docs` | Interactive Swagger / OpenAPI UI |
+| `/redoc` | ReDoc reference |
+
+### AI Engine
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /predict/disease` | Leaf-image disease inference |
+| `POST /predict/advisory` | NPK + irrigation evaluation |
+| `POST /predict/yield-forecast` | Harvest window + yield estimate |
+| `POST /predict/price-forecast` | 14-day price forecast |
+
+When the services are running, FastAPI’s generated `/docs` pages are the fastest way to explore schemas and try requests interactively.
+
+---
+
+## 📚 Repository Documentation
+
+| Document | Purpose |
+|---|---|
+| [`SETUP.md`](SETUP.md) | Local + Docker setup |
+| [`architecture.md`](agro-cloud-platform/docs/architecture.md) | Architecture and data flows |
+| [`DEMO_SCRIPT.md`](agro-cloud-platform/docs/DEMO_SCRIPT.md) | Demo walkthrough |
+| [`FEATURES_CHECKLIST.md`](agro-cloud-platform/docs/FEATURES_CHECKLIST.md) | Feature coverage |
+| [`pitch_notes.md`](agro-cloud-platform/docs/pitch_notes.md) | Pitch narrative |
+
+---
+
 ## 🗺️ Roadmap
- 
-- [x] Disease diagnosis microservice
-- [x] Soil health advisory engine
-- [x] 14-day mandi price forecasting
-- [x] Smart buyer/mandi matching
-- [ ] Voice input & text-to-speech advisory playback
-- [ ] WhatsApp bot interface
-- [ ] Live IoT soil sensor integration
-- [ ] Multi-region, multi-crop scale-out
-<br/>
+
+### Implemented
+
+- [x] Farmer + farm management
+- [x] Telemetry ingestion/history
+- [x] Leaf disease workflow
+- [x] Agronomic advisory
+- [x] Smart summary
+- [x] Live weather integration
+- [x] Yield forecasting
+- [x] Mandi price forecasting
+- [x] Buyer matching
+- [x] Trade confirmation + logistics
+- [x] React Native / Expo client
+- [x] i18n + device services
+
+### Next
+
+- [ ] Broader live IoT integrations
+- [ ] Production market-data feeds
+- [ ] Voice-first advisory
+- [ ] Broader language coverage
+- [ ] Stronger model evaluation / monitoring
+- [ ] Multi-region production rollout
+
+---
+
+## ⚠️ Project Scope
+
+Krishi Setu is a **hackathon / prototype-oriented engineering project**.
+
+Parts of the current implementation intentionally use:
+
+- seed/mock data
+- deterministic fallback logic
+- simulated buyer candidates
+- configurable external services
+
+Forecasts and recommendations should therefore be treated as software outputs for demonstration and development, not guaranteed agronomic or financial advice.
+
+---
+
 ## 🤝 Contributing
- 
-Contributions, issues, and feature requests are welcome.
- 
+
 ```bash
-# 1. Fork the repo
-# 2. Create your feature branch
-git checkout -b feature/amazing-feature
-# 3. Commit your changes
-git commit -m "Add amazing feature"
-# 4. Push and open a Pull Request
-git push origin feature/amazing-feature
+git checkout -b feature/your-feature
+git add .
+git commit -m "Add: your feature"
+git push origin feature/your-feature
 ```
- 
-<br/>
+
+Then open a Pull Request.
+
+---
+
 <div align="center">
-### Built for Smart India Hackathon 2026
- 
-<img src="https://img.shields.io/badge/Made%20with-%E2%9D%A4-C1502E?style=for-the-badge" alt="Made with love"/>
+
+### 🌾 Build systems that help farmers act — not just observe.
+
+<a href="https://github.com/Ankit-Tank/Krishi-Setu">
+  <img src="https://img.shields.io/badge/Explore%20Krishi%20Setu-%E2%86%92-111827?style=for-the-badge&logo=github&logoColor=white" alt="Explore Krishi Setu" />
+</a>
+
 <br/><br/>
- 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:2B3A67,100:C1502E&height=120&section=footer" width="100%"/>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&height=120&section=footer&animation=fadeIn" width="100%" alt="" />
+
 </div>
