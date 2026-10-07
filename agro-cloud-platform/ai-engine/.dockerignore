@@ -1,0 +1,61 @@
+# Krishi Setu AI-engine Docker build context
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python cache / environments
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / temporary files
+*.log
+*.tmp
+*.temp
+
+# Tests and test artifacts
+test_*.py
+tests/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Developer-only utilities / notebooks
+download_model.py
+*.ipynb
+
+# Locally generated ML caches
+.cache/
+.huggingface/
+transformers_cache/
+torch_cache/
+
+# IMPORTANT:
+# Do NOT ignore the models/ directory.
+# The application loads these local assets at runtime:
+#   models/mobilenet_v2_plant_disease/
+#   models/plant_disease_int8.tflite
+#   models/labels.txt
