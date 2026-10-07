@@ -1,0 +1,58 @@
+# Krishi Setu backend Docker build context
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python cache / environments
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Runtime-generated uploads and logs
+uploads/*
+!uploads/.gitkeep
+*.log
+
+# Local development databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Tests and test artifacts
+test_*.py
+tests/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Documentation not needed in runtime image
+docs/
+*.md
+!requirements.txt
+
+# Packaging artifacts
+dist/
+build/
