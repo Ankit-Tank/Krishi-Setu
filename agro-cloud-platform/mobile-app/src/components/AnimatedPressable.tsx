@@ -1,11 +1,11 @@
-import React from 'react';
-import { Pressable, StyleProp, ViewStyle, GestureResponderEvent } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-} from 'react-native-reanimated';
+import React, { useRef } from 'react';
+import {
+  Pressable,
+  Animated,
+  StyleProp,
+  ViewStyle,
+  GestureResponderEvent,
+} from 'react-native';
 import { AppHaptics } from '../utils/haptics';
 
 interface AnimatedPressableProps {
@@ -17,11 +17,9 @@ interface AnimatedPressableProps {
   disabled?: boolean;
 }
 
-const AnimatedTouchable = Animated.createAnimatedComponent(Pressable);
-
 /**
  * Snappy button micro-interaction component with slight scale-down on tap
- * and integrated cross-platform haptic feedback.
+ * and integrated cross-platform haptic feedback (works everywhere: Web, iOS, Android, Expo Go).
  */
 export default function AnimatedPressable({
   children,
@@ -31,20 +29,25 @@ export default function AnimatedPressable({
   scaleTo = 0.96,
   disabled = false,
 }: AnimatedPressableProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
     if (disabled) return;
-    scale.value = withTiming(scaleTo, { duration: 90 });
+    Animated.timing(scaleAnim, {
+      toValue: scaleTo,
+      duration: 80,
+      useNativeDriver: true,
+    }).start();
   };
 
   const handlePressOut = () => {
     if (disabled) return;
-    scale.value = withSpring(1, { damping: 14, stiffness: 240 });
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 5,
+      tension: 200,
+      useNativeDriver: true,
+    }).start();
   };
 
   const handlePress = (e: GestureResponderEvent) => {
@@ -58,14 +61,16 @@ export default function AnimatedPressable({
   };
 
   return (
-    <AnimatedTouchable
+    <Pressable
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={handlePress}
       disabled={disabled}
-      style={[style, animatedStyle]}
     >
-      {children}
-    </AnimatedTouchable>
+      <Animated.View style={[style, { transform: [{ scale: scaleAnim }] }]}>
+        {children}
+      </Animated.View>
+    </Pressable>
   );
 }
+
