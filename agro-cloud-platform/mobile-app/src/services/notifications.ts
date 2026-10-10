@@ -6,20 +6,22 @@ let setNotificationHandler: any = null;
 
 try {
   if (Platform.OS !== 'web') {
-    // Import local notification scheduling and handler submodules directly
-    // to bypass remote push token registration and prevent Expo Go SDK 53+ push warnings.
-    scheduleNotificationAsync = require('expo-notifications/build/scheduleNotificationAsync').default;
-    setNotificationHandler = require('expo-notifications/build/NotificationsHandler').setNotificationHandler;
+    try {
+      scheduleNotificationAsync = require('expo-notifications/build/scheduleNotificationAsync')?.default;
+      setNotificationHandler = require('expo-notifications/build/NotificationsHandler')?.setNotificationHandler;
 
-    if (setNotificationHandler) {
-      setNotificationHandler({
-        handleNotification: async () => ({
-          shouldShowBanner: true,
-          shouldShowList: true,
-          shouldPlaySound: true,
-          shouldSetBadge: false,
-        }),
-      });
+      if (setNotificationHandler) {
+        setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowBanner: true,
+            shouldShowList: true,
+            shouldPlaySound: true,
+            shouldSetBadge: false,
+          }),
+        });
+      }
+    } catch (innerErr) {
+      console.warn('Expo Go local notifications not supported or restricted in this client.');
     }
   }
 } catch (e) {
