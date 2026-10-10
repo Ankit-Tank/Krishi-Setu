@@ -1,8 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-// Backend API URL: Using public ngrok tunnel for phone connection over cellular/any WiFi
-export const API_BASE_URL = 'https://showdown-scorebook-disabled.ngrok-free.dev';
+// Backend API URL: Dynamically resolves for Web and LAN mobile clients
+export function getApiBaseUrl(): string {
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location?.hostname) {
+    const host = window.location.hostname;
+    const proto = window.location.protocol === 'https:' ? 'https:' : 'http:';
+    if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.')) {
+      return `${proto}//${host}:8000`;
+    }
+  }
+  return 'http://192.168.1.9:8000';
+}
+
+export const API_BASE_URL = getApiBaseUrl();
+
 
 export interface FarmerIdentity {
   farmer_id: number;
