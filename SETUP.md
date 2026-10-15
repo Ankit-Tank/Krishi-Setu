@@ -97,4 +97,4 @@ cd agro-cloud-platform/backend
 python test_e2e_integration.py
 python test_farm_to_market_flow.py
 ```
-Both test scripts should exit with code `0` and print full JSON responses.
+Both test scripts should exit with code `0` and print full JSON responses..
